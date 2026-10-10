@@ -1,6 +1,7 @@
 # Caja negra: diseño del reemplazo HTTP
 
-**Estado:** diseño corregido con evidencia `v1`, 10 de octubre de 2026. Implementación pendiente.
+**Estado:** decisiones de diseño ampliadas con evidencia `v1`, 10 de octubre de 2026.
+Implementación y nuevas confirmaciones pendientes. Los tiempos los controla manualmente el operador.
 **Objetivo:** reproducir el servicio vigente a la entrega, incluidos errores y memoria entre
 requests. El reemplazo es autónomo, responde en menos de 5 segundos por paso y conserva
 su estado tras reinicios. La [especificación incremental](specification.md) queda separada
@@ -18,7 +19,7 @@ Contrato: [enunciado](old-system/README.md). Plan experimental:
 | Decisión | Razón y límite |
 | --- | --- |
 | Go con `net/http`, un proceso y una réplica | Experiencia del equipo, ejecución determinista y operación sencilla. No escalar horizontalmente durante el reto. |
-| SQLite en volumen persistente | Mantener cuentas, operaciones y contadores sin un servidor de base de datos. Memoria solo para arranque y pruebas; no para entrega final. |
+| SQLite en volumen persistente | Un único adaptador para cuentas, operaciones y contadores; bases temporales en pruebas y volumen persistente en entrega. |
 | Exploración en Python, fuera del servicio Go | Aprovechar el plan de investigación paralelo. Solo el cliente instrumentado consulta el original; el binario desplegado no contiene ese cliente ni recibe `BB_TOKEN`. |
 | Railway; local + ngrok como respaldo | Una réplica, Serverless desactivado y volumen montado. Comprobar cuenta, créditos y continuidad; el respaldo requiere equipo y red disponibles. |
 | Actualizaciones mediante código y redespliegue | Detectar cambios con replay manual; no autoadaptación ni consultas al original durante requests del evaluador. |
@@ -39,7 +40,7 @@ La evidencia se convierte en reglas mediante revisión y cambios de código.
 | Motor de compatibilidad (`internal/engine`) | Coordinar validaciones y comandos en el orden observado, seleccionar respuestas, ejecutar consultas/mutaciones/reset de forma indivisible. | Protocolo, modelo de estado y contrato de almacenamiento. Sin HTTP ni cliente del original. |
 | Protocolo (`internal/protocol`) | Gramática de `m`, control, representación numérica, errores y serialización compatibles. No normalizar ni usar defaults del framework sin evidencia. | Biblioteca estándar. Sin base de datos ni red. |
 | Modelo (`internal/state`) | Tipos de cuentas, operaciones, contadores y cambios de estado; reglas aprendidas, sin inventar restricciones bancarias. | Biblioteca estándar. |
-| Persistencia (`internal/storage`) | Implementar el contrato del motor con transacciones y lecturas del estado, en SQLite o memoria. Persistir resultados completos y recuperar tras reinicio. | Modelo de estado; driver SQLite únicamente en la implementación concreta. |
+| Persistencia (`internal/storage`) | Implementar el contrato del motor con transacciones y lecturas del estado en SQLite. Persistir resultados completos y recuperar tras reinicio. | Modelo de estado; driver SQLite únicamente en la implementación concreta. |
 | Herramientas (`tools/explorer`) | Hipótesis, sondas, secuencias, registro, replay y diferencias. Ejecución manual independiente del runtime. | Cliente HTTP instrumentado y artefactos; nunca importadas por el servicio Go. |
 
 La interfaz de almacenamiento pertenece al consumidor del motor: debe permitir una
@@ -67,7 +68,6 @@ como única vía al original, verificando sus garantías antes de ampliar el run
 │   ├── protocol/                   # parser, control, errores y respuestas
 │   ├── state/                      # cuentas, operaciones y contadores
 │   └── storage/
-│       ├── memory/                 # desarrollo y pruebas
 │       └── sqlite/                 # transacciones, esquema y migraciones
 ├── tools/
 │   └── explorer/                   # Python; fuera del despliegue Go
@@ -100,6 +100,12 @@ deben quedar en el mismo volumen. `TEAM_TOKEN` se configura en el runtime; `BB_T
 solo en la herramienta de investigación. `.env`, archivos de estado y secretos se excluyen
 de Git y del contexto de construcción.
 
+Para reducir trabajo, habrá **un solo adaptador de estado: SQLite**, con driver Go puro
+`modernc.org/sqlite`. Las pruebas usan una base temporal por caso y las mismas transacciones
+que producción; no se desarrolla un segundo motor en memoria ni snapshots paralelos.
+Las capas anteriores son límites de responsabilidad, no servicios ni interfaces obligatorias:
+solo el contrato Store separa motor y persistencia. No añadir repositorios por entidad.
+
 ### Estado, atomicidad y operación
 
 Modelo inicial: cuentas (ID, datos de alta, saldo), operaciones (ID, tipo, datos necesarios
@@ -109,11 +115,34 @@ Saldos, montos y contadores se representan con enteros `int64`, nunca `float64`.
 Rechazo de decimales, exponentes, overflow y rango son supuestos pendientes de sondas;
 no convertir ni truncar valores fuera del rango. Serializar enteros sin sufijo `.0`.
 
+Esquema mínimo previsto: `accounts` con ID, datos originales del alta y saldo;
+`operations` con ID, comando, argumentos originales, deltas por cuenta y marca de anulación;
+`counters` con el siguiente ID de cuenta y operación. No imponer restricciones bancarias
+no observadas. La unidad monetaria y los datos exactos se fijan con evidencia, no por el nombre
+de los campos. Guardar deltas permite revertir una operación sin recalcular reglas de otra versión.
+
 Una única conexión escritora SQLite y serialización de requests con estado, incluidos
 consultas y reset, proporcionan una vista consistente. Cada comando que modifica estado
 confirma una transacción antes de responder; reset borra el alcance y reinicia contadores
 en una transacción. El alcance exacto del reset sigue pendiente de evidencia. Un error
 de validación no debe mutar estado salvo que el original demuestre lo contrario.
+
+Supuesto inicial del reemplazo: solo un comando exitoso consume IDs; una anulación ya aplicada
+no vuelve a mover saldos; reset vacía cuentas y operaciones y vuelve ambos contadores a 1.
+El único estado de negocio pertenece a `TEAM_TOKEN`. No persistir `X-Req` para compatibilidad,
+pues los headers no se comparan. Para verificar el supuesto, ejecutar desde reset: alta fallida
+y exitosa; operación fallida y exitosa; depósito/anulación repetida/consulta; transferencia,
+anulación y consulta de ambas cuentas; reset y consulta de IDs anteriores, seguido de nuevas
+altas y operaciones. Comparar también tras reiniciar el reemplazo. Cada divergencia cambia
+el esquema o la transición y añade una regresión, sin declarar probado el alcance del original.
+
+Parsear importes desde su texto original antes de convertirlos. Sondas obligatorias: `0`, `-1`,
+`+1`, `01`, espacios, `1.0`, `1e2`, extremos de int64 y valores inmediatamente fuera;
+probar tanto el importe como el saldo resultante de sumas y transferencias. Las comprobaciones
+de overflow se hacen antes de escribir. Si el original exige valores fuera de int64, sustituir
+el tipo por enteros de precisión arbitraria y almacenamiento decimal exacto; no saturar.
+Mientras falte evidencia, aceptar solo enteros ASCII representables y tratar el rechazo como
+regla supuesta, con status/cuerpo documentados antes de implementar: no inventar un código nuevo.
 
 No prometer ejecución exactamente una vez ante cortes de red: una operación puede haberse
 confirmado antes de perder la respuesta. No añadir deduplicación o reintentos de mutaciones
@@ -135,6 +164,31 @@ El chequeo de disponibilidad debe enviar `TEAM_TOKEN`; confirmar que el hosting 
 ese header antes de configurar un health check. No añadir una ruta pública de readiness.
 El supuesto para otros tokens es 401 E001, con estado únicamente para `TEAM_TOKEN`.
 Auth frente a ruta inexistente o JSON inválido sigue sin precedencia demostrada.
+
+Orden provisional, **supuesto** en combinaciones no observadas: autenticación, método/ruta
+exactos, decodificación JSON, extracción de `m`, gramática del control E201, valor E202,
+comando/aridad y validaciones de estado. PING conserva sus reglas observadas y se investiga
+por separado. Las etapas generan una respuesta y terminan; ninguna etapa anterior al comando
+muta estado. La precedencia entre errores de negocio no se fija sin controles válidos.
+
+Matriz de cierre HTTP, siempre mediante el cliente instrumentado y reset por secuencia:
+
+| Grupo | Sondas | Decisión que debe cerrar |
+| --- | --- | --- |
+| Precedencia | Ruta inexistente sin token y JSON `{` sin token. | Auth frente a ruta y JSON. |
+| Cuerpo | Vacío, `[]`, `"x"`, `null`, `{"m":""}`, `{"m":null}` y JSON seguido de otro valor. | Forma aceptada y error exacto; no asumir que existe E101. |
+| PING | `PING`, `PING;5X`, `PING;64;1`, control vacío y espacios. | Exención de control, aridad y precedencia. |
+| Métodos | HEAD, OPTIONS y PUT en `/msg` y `/health`, con y sin auth. | Status y cuerpo efectivo, incluida ausencia de cuerpo en HEAD. |
+| Ruta | `//msg`, `/a/../msg`, `/%6dsg`, `/msg/`, `/msg?x=1` y escapes inválidos. | Comparación de ruta original, escapes y query. |
+| Transporte | JSON con/sin Content-Type, Expect y bytes no UTF-8; fallos anteriores al handler si el cliente puede emitirlos. | Límites de net/http y bytes preservados. |
+
+Conservar `RequestURI` para captura y comparar la ruta escapada original sin query; nunca
+basar el routing en una ruta decodificada que convierta `/%6dsg` en `/msg`, salvo evidencia.
+El cliente debe permitir omitir Content-Type, controlar headers con una lista segura y guardar
+request/response en base64 además del texto: su decodificación con reemplazo no prueba igualdad
+de bytes. No enviar sondas manuales fuera del cliente. Si net/http impide reproducir un caso
+confirmado antes del handler, documentar el límite y adaptar solo ese caso; el handler propio
+no demuestra cobertura del transporte completo.
 
 ### Versionado, captura del evaluador y monitoreo
 
@@ -164,6 +218,21 @@ ventana de 1.000 requests. Emitir resumen cada 100 requests o minuto y alerta so
 Registrar arranque con versión, almacenamiento y esquema listos; nunca secretos.
 Estas capacidades están diseñadas y siguen pendientes de implementación y verificación.
 
+### Condiciones de despliegue y continuidad
+
+El despliegue se acepta con volumen accesible, una réplica, estado recuperado, recursos
+disponibles hasta conocer el resultado final y un smoke test público de todas las rutas.
+Registrar la verificación de créditos y límites de la cuenta, sin afirmar que ya se realizó.
+El proceso no escucha hasta abrir SQLite y completar el esquema; un fallo impide el arranque.
+
+Primera opción de readiness: `/health` con Authorization, si la plataforma permite configurarlo.
+Si no lo permite, usar la comprobación de proceso/TCP disponible y un smoke test externo
+autenticado; no configurar un chequeo HTTP sin token que recibirá 401 ni abrir otra ruta.
+Si tampoco hay chequeo alternativo, documentar esa limitación y validar manualmente antes de
+entregar el endpoint. El respaldo local usa el mismo artefacto y una copia consistente de SQLite,
+conserva TEAM_TOKEN y se prueba antes de necesitarlo; cambiar el entrypoint solo tras verificarlo.
+No copiar archivos SQLite abiertos: usar backup SQLite o detener el proceso antes de copiar.
+
 ## Investigación y validación
 
 El log 1-50 ya reproduce el corpus y mide precedencia y sobre HTTP en `v1`.
@@ -192,6 +261,42 @@ desde reset cuando sea seguro. La caché usa el prefijo completo desde reset, ve
 antes del primer fallo de caché. Se evita para confirmaciones y detección de cambios. El log
 omite autorización y cualquier aparición de secretos.
 
+### Propiedad exclusiva de una secuencia
+
+Implementar un `flock` por etiqueta de token en el coordinador local del explorador, diferente
+del lock breve de IDs/cuota. Adquirirlo antes del reset real y mantenerlo hasta cerrar o abortar
+la secuencia, incluidas esperas y confirmaciones sin caché. Todas las llamadas con ese token
+pasan por el propietario; varios tokens pueden explorar en paralelo. El reset de otro proceso
+debe quedar bloqueado, aunque no mueva `X-Req`.
+
+Usar un runner/context manager que conserve el descriptor durante toda la secuencia; los
+comandos CLI independientes necesitan ejecutarse dentro de ese runner, no fingir exclusión
+con un lock adquirido solo por request. La caída del proceso libera el flock; se abandona
+la secuencia incierta y se comienza otra desde reset. Registrar propietario, seq e inicio
+sin secretos. No robar locks por timeout. En varias máquinas, centralizar llamadas por token
+en el mismo coordinador o asignar tokens distintos: un flock local no coordina hosts.
+
+Aceptar la implementación cuando dos procesos con el mismo token no intercalen reset/msg,
+el cierre y una caída liberen el lock y un segundo token no se bloquee. Usar continuidad de
+X-Req solo como alarma adicional: no detecta resets ni debe exigir IDs globales contiguos
+si se exploran otros tokens.
+
+### Cierre de la fórmula del control
+
+Cada candidato declara qué texto incluye, si cuenta bytes UTF-8 o caracteres, tratamiento
+de caja/separadores/espacios y reducción al rango 0-99. Obtener controles válidos para pares
+que cambien una sola propiedad: nombre ASCII/acentuado, longitud, caja, argumento numérico,
+ceros iniciales y separador. Buscar controles 0-99 solo tras E201, con cuota reservada y reset
+para evitar que los intentos exitosos contaminen pruebas de estado. No inferir la fórmula
+solo de controles conocidos.
+
+Aceptar una fórmula tras repetir casos y acertar controles de mensajes nuevos reservados
+para validación, en varios comandos y con una variante UTF-8; comprobar también que controles
+alternativos dan E202 en la misma versión. Vincular algoritmo, fixtures e IDs. Si falla un caso,
+seguir como hipótesis; cuando el operador cierre la búsqueda, activar explícitamente el plan B
+y marcar la versión como incompleta. Los valores conocidos solo se reutilizan para el mensaje
+exacto y la epoch correspondiente, sin extrapolación ni consultas del runtime al original.
+
 ### Un comando manual para detectar cambios
 
 Interfaz prevista, **todavía no implementada**:
@@ -217,11 +322,25 @@ por hora en runtime: configurar la versión vigente a la entrega. Cada fila de l
 se revalida con IDs nuevos de la `epoch` vigente o se marca histórica/reemplazada; no elevar
 observaciones de una sola corrida a `confirmado`. El replay incluye auth, rutas y sobre JSON.
 
+Mantener un manifiesto por regla: ID, epoch, secuencia reproducible, IDs de evidencia,
+status/cuerpo esperado y efecto comprobable mediante consultas posteriores. El corpus cubre
+cada regla vigente, combinaciones de errores y secuencias de 2-12 pasos; incluir casos capturados
+del evaluador sin reemplazar las sondas independientes. La repetición confirmatoria usa otro
+reset y no caché. Si una regla no puede revalidarse, conservarla como supuesto o histórica,
+sin presentar evidencia anterior como confirmación de la versión actual.
+
+El informe final distingue coincidencias, deltas y casos no ejecutados. Solo promocionar una
+epoch cuando el replay esté completo, el delta tenga evidencia repetida y el reemplazo pase
+el corpus de esa versión. Las pruebas de versiones anteriores siguen disponibles para rollback,
+pero no obligan a conservar comportamientos que el original cambió. Archivar manifiesto,
+informe, log y commit del artefacto juntos para poder reproducir la entrega.
+
 ### Horarios de corte y plan B
 
-El usuario decidió Bogotá UTC-5 en el plan coordinado; falta confirmar con los organizadores
-la zona oficial. Hasta entonces usar el plazo de entrega más temprano y dos replays tras
-los posibles cambios. Todos son hitos manuales, sin tarea automática creada.
+Los tiempos y la detección del cambio los controla manualmente el usuario. Por su indicación,
+la confirmación de zona horaria deja de ser una tarea pendiente del diseño. La tabla siguiente
+queda solo como referencia previa; el operador decide cuándo ejecutar replays, cortar la búsqueda,
+desplegar y entregar. No se crean automatizaciones ni se elige el comportamiento por reloj.
 
 | Hito del 10 de octubre | Bogotá (UTC-5) | CDMX (UTC-6) | UTC |
 | --- | --- | --- | --- |
@@ -252,13 +371,39 @@ avería comprobada, registrar motivo y repetir smoke test y validación pública
 La [especificación](specification.md) contiene las siete secciones del contrato, con IDs
 reales del log y confianza por comportamiento. El diseño no es evidencia de implementación.
 
-El log de auditoría conserva todos los intentos y sus IDs originales. Para entregar evidencia,
-exportar solo entradas `completed`, con status/respuesta y sin marca de infraestructura,
-conservando esos IDs sin renumerar. Adjuntar aparte los intentos inciertos e infraestructura
-con su explicación; nunca presentarlos como comportamientos del servicio. Validar que toda
-cita existe y que ninguna secuencia quedó incompleta. Confirmar con los organizadores si
-exigen un archivo único de auditoría completo además de la exportación filtrada. El exportador
-y su validación siguen pendientes; los campos extra no sustituyen los obligatorios.
+El log de auditoría conserva todos los intentos y sus IDs originales, sin editarlo ni renumerarlo.
+La entrega incluye ese `experimentos.jsonl` completo; infraestructura e intentos sin respuesta
+se identifican mediante `outcome` y no prueban comportamiento. Así no se pierde una solicitud
+al original ni se rompe la relación ID/número de línea. No sustituirlo por un archivo filtrado.
+
+Exportar adicionalmente `evidencia.jsonl` con entradas `completed`, status/respuesta y sin
+infraestructura; conserva IDs originales y es un índice auxiliar, no el log canónico. Añadir
+`intentos-no-validos.jsonl` con la razón de exclusión y un manifiesto con conteos y hashes.
+Si los organizadores piden otra presentación, generarla como derivado sin alterar la auditoría.
+
+El validador debe verificar JSON por línea, IDs únicos e iguales a posición en el log canónico,
+hipótesis no vacía, seq y campos obligatorios en respuestas completas. Los intentos inciertos
+conservan nulls y la explicación; nunca se fabrican status, response o X-Req. Verificar que cada
+cita de la especificación apunta a una respuesta completa, sin infraestructura, de la epoch
+declarada y con secuencia reproducible iniciada por reset. Una secuencia abortada no se usa
+para inferir efectos posteriores; sus respuestas válidas aisladas conservan su contexto.
+Revisar ausencia de secretos y correspondencia entre bytes capturados y cuerpo antes de exportar.
+El exportador debe fallar ante una cita inválida, sin generar una entrega aparentemente exitosa.
+
+### Prioridad de cierre
+
+| Prioridad | Trabajo | Condición de aceptación |
+| --- | --- | --- |
+| P0 | Control y transiciones de estado. | Fórmula confirmada o plan B explícito; fixtures de IDs, anulaciones, errores y reset. |
+| P0 | Revalidación de versión vigente. | Manifiesto y replay completos con evidencia nueva; sin reglas históricas presentadas como actuales. |
+| P1 | Exclusión por token y contrato HTTP. | Sin intercalado de secuencias; matriz HTTP resuelta o supuestos exactos registrados. |
+| P1 | Números y transporte. | Fronteras medidas, sin pérdida numérica ni de bytes; límites del servidor identificados. |
+| P1 | Despliegue y entrega. | Smoke test público, recuperación, continuidad verificada y auditoría/citas válidas. |
+| P2 | Simplificación. | Solo SQLite y un contrato Store; sin segundo almacenamiento ni interfaces innecesarias. |
+
+Estas decisiones cierran las propuestas de diseño, no sustituyen implementación, solicitudes
+instrumentadas ni verificación de la cuenta de hosting. No se han obtenido nuevas respuestas
+del original durante esta revisión.
 
 ## Plan de implementación y aceptación
 

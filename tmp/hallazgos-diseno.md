@@ -2,7 +2,8 @@
 
 Revisión de `docs/system-design.md` (con `PROGRESS.md`, la estrategia de descubrimiento, el
 enunciado, el corpus y `tools/explorer/bb.py` en `ecac9e7`). Cada hallazgo tiene un ID para
-resolverlo y marcarlo. Estado inicial de todos: **pendiente**.
+resolverlo y marcarlo. Estado inicial de todos: **pendiente**. Para el estado actual,
+consultar los registros de atención de las secciones 7 y 8; las tablas iniciales son históricas.
 
 ## 0. Priorización (qué corregir si falta tiempo)
 
@@ -250,3 +251,27 @@ Se corrige el diseño y se enlaza con evidencia existente; **no se declara imple
 Siguientes trabajos que requieren implementación o evidencia nueva: H-03 (exclusión de secuencias por token), las sondas de §6.3, esqueleto desplegable y replay final. La corrección documental no sustituye ninguno de esos trabajos.
 
 Verificación de esta tanda: 20 respuestas del corpus coinciden con el log; todas las citas de IDs existen y corresponden a intentos completed sin infraestructura; cuerpos exactos de errores contrastados con el log. PNG y PDF de 9 páginas revisados visualmente. `git diff --check` sin errores.
+
+## 8. Cierre de decisiones pendientes de diseño
+
+Por indicación del usuario, H-02 queda fuera del trabajo: los tiempos se controlan manualmente.
+Se actualiza `docs/system-design.md`, fuente del PDF, con las decisiones siguientes. No se
+declara implementado el servicio, ejecutadas las sondas ni verificada la cuenta de hosting.
+
+| Prioridad | Pendiente revisado | Corrección incorporada | Estado |
+| --- | --- | --- | --- |
+| P0 | H-01, G-05: fórmula del control. | Candidatos explícitos, pares con una sola variación, casos nuevos reservados y UTF-8; confirmación repetida por epoch y fallback activado por operador. | Plan cerrado; fórmula requiere evidencia. |
+| P0 | Modelo definitivo de estado. | Esquema de cuentas, operaciones con deltas y contadores; supuestos de IDs/reset y secuencias para errores, anulaciones y reinicios. | Diseño concretado; semántica requiere sondas. |
+| P0 | H-04: versión vigente. | Manifiesto por regla, replay sin caché, evidencia nueva, deltas y casos incompletos separados; promoción y rollback por corpus de versión. | Procedimiento cerrado; replay pendiente. |
+| P1 | H-03: exclusión de secuencias. | flock por token durante toda la secuencia, runner propietario, recuperación sin robar locks y coordinación entre máquinas. | Diseño cerrado; implementación y prueba pendientes. |
+| P1 | §6.3: precedencia y protocolo. | Orden provisional marcado supuesto y matriz de auth, JSON, PING y métodos; no inferir E101 por numeración. | Plan cerrado; respuestas exactas requieren sondas. |
+| P1 | H-05: transporte HTTP. | Routing con ruta escapada original, matriz de escapes/HEAD/Expect y captura base64 en cliente; adaptación condicionada a evidencia. | Diseño cerrado; límites requieren verificación. |
+| P1 | G-06: números. | Parseo exacto y matriz de formatos/fronteras; overflow previo a escritura y enteros arbitrarios si la evidencia supera int64. | Diseño cerrado; errores y rangos requieren sondas. |
+| P1 | H-06, N-02: despliegue. | Gate de volumen, créditos, recuperación y smoke test; readiness autenticado o proceso/TCP sin nueva ruta; respaldo consistente probado. | Procedimiento cerrado; hosting requiere verificación. |
+| P1 | G-08: entrega del log. | Auditoría canónica completa conserva ID/línea; evidencia filtrada solo auxiliar, exclusiones y manifiesto; validador de citas/epoch/secuencias/secretos. | Contrato interno cerrado; exportador pendiente. |
+| P2 | A-01: almacenamiento. | Un solo adaptador SQLite con modernc.org/sqlite, bases temporales para pruebas y solo interfaz Store. | Decisión cerrada; implementación pendiente. |
+
+Corrección respecto a la sección 7: la exportación filtrada ya no sustituye el log de entrega,
+porque dejaría huecos en los IDs y omitiría intentos al original. No se añaden afirmaciones
+confirmadas a la especificación sin evidencia nueva. El PDF se regenera desde el diseño y
+la especificación actuales, no desde las tablas históricas de esta revisión.

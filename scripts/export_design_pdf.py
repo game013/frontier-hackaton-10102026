@@ -47,7 +47,12 @@ doc.setDocumentMargin(0)
 doc.setHtml(html)
 # Separar bloques extensos y evitar encabezados huérfanos.
 block = doc.begin()
-break_before = {"Capas y dependencias", "Árbol de directorios propuesto", "Caja negra: especificación incremental", "3. Comandos"}
+break_before = {
+    "Capas y dependencias", "Árbol de directorios propuesto",
+    "Matriz de cierre HTTP, siempre mediante el cliente instrumentado y reset por secuencia:",
+    "Plan de implementación y aceptación",
+    "Caja negra: especificación incremental", "3. Comandos",
+}
 while block.isValid():
     cursor = QTextCursor(block)
     fmt = block.blockFormat()
