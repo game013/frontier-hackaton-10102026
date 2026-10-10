@@ -111,3 +111,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [claude] 2026-10-10 14:09: B1 completado (4a2d32d…fc09d12, ff a master): handler con auth/health/reset/E404/E100/E102 y stub PING (19 casos del log 2, 33–50 en verde), captura JSONL de todo request en `CAPTURE_PATH` + stdout con token redactado, `make serve` (:9900), `make test-go`, `make seeds` para convertir capturas o logs en semillas. Límites: lo que net/http rechaza antes del handler no se captura; cuerpo sin tope de tamaño. 0 requests al original. B2 desbloqueado.
 
 - [codex] 2026-10-10 14:10: corregido P1 de revisión A0: migración de cuota filtrada por token_tag y día, sin atribuir entradas sin etiqueta; rate limits laterales etiquetados. Regresión con dos tokens y log común reproduce el fallo antes del fix; 25 pruebas en verde después. 0 requests al original.
+
+- [claude] 2026-10-10 14:21: revisión de B1 corregida (d76cf00, 232337b): la captura conserva el error de lectura del cuerpo (antes un cuerpo truncado daba 200 en vez de E100) y registra solo el cuerpo que sale al cable (HEAD, 204/304 vacíos).
