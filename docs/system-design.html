@@ -341,21 +341,27 @@ secuencias nuevas de 2-12 pasos. La numeración de errores y los nombres
 bancarios orientan sondas; no prueban reglas ni comandos
 adicionales.</p>
 <p>El cliente exige hipótesis y registra <strong>cada intento</strong>,
-incluidos reset, health, rutas y autenticación inválida. Conserva los
-campos del README y añade método/ruta, bytes de request y response,
-timestamp, versión de corpus y etiqueta de token sin valor secreto. Un
-escritor asigna IDs únicos; antes de varias herramientas concurrentes,
-coordinar cuota e IDs. Un fallo de transporte se registra como intento
-sin respuesta y no prueba comportamiento. Si ocurre en una secuencia con
+incluidos reset, health, rutas y autenticación inválida, antes de abrir
+la conexión. Conserva los campos del README y añade método/ruta, bytes
+de request y response cuando existe, timestamp, versión de corpus y
+etiqueta derivada del token sin su valor secreto. El bloqueo del log
+asigna IDs únicos. Un fallo de transporte permanece como intento sin
+respuesta y no prueba comportamiento; si ocurre en una secuencia con
 estado, abortar y repetir desde reset, sin reintento ciego.</p>
-<p>Limitador inicial: 8 req/s, contador persistente por token/día y tope
-de 8.000 incluyendo resets y reintentos. Las respuestas
-<code>X-Frontier-Infra: rate-limit</code> se registran como
-infraestructura, se excluyen de evidencia y comparaciones y consumen
-presupuesto local. Aplicar backoff; en secuencias de estado, repetir
-desde reset cuando sea seguro. La caché usa el prefijo completo desde
-reset y la versión; se evita para confirmaciones y detección de cambios.
-El log omite autorización y cualquier aparición de secretos.</p>
+<p>El limitador coordina persistentemente entre procesos: 8 req/s,
+contador por token/día y tope local conservador configurable de 7.800
+(nunca por encima del máximo externo de 8.000), incluyendo resets y
+reintentos. La reserva de turno y presupuesto es atómica en el mismo
+área privada del explorador; no contiene el token, solo una etiqueta
+derivada. Las respuestas <code>X-Frontier-Infra: rate-limit</code> se
+marcan como infraestructura, se excluyen de evidencia y comparaciones y
+consumen presupuesto local. Aplicar backoff; en secuencias de estado,
+repetir desde reset cuando sea seguro. La caché usa el prefijo completo
+desde reset, versión y <code>Content-Type</code> efectivo; sus aciertos
+pendientes persisten para que otra ejecución los reenvíe antes del
+primer fallo de caché. Se evita para confirmaciones y detección de
+cambios. El log omite autorización y cualquier aparición de
+secretos.</p>
 <h3 id="un-comando-manual-para-detectar-cambios">Un comando manual para
 detectar cambios</h3>
 <p>Interfaz prevista, <strong>todavía no implementada</strong>:</p>
