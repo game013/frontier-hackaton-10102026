@@ -8,7 +8,8 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 
 - **Fase:** A0, A1, A2, A3, A4 y B1 completados (A4 integrado en master mediante fast-forward autorizado, 1598e36); fórmula del control confirmada y línea base completa revalidada. A2 integrado en master mediante fast-forward autorizado (d3abf21); A1 integrado en 310a1be.
 - **Versión observada:** `v1`, revalidada a las 15:00 de Bogotá. Último ID del log: 1381 (A4 cerró a las 15:28:23, antes del cambio; intentos 51 y 226 sin respuesta).
-- **Próximo paso:** A6 (replay tras el cambio anunciado, para los 3 deltas de FR-0153) y B5 (SQLite tras el contrato Store de B4); B7 depende de A6.
+- **Próximo paso:** B7 (`BEHAVIOR_VERSION=v2` con CAM-V2-1…3; NOTAS/HALT no son delta, existen en v1 y v2) y B5 (SQLite tras el contrato Store de B4); A7 antes de las 18:30.
+- **Versión vigente:** `v2` desde algún momento entre las 15:48:49 (ID 1996, aún v1) y las 16:24:51 (ID 2004). A6 encontró exactamente 3 deltas (spec §6); A5 respondió como v1.
 - **Bloqueos:** ninguno.
 
 ## Hitos de hoy (Bogotá, UTC−5)
@@ -16,8 +17,8 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 - [x] 13:15 · A0 listo (completado a las 13:59): cliente con base64, `--no-cache`, runner de secuencias con lock.
 - [x] 15:00 · Fórmula del control con candidato validado (A1 completado a las 14:42; objetivo, no corte).
 - [x] 15:20 · **Línea base `v1` completa** en `tests/corpus/` (A2; revalidada a las 15:00).
-- [ ] 15:35 · Primer replay tras el cambio anunciado (A6).
-- [ ] 16:35 · Segundo replay (por si la hora del cambio es de CDMX).
+- [x] 15:35 · Primer replay tras el cambio anunciado (A6; completado a las 16:27, base completa, 3 deltas).
+- [x] 16:35 · Segundo replay (innecesario: el canario de las 16:24 ya era v2; sondas repetidas a las 16:46).
 - [ ] 18:00 · Corte de la fórmula: si no está confirmada, activar plan B (INT-04).
 - [ ] 18:30 · Replay final sin caché sobre la versión vigente (A7).
 - [ ] 19:15 · Último despliegue.
@@ -34,7 +35,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 | A3 | **Estado:** consumo de IDs ante errores, anulación de transferencias, ANULA sobre operación inexistente, alcance del reset, naturaleza del límite E506. | ~500 (800 aprobados; 436 consumidas) | A0 (mejor con A1) | claude (orquestación), Haiku (minería/auditoría) | Completado | 451–886 (618: TEAM_TOKEN rechazado) |
 | A4 | **Sobre HTTP y números:** matriz de cierre del diseño (precedencia auth/ruta/JSON, cuerpos, HEAD/OPTIONS, escapes) y bordes (`0`, `-1`, `+1`, `01`, `1.0`, int64). | ~300 (500 aprobados; 495 consumidas) | A0 | claude (orquestación), Haiku (auditoría) | Completado | 887–1381 |
 | A5 | **Descubrir comandos** por diccionario (RETIRO, MOVIMIENTOS, CIERRE…). | ~500 (900 aprobados; 617 consumidas) | A1 | claude (orquestación), Haiku (diccionario/auditoría) | Completado | 1382–1998 |
-| A6 | **Detección del cambio (incidente [FR-0153](docs/old-system/incidente-FR-0153.md)):** replay de la base `v1` contra v2 y sondas mínimas hasta aislar **exactamente 3 deltas**. Cada delta va al log con `hipotesis`, a la spec §6 (CAM-V2-1…3) con IDs v1/v2 y al debrief. | ~900 (1.000 aprobados) | A2 | claude (orquestación), Haiku (auditoría) | En curso | — |
+| A6 | **Detección del cambio (incidente [FR-0153](docs/old-system/incidente-FR-0153.md)):** replay de la base `v1` contra v2 y sondas mínimas hasta aislar **exactamente 3 deltas**. Cada delta va al log con `hipotesis`, a la spec §6 (CAM-V2-1…3) con IDs v1/v2 y al debrief. | ~900 (1.000 aprobados; 980 consumidas) | A2 | claude (orquestación), Haiku (auditoría) | Completado | 1999–2978 |
 | A7 | Replay final sin caché de la versión vigente. | ~300 | A6 | — | Pendiente | — |
 
 Al cerrar cada tanda: `conclude` en el log, actualizar la fila de la spec con sus IDs y
@@ -90,6 +91,7 @@ Trabajan varios agentes en paralelo, sin reparto fijo por herramienta ni por eta
 **Mensajes** (con autor):
 
 - [claude → B1a/B3] A4 contradice el supuesto ENT-05 de B1: la ruta se evalúa antes que la auth. El handler necesita los deltas del [informe A4](docs/research/envelope-a4.md#deltas-para-el-handler-go-tablero-b); B3 debe implementar E103, la excepción de PING (INT-11) y `sugerencia` en E301.
+- [claude → B4/B7] A6: v2 tiene exactamente 3 deltas: (1) CONSULTA devuelve `saldo` como string con dos decimales (entero/100, `"400.00"`); (2) E506 con TRANSFER > 50000 (antes > 100000); (3) E510 423 `cuenta bloqueada` con `intentos` tras 3 TRANSFER fallidos seguidos (E506/E507) del origen; solo DEPOSITO lo libera. Reglas, IDs y lo no medido en el [informe A6](docs/research/deltas-a6.md#para-el-reemplazo-b7). Suite `tests/differential/v2.json` + `pending-v2.txt` lista; añadir `v2` a `config.Versions` es de B7 (cambia el default). A5 respondió como v1: NOTAS/HALT existen en ambas versiones.
 - [claude → B3/B4] A5 (`v2`): hay dos comandos más, `NOTAS` (aridad 0, 200 con nota fija) y `HALT` (aridad 1, 409 E520 sin cambios observados; medido con `x`, otros argumentos como supuesto) y `POST /internal/export-docs` responde E404. Los dos entran en el conjunto de sugerencias de E301. Cuerpos y orden en el [informe A5](docs/research/commands-a5.md#deltas-para-el-reemplazo-tablero-b).
 - [claude → A6/B5/B7] B4: NOTAS y HALT activos en todas las versiones (spec CMD-VERSION); si A6 los identifica como delta, B7 los condiciona por `BEHAVIOR_VERSION`. El motor no tiene bifurcación por versión y `config.Versions` solo tiene `v1`: B7 añade `v2`. B5 implementa `engine.Store` (`Update` atómico serializado, `Reset`) sobre SQLite y retira `MemoryStore` de producción (MEM-07). La captura (B1) lee el cuerpo sin tope antes del handler: respuestas correctas, pero un cuerpo enorme ocupa memoria.
 
@@ -159,3 +161,4 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [claude] 2026-10-10 16:36: revisión adversaria de B4 (Spec sin hallazgos; Standards 3 P2) corregida: contadores int64 (a2527b6), desbordamiento de saldos comprobado antes de escribir con state.ErrOverflow → 500 E500 de MEM-07 (83fb82f) y motor sin net/http (5103b3b). go test -race ./... y diferencial v1 sin pendientes en verde. 0 requests al original.
 - [claude] 2026-10-10 16:38: usuario autoriza mezcla; feat/b4-engine integrado en master con git merge --ff-only hasta 39325fd, sin commit de merge. go test ./... en verde. Worktree (sin ignorados) y rama eliminados. Sin llamadas al original.
 - [claude] 2026-10-10 16:24: A6 reclamado en feat/a6-v2-deltas (worktree ../10102026-a6); usuario aprueba techo de 1.000 requests, debrief nuevo en docs/debrief.md, suite diferencial v2 y re-etiquetar A5 si el testigo lo exige. Incidente confirmado activo (ticket recibido 15:44): replay completo sin esperar a 16:31.
+- [claude] 2026-10-10 16:53: A6 completado en feat/a6-v2-deltas, sobre `v2`: IDs 1999–2978, 980/1.000. Canario s001 (16:24:50) ya v2; replay sin caché de toda la base A2+A3+A4+A5 (725 pasos, 2020–2744): 78 deltas, todos explicados por 3 causas (59 formato de saldo, 12 E506, 1 E510, 14 cascadas); sondas 2745–2861 repetidas 2862–2978, 117/117 iguales. CAM-V2-1 saldo string con dos decimales, CAM-V2-2 límite > 50000, CAM-V2-3 bloqueo E510 (ausencia en v1 inferida). A5 (15:48) respondió como v1; ventana del cambio 15:48:49–16:24:51 (CAM-04). Spec §6, informe docs/research/deltas-a6.md, docs/debrief.md, suite diferencial v2. Auditoría Haiku: clasificación confirmada; un conteo corregido. Rama sin mezclar.
