@@ -4,6 +4,7 @@ import os
 import sys
 import tempfile
 import threading
+import time
 import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -208,6 +209,54 @@ class ClientTest(unittest.TestCase):
         second.resume("s1").msg("PING;1", "h", confirm=True)
         with self.assertRaises(bb.BudgetExceeded):
             first.resume("s1").msg("PING;2", "h", confirm=True)
+
+    def test_delayed_turns_do_not_burst(self):
+        sent: list[float] = []
+        guard = threading.Lock()
+
+        class Resp:
+            status, headers = 200, {}
+
+            def read(self):
+                return b'{"ok":true}'
+
+        def opener(_req, timeout):
+            with guard:
+                sent.append(time.time())
+            return Resp()
+
+        interval, n = 0.125, 11
+        reserved, holding = threading.Barrier(n + 1), threading.Event()
+
+        class Delayed(bb.Client):
+            def _reserve_request(self):
+                result = super()._reserve_request()
+                reserved.wait()  # todos reservaron cuota (y, antes del arreglo, turno)
+                holding.wait()  # el log queda bloqueado entre la reserva y el envío
+                return result
+
+        c = Delayed(base_url=self.url, log_path=self.log, token_var="BB_TEST_TOKEN",
+                    min_interval=interval, opener=opener)
+
+        def hold_log_lock():
+            reserved.wait()
+            with c._locked():
+                holding.set()
+                time.sleep(1.6)  # los turnos vencen mientras el log está bloqueado
+
+        holder = threading.Thread(target=hold_log_lock)
+        workers = [threading.Thread(target=c.execute, args=("s", "POST", "/msg", {"m": f"PING;{i}"}, "h"))
+                   for i in range(n)]
+        for t in [holder, *workers]:
+            t.start()
+        for t in [holder, *workers]:
+            t.join()
+        sent.sort()
+        self.assertEqual(len(sent), n)
+        gaps = [b - a for a, b in zip(sent, sent[1:])]
+        self.assertGreaterEqual(min(gaps), interval * 0.9)
+        self.assertTrue(all(sum(1 for t in sent if s <= t < s + 1) <= 10 for s in sent))
+        self.assertEqual(c.used_today(), n)
 
     def test_non_json_response_kept_verbatim(self):
         s = self.c.sequence("s1")

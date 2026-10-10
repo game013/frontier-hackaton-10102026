@@ -174,20 +174,35 @@ class Client:
         with self._locked():
             return self._quota_state(self._read_quota(), today)["used"]
 
-    def _reserve_request(self) -> float:
-        """Reserva atómicamente cuota y turno; devuelve la espera antes de enviar."""
+    def _reserve_request(self) -> None:
+        """Reserva atómicamente una unidad de la cuota diaria (el turno se toma al enviar)."""
         today = bogota_day(now_iso())
         with self._locked():
             quota = self._read_quota()
             state = self._quota_state(quota, today)
             if state["used"] >= self.daily_cap:
                 raise BudgetExceeded(f"tope diario alcanzado ({self.daily_cap})")
-            now = time.time()
-            scheduled = max(now, state["next_at"])
-            state["next_at"] = scheduled + self.min_interval
             state["used"] += 1
             self._write_quota(quota)
-        return max(0.0, scheduled - time.time())
+
+    def _claim_turn(self) -> None:
+        """Toma el turno de envío revalidándolo con la hora real, justo antes de conectar.
+
+        Un turno no se agenda por adelantado: si el proceso se retrasa (bloqueo, pausa),
+        vuelve a esperar al intervalo mínimo desde el último envío real, y así los
+        retrasos nunca se acumulan en una ráfaga.
+        """
+        while True:
+            with self._locked():
+                quota = self._read_quota()
+                state = self._quota_state(quota, bogota_day(now_iso()))
+                now = time.time()
+                wait = state["next_at"] - now
+                if wait <= 0:
+                    state["next_at"] = now + self.min_interval
+                    self._write_quota(quota)
+                    return
+            self._sleep(wait)
 
     def _replace_entries(self, entries: list[dict]) -> None:
         tmp = self.log_path.with_suffix(".tmp")
@@ -315,9 +330,7 @@ class Client:
             data = b"" if method == "POST" else None
 
         for attempt in range(retries + 1):
-            wait = self._reserve_request()
-            if wait:
-                self._sleep(wait)
+            self._reserve_request()
             ts = now_iso()
             # Escribir antes de abrir la conexión conserva evidencia incluso si se pierde la respuesta.
             with self._locked():
@@ -331,6 +344,8 @@ class Client:
                 }
                 with open(self.log_path, "a") as fh:
                     fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
+            # Último paso antes de conectar: nada que pueda bloquear entre el turno y el envío.
+            self._claim_turn()
             try:
                 status, hdrs, raw = self._send(method, path, data, auth, content_type)
             except Exception as err:
