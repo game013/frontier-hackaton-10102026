@@ -46,7 +46,7 @@ valores. Un comando candidato costaría ~50 requests de media en lugar de 1.
   último dígito da 14−24 = −10 ≡ 87 (mod 97). Encaja con un esquema tipo ISO 7064 / IBAN
   (mod 97). Es una hipótesis que hay que probar.
 
-**Plan para descifrarlo (presupuesto ≤ 400 req):**
+**Plan para descifrarlo (tope de 100 req por tanda; ver sección 9):**
 
 1. Usar un "oráculo" barato y sin estado: `CONSULTA;AC-NNNN;c`. Si el control es válido
    responde 404 `E401`; si no, 400 `E202`. E15 sugiere que el control se valida antes que la
@@ -133,7 +133,7 @@ Técnicas para ahorrar:
 | 0. Análisis offline del corpus | 0 | hipótesis de control |
 | 1. Replay del corpus (baseline) | 21 | comprobar determinismo, ver `X-Req` |
 | 2. Precedencia E301/E302/E202 | ~10 | coste real de las fases siguientes |
-| 3. Fórmula de control | ≤ 400 | generador de control local |
+| 3. Fórmula de control | ≤ 100 por tanda | generador de control local |
 | 4. Rutas, sobre y auth | ~100 | sección 1 de la spec |
 | 5. Descubrimiento de comandos | ~300 | lista cerrada de comandos |
 | 6. Semántica y estado | ~1.500 | secciones 3 y 4 |
@@ -141,7 +141,7 @@ Técnicas para ahorrar:
 | 8. Corpus de regresión (antes de 15:30 Bogotá) | ~300 | baseline para comparar |
 | 9. Re-ejecución tras 15:30 y diff | ~300 + exploración del delta ~800 | sección 6 |
 | 10. Fuzzing diferencial | ~1.500 | cerrar huecos |
-| Reserva | ~2.000 | imprevistos y cambio de la tarde |
+| Reserva | ~2.300 | imprevistos, tandas extra de control y cambio de la tarde |
 
 **Horario** (Bogotá UTC−5, CDMX UTC−6):
 
@@ -170,16 +170,25 @@ La exploración se hace en Python y el reemplazo en Go.
 2. Se registran todos los requests, incluidos `/__reset` y las sondas de rutas y auth. Decidido.
 3. Las horas del reto son de Bogotá (UTC−5); el usuario está en CDMX (UTC−6). Decidido.
 4. Exploración en Python. Decidido.
-5. Pendiente: tope de gasto para descifrar el control y qué hacer si se alcanza (ver abajo).
+5. Orden de trabajo y tope del control: decidido (ver abajo).
 
-**Pendiente 5.** El reemplazo tiene que calcular el control para responder `E202` igual que el
+**Decisión 5.** El reemplazo tiene que calcular el control para responder `E202` igual que el
 original, así que la fórmula hace falta sí o sí. La duda es cuánto gastar en ella de entrada:
 
-- **A. Control primero, con tope de 400.** Si se descifra, todo lo demás cuesta 1 request por
-  prueba. Si se llega a 400 sin fórmula, se para, se pasa a comandos y se retoma más tarde con
+- **A. Control primero, con tope de 100.** Si se descifra, todo lo demás cuesta 1 request por
+  prueba. Si se llega a 100 sin fórmula, se para, se pasa a comandos y se retoma más tarde con
   los datos acumulados.
 - **B. Comandos primero, si la fase 2 muestra que "comando desconocido" se valida antes que el
   control.** Se buscan comandos con 1 request cada uno sin conocer la fórmula, y el control se
   ataca después con más ejemplos válidos a mano.
 
-Propuesta: medir primero la precedencia (~10 requests) y aplicar B si es posible, si no A.
+Decidido: medir primero la precedencia (~10 requests) y aplicar B si es posible; si no, A.
+Cada tanda de trabajo sobre el control tiene un tope de 100 requests. Una tanda nueva requiere
+hipótesis nuevas y sale de la reserva.
+
+## 10. Uso de modelos
+
+El descubrimiento y la ejecución de comandos se hacen con modelos baratos: Luna (OpenAI) o
+Sonnet (Anthropic). Eso incluye lanzar sondas, correr el cliente o el fuzzer, ordenar
+respuestas y redactar entradas del log. El modelo grande no se usa para exploración ni para
+ejecutar comandos.
