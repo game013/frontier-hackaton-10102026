@@ -20,6 +20,7 @@ var (
 	respE100 = []byte(`{"error":"E100","mensaje":"json inválido"}`)
 	respE101 = []byte(`{"error":"E101","mensaje":"cuerpo demasiado grande"}`)
 	respE102 = []byte(`{"error":"E102","mensaje":"falta m"}`)
+	respE500 = []byte(`{"error":"E500","mensaje":"error interno"}`) // fallo de persistencia, supuesto MEM-07
 	respE404 = []byte(`{"error":"E404","mensaje":"ruta desconocida"}`)
 	// No es del original: solo lo ve un Handler sin WithExec (pruebas del
 	// sobre); app conecta el motor. 501 para no confundirlo con lo observado.
@@ -28,14 +29,14 @@ var (
 
 type Handler struct {
 	auth  []byte
-	reset func()
+	reset func() error
 	exec  func(protocol.Message) (int, []byte)
 }
 
 type Option func(*Handler)
 
 // WithReset registra la acción que vacía el estado en POST /__reset.
-func WithReset(fn func()) Option { return func(h *Handler) { h.reset = fn } }
+func WithReset(fn func() error) Option { return func(h *Handler) { h.reset = fn } }
 
 // WithExec registra quien ejecuta un mensaje que ya pasó el protocolo (forma,
 // control, comando y aridad). Por defecto solo PING tiene respuesta.
@@ -52,7 +53,7 @@ func defaultExec(m protocol.Message) (int, []byte) {
 }
 
 func New(token string, opts ...Option) *Handler {
-	h := &Handler{auth: []byte("Bearer " + token), reset: func() {}, exec: defaultExec}
+	h := &Handler{auth: []byte("Bearer " + token), reset: func() error { return nil }, exec: defaultExec}
 	for _, o := range opts {
 		o(h)
 	}
@@ -81,7 +82,9 @@ func (h *Handler) precedence(r *http.Request) (int, []byte) {
 	}
 	switch route {
 	case "POST /__reset":
-		h.reset()
+		if err := h.reset(); err != nil {
+			return http.StatusInternalServerError, respE500
+		}
 		return http.StatusOK, respOK
 	case "POST /msg":
 		return h.msg(r)

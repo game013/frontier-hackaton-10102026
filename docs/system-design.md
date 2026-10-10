@@ -1,7 +1,8 @@
 # Caja negra: diseño del reemplazo HTTP
 
 **Estado:** decisiones de diseño ampliadas con evidencia `v1`, 10 de octubre de 2026.
-Implementación y nuevas confirmaciones pendientes. Los tiempos los controla manualmente el operador.
+Capas de compatibilidad y persistencia implementadas hasta B5; detección de deltas v2
+y despliegue pendientes. Los tiempos los controla manualmente el operador.
 **Objetivo:** reproducir el servicio vigente a la entrega, incluidos errores y memoria entre
 requests. El reemplazo es autónomo, responde en menos de 5 segundos por paso y conserva
 su estado tras reinicios. La [especificación incremental](specification.md) queda separada
@@ -19,7 +20,7 @@ Contrato: [enunciado](old-system/README.md). Plan experimental:
 | Decisión | Razón y límite |
 | --- | --- |
 | Go con `net/http`, un proceso y una réplica | Experiencia del equipo, ejecución determinista y operación sencilla. No escalar horizontalmente durante el reto. |
-| SQLite en volumen persistente | Un único adaptador para cuentas, operaciones y contadores; bases temporales en pruebas y volumen persistente en entrega. |
+| SQLite en volumen persistente | Adaptador predeterminado para cuentas, operaciones y contadores; bases temporales en pruebas y volumen persistente en entrega. `STORAGE=memory` es la alternativa volátil local solicitada en B5. |
 | Exploración en Python, fuera del servicio Go | Aprovechar el plan de investigación paralelo. Solo el cliente instrumentado consulta el original; el binario desplegado no contiene ese cliente ni recibe `BB_TOKEN`. |
 | Railway; local + ngrok como respaldo | Una réplica, Serverless desactivado y volumen montado. Comprobar cuenta, créditos y continuidad; el respaldo requiere equipo y red disponibles. |
 | Actualizaciones mediante código y redespliegue | Detectar cambios con replay manual; no autoadaptación ni consultas al original durante requests del evaluador. |
@@ -28,7 +29,8 @@ Contrato: [enunciado](old-system/README.md). Plan experimental:
 | Reglas versionadas por configuración de arranque | `BEHAVIOR_VERSION=v1/v2`; sin valor, última versión implementada. Versión desconocida impide arrancar. Nunca elegir por reloj. |
 
 El único camino al original es **operador → herramienta de exploración → cliente
-instrumentado → original**. El evaluador solo llega al **reemplazo → SQLite**.
+instrumentado → original**. El evaluador solo llega al **reemplazo → SQLite** con la configuración persistente;
+`STORAGE=memory` es una alternativa local volátil.
 La evidencia se convierte en reglas mediante revisión y cambios de código.
 
 ### Capas y dependencias
@@ -48,9 +50,12 @@ operación atómica que lea y modifique conjuntamente cuentas, operaciones y con
 Los adaptadores concretos implementan ese contrato. No dividir una transferencia en
 escrituras independientes ni fijar todavía la precedencia de validaciones.
 
-### Árbol de directorios propuesto
+### Árbol de directorios
 
-Los directorios de implementación siguientes son **propuestos**, no código ya creado.
+El árbol conserva el plan inicial. `cmd/replacement`, las capas `internal/`
+y el arnés diferencial ya existen; las herramientas y despliegue restantes se
+consultan en [PROGRESS.md](../PROGRESS.md). Los nombres de herramientas siguientes
+son orientativos: no todos corresponden a código implementado.
 El cliente `tools/explorer/bb.py` apareció durante el trabajo paralelo; se reutilizará
 como única vía al original, verificando sus garantías antes de ampliar el runner.
 
@@ -100,9 +105,11 @@ deben quedar en el mismo volumen. `TEAM_TOKEN` se configura en el runtime; `BB_T
 solo en la herramienta de investigación. `.env`, archivos de estado y secretos se excluyen
 de Git y del contexto de construcción.
 
-Para reducir trabajo, habrá **un solo adaptador de estado: SQLite**, con driver Go puro
-`modernc.org/sqlite`. Las pruebas usan una base temporal por caso y las mismas transacciones
-que producción; no se desarrolla un segundo motor en memoria ni snapshots paralelos.
+B5 implementa **SQLite como adaptador predeterminado**, con driver Go puro
+`modernc.org/sqlite`. Por indicación del usuario se conserva la opción volátil
+`STORAGE=memory`; esta decisión sustituye la restricción inicial de adaptador único.
+Ambas opciones usan el mismo contrato Store y motor. Las pruebas del motor y el arnés
+diferencial usan una base SQLite temporal por caso y las mismas transacciones que producción.
 Las capas anteriores son límites de responsabilidad, no servicios ni interfaces obligatorias:
 solo el contrato Store separa motor y persistencia. No añadir repositorios por entidad.
 
@@ -399,7 +406,7 @@ El exportador debe fallar ante una cita inválida, sin generar una entrega apare
 | P1 | Exclusión por token y contrato HTTP. | Sin intercalado de secuencias; matriz HTTP resuelta o supuestos exactos registrados. |
 | P1 | Números y transporte. | Fronteras medidas, sin pérdida numérica ni de bytes; límites del servidor identificados. |
 | P1 | Despliegue y entrega. | Smoke test público, recuperación, continuidad verificada y auditoría/citas válidas. |
-| P2 | Simplificación. | Solo SQLite y un contrato Store; sin segundo almacenamiento ni interfaces innecesarias. |
+| P2 | Simplificación. | Un contrato Store y motor compartidos; SQLite predeterminado y memoria volátil opcional por decisión B5, sin repositorios por entidad. |
 
 Estas decisiones cierran las propuestas de diseño, no sustituyen implementación, solicitudes
 instrumentadas ni verificación de la cuenta de hosting. No se han obtenido nuevas respuestas

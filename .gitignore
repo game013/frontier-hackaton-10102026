@@ -8,3 +8,13 @@ __pycache__/
 [tT][mM][pP]/
 # Capturas locales del reemplazo (CAPTURE_PATH por defecto).
 /var/
+
+# SQLite y auxiliares, también si STATE_PATH se cambia dentro del checkout.
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal

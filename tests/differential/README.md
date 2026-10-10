@@ -1,7 +1,9 @@
 # Arnés diferencial
 
 Reproduce secuencias grabadas del original contra el reemplazo, sobre un
-`httptest.Server` nuevo por secuencia, sin red externa ni llamadas al original.
+`httptest.Server` y un archivo SQLite temporal nuevos por secuencia, sin red externa
+ni llamadas al original. El servidor se detiene antes de cerrar la base. Esta suite
+usa siempre SQLite, independientemente de `STORAGE` del entorno.
 Por cada paso compara **status y bytes exactos** del cuerpo. Los headers, `X-Req`
 y `ts` no se comparan. Si los bytes difieren, el mensaje también dice si el JSON
 es equivalente según el criterio del evaluador (orden de claves libre, arrays en

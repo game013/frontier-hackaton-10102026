@@ -15,6 +15,8 @@ type Config struct {
 	Port        string
 	Version     string
 	CapturePath string
+	Storage     string
+	StatePath   string
 }
 
 func Load(getenv func(string) string) (Config, error) {
@@ -23,6 +25,11 @@ func Load(getenv func(string) string) (Config, error) {
 		Port:        or(getenv("PORT"), "9900"),
 		Version:     or(getenv("BEHAVIOR_VERSION"), Versions[len(Versions)-1]),
 		CapturePath: or(getenv("CAPTURE_PATH"), "var/capture.jsonl"),
+		Storage:     or(getenv("STORAGE"), "sqlite"),
+		StatePath:   or(getenv("STATE_PATH"), "var/state.db"),
+	}
+	if c.Storage != "sqlite" && c.Storage != "memory" {
+		return c, fmt.Errorf("STORAGE desconocido: %q", c.Storage)
 	}
 	if c.Token == "" {
 		return c, errors.New("TEAM_TOKEN es obligatorio")

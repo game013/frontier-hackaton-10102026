@@ -1,26 +1,48 @@
-// Package app compone el reemplazo sin transporte ni captura: es lo que main
-// despliega y lo que el arnés diferencial reproduce. Cada llamada a New
-// devuelve una instancia con estado propio.
+// Package app compone el motor, su almacenamiento y el adaptador HTTP.
 package app
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 
 	"github.com/game013/frontier-hackaton-10102026/internal/config"
 	"github.com/game013/frontier-hackaton-10102026/internal/engine"
 	"github.com/game013/frontier-hackaton-10102026/internal/httpadapter"
+	"github.com/game013/frontier-hackaton-10102026/internal/storage/sqlite"
 )
 
-// New usa el store en memoria transitorio hasta que B5 conecte SQLite.
-func New(cfg config.Config) http.Handler {
-	eng := engine.New(engine.NewMemoryStore())
-	return httpadapter.New(cfg.Token,
-		httpadapter.WithExec(eng.Exec),
-		httpadapter.WithReset(func() {
-			if err := eng.Reset(); err != nil {
-				log.Printf("reset: %v", err)
-			}
-		}),
-	)
+// App posee el almacenamiento. Close se llama después de detener el servidor.
+type App struct {
+	http.Handler
+	close func() error
+}
+
+func (a *App) Close() error { return a.close() }
+
+// New abre el almacenamiento antes de devolver un handler listo para servir.
+func New(cfg config.Config) (*App, error) {
+	var store interface {
+		engine.Store
+		Close() error
+	}
+	switch cfg.Storage {
+	case "sqlite":
+		s, err := sqlite.Open(cfg.StatePath)
+		if err != nil {
+			return nil, err
+		}
+		store = s
+	case "memory":
+		store = engine.NewMemoryStore()
+	default:
+		return nil, fmt.Errorf("STORAGE desconocido: %q", cfg.Storage)
+	}
+	eng := engine.New(store)
+	return &App{
+		Handler: httpadapter.New(cfg.Token,
+			httpadapter.WithExec(eng.Exec),
+			httpadapter.WithReset(eng.Reset),
+		),
+		close: store.Close,
+	}, nil
 }

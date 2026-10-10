@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"slices"
 	"sort"
 	"testing"
@@ -37,7 +38,16 @@ func behaviorVersion() string {
 // parseo de net/http (rutas crudas, cuerpos) sea el mismo que en despliegue.
 func serve(t *testing.T, version string) (*httptest.Server, *http.Client) {
 	t.Helper()
-	srv := httptest.NewServer(app.New(config.Config{Token: testToken, Version: version}))
+	replacement, err := app.New(config.Config{Token: testToken, Version: version, Storage: "sqlite", StatePath: filepath.Join(t.TempDir(), "state.db")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := replacement.Close(); err != nil {
+			t.Error(err)
+		}
+	})
+	srv := httptest.NewServer(replacement)
 	t.Cleanup(srv.Close)
 	client := srv.Client()
 	client.Timeout = stepTimeout

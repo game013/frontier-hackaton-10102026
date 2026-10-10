@@ -13,9 +13,12 @@ corpus:
 test-explorer:
 	$(PYTHON) -m unittest discover -s tools/explorer -p 'test_*.py'
 
-# Reemplazo Go. Solo TEAM_TOKEN sale de .env: el runtime nunca recibe BB_TOKEN.
+# Reemplazo Go. Lista explícita de claves runtime: nunca cargar BB_TOKEN.
 serve:
-	TEAM_TOKEN="$$(sed -n 's/^TEAM_TOKEN=//p' .env)" go run ./cmd/replacement
+	TEAM_TOKEN="$${TEAM_TOKEN:-$$(sed -n 's/^TEAM_TOKEN=//p' .env)}" \
+	STORAGE="$${STORAGE:-$$(sed -n 's/^STORAGE=//p' .env)}" \
+	STATE_PATH="$${STATE_PATH:-$$(sed -n 's/^STATE_PATH=//p' .env)}" \
+	go run ./cmd/replacement
 
 test-go:
 	go vet ./... && go test ./...

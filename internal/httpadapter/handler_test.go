@@ -1,6 +1,7 @@
 package httpadapter
 
 import (
+	"errors"
 	"io"
 	"net/http/httptest"
 	"strings"
@@ -177,7 +178,7 @@ func TestMsgExecReceivesParsedMessage(t *testing.T) {
 
 func TestResetCallsHook(t *testing.T) {
 	calls := 0
-	h := New(testToken, WithReset(func() { calls++ }))
+	h := New(testToken, WithReset(func() error { calls++; return nil }))
 	req := httptest.NewRequest("POST", "/__reset", nil)
 	req.Header.Set("Authorization", authValid)
 	h.ServeHTTP(httptest.NewRecorder(), req)
@@ -199,5 +200,16 @@ func TestResponseHeaders(t *testing.T) {
 	h.ServeHTTP(rec, req)
 	if got := rec.Header().Get("Content-Type"); got != "application/json; charset=utf-8" {
 		t.Fatalf("Content-Type = %q", got)
+	}
+}
+
+func TestResetFailureDoesNotReportSuccess(t *testing.T) {
+	h := New(testToken, WithReset(func() error { return errors.New("storage unavailable") }))
+	req := httptest.NewRequest("POST", "/__reset", nil)
+	req.Header.Set("Authorization", authValid)
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+	if rec.Code != 500 || rec.Body.String() != `{"error":"E500","mensaje":"error interno"}` {
+		t.Fatalf("got %d %q", rec.Code, rec.Body.String())
 	}
 }
