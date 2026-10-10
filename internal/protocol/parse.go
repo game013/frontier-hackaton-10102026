@@ -14,7 +14,9 @@ type Message struct {
 }
 
 // commands es la tabla de comandos conocidos y su aridad. El orden decide los
-// empates de sugerencia (supuesto, ERR-301).
+// empates de sugerencia (supuesto, ERR-301): NOTAS y HALT (A5, observados en
+// `v2`) van al final porque `ALT` y `ACT` sugieren ALTA y no HALT (A5 log
+// 1860, 1888). Activos en todas las versiones hasta que A6 diga lo contrario.
 var commands = []struct {
 	name  string
 	arity int
@@ -25,6 +27,8 @@ var commands = []struct {
 	{"DEPOSITO", 2},
 	{"TRANSFER", 3},
 	{"ANULA", 1},
+	{"NOTAS", 0},
+	{"HALT", 1},
 }
 
 // Parse aplica el orden medido (ERR-ORD): E103 → E104 → E201 → E202 →

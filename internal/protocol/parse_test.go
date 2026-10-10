@@ -4,12 +4,17 @@ import (
 	"encoding/json"
 	"os"
 	"reflect"
+	"strconv"
 	"testing"
 )
 
+func itoa(n int) string { return strconv.Itoa(n) }
+
 // logCase es una respuesta del original a un m, sin dependencia de estado:
 // E103, E104, E201, E202, E301, E302 o pong. testdata/log-cases.json se extrajo
-// de experimentos.jsonl (request_b64 y raw), deduplicado por m.
+// de experimentos.jsonl (request_b64 y raw), deduplicado por m;
+// testdata/log-cases-v2.json son los de A5 (`v2`), con NOTAS y HALT en las
+// sugerencias. Ambos con tools/explorer/protocol_cases.py [--epoch v2].
 type logCase struct {
 	IDs    []string `json:"ids"`
 	M      string   `json:"m"`
@@ -18,7 +23,13 @@ type logCase struct {
 }
 
 func TestParseLogCases(t *testing.T) {
-	raw, err := os.ReadFile("testdata/log-cases.json")
+	for _, f := range []string{"testdata/log-cases.json", "testdata/log-cases-v2.json"} {
+		t.Run(f, func(t *testing.T) { parseLogCases(t, f) })
+	}
+}
+
+func parseLogCases(t *testing.T, path string) {
+	raw, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,6 +74,9 @@ func TestParseValidMessages(t *testing.T) {
 		{"ANULA;OP-0042;46", "ANULA", []string{"OP-0042"}, "173"},
 		{"ALTA; Lucia;82", "ALTA", []string{" Lucia"}, "969: nombre sin recortar"},
 		{"PING;64\x00", "PING", nil, "964"},
+		{"NOTAS;" + itoa(Control("NOTAS")), "NOTAS", nil, "1637 (v2)"},
+		{"notas;" + itoa(Control("notas")), "NOTAS", nil, "1937 (v2)"},
+		{"HALT;x;" + itoa(Control("HALT;x")), "HALT", []string{"x"}, "1952 (v2)"},
 	}
 	for _, c := range cases {
 		msg, perr := Parse(c.m)
@@ -94,6 +108,12 @@ func TestSuggestion(t *testing.T) {
 		{"ALTAXYZ", ""},   // distancia 3
 		{"ANUA", "ANULA"}, // gana la menor distancia (1), no el orden de la tabla
 		{"PITA", "PING"},  // empate PING/ALTA a distancia 2: gana el orden de la tabla
+		// A5 (`v2`): NOTAS y HALT entran en las sugerencias, sin ganar empates.
+		{"HOLD", "HALT"},   // 1720
+		{"HEALTH", "HALT"}, // 1778
+		{"NOTA", "NOTAS"},  // 1636
+		{"CTAS", "NOTAS"},  // 1416
+		{"ACT", "ALTA"},    // 1860: empate ALTA/HALT a distancia 2
 	}
 	for _, c := range cases {
 		if got := suggest(c.cmd); got != c.want {

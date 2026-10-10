@@ -1,0 +1,4381 @@
+[
+ {
+  "ids": [
+   "1383",
+   "1955",
+   "1962",
+   "1986",
+   "1993"
+  ],
+  "m": "PING;64",
+  "status": 200,
+  "body": "{\"pong\":true}"
+ },
+ {
+  "ids": [
+   "1386"
+  ],
+  "m": "ZZZ;54",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1387",
+   "1888"
+  ],
+  "m": "ALT;97",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ALTA\"}"
+ },
+ {
+  "ids": [
+   "1388"
+  ],
+  "m": "RETIRX;56",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1390"
+  ],
+  "m": "RETIRO;83",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1391"
+  ],
+  "m": "RETIROS;93",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1392"
+  ],
+  "m": "RETIRAR;44",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1393"
+  ],
+  "m": "RETIRA;98",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1394"
+  ],
+  "m": "EXTRACCION;74",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1395"
+  ],
+  "m": "EXTRACCIONES;52",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1396"
+  ],
+  "m": "BAJA;39",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1397"
+  ],
+  "m": "BAJAS;58",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1398"
+  ],
+  "m": "CIERRE;10",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1399"
+  ],
+  "m": "CERRAR;28",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1400"
+  ],
+  "m": "CIERRA;22",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1401"
+  ],
+  "m": "SALDO;38",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1402"
+  ],
+  "m": "SALDOS;55",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1403"
+  ],
+  "m": "MOVIMIENTOS;78",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1404"
+  ],
+  "m": "MOVIMIENTO;78",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1405"
+  ],
+  "m": "MOV;31",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1406"
+  ],
+  "m": "HISTORIAL;13",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1407"
+  ],
+  "m": "HISTORICO;83",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1408"
+  ],
+  "m": "EXTRACTO;81",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1409"
+  ],
+  "m": "EXTRACTOS;87",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1410"
+  ],
+  "m": "LISTA;9",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1411"
+  ],
+  "m": "LISTAR;68",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1412"
+  ],
+  "m": "LISTADO;63",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1413"
+  ],
+  "m": "CUENTAS;87",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1414"
+  ],
+  "m": "CUENTA;81",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1415"
+  ],
+  "m": "CTA;98",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ALTA\"}"
+ },
+ {
+  "ids": [
+   "1416"
+  ],
+  "m": "CTAS;41",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"NOTAS\"}"
+ },
+ {
+  "ids": [
+   "1417"
+  ],
+  "m": "OPERACION;47",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1418"
+  ],
+  "m": "OPERACIONES;18",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1419"
+  ],
+  "m": "OP;12",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1420"
+  ],
+  "m": "OPS;74",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1421"
+  ],
+  "m": "ESTADO;28",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1422"
+  ],
+  "m": "ESTADOS;25",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1423"
+  ],
+  "m": "BLOQUEO;9",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1424"
+  ],
+  "m": "BLOQUEAR;80",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1425"
+  ],
+  "m": "BLOQUEA;13",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1426"
+  ],
+  "m": "DESBLOQUEO;92",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1427"
+  ],
+  "m": "DESBLOQUEAR;37",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1428"
+  ],
+  "m": "DESBLOQUEA;31",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1429"
+  ],
+  "m": "LIMITE;95",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1430"
+  ],
+  "m": "LIMITES;32",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1431"
+  ],
+  "m": "PAGO;50",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1432"
+  ],
+  "m": "PAGOS;91",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1433"
+  ],
+  "m": "PAGAR;5",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1434"
+  ],
+  "m": "PAGA;85",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1435"
+  ],
+  "m": "REVERSA;64",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1436"
+  ],
+  "m": "REVERSO;34",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1437"
+  ],
+  "m": "REVERSAR;39",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1438"
+  ],
+  "m": "REVERTIR;71",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1439"
+  ],
+  "m": "CARGO;88",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1441"
+  ],
+  "m": "CARGOS;11",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1442"
+  ],
+  "m": "CARGAR;94",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1443"
+  ],
+  "m": "ABONO;5",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1444"
+  ],
+  "m": "ABONOS;53",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1445"
+  ],
+  "m": "ABONAR;40",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1446"
+  ],
+  "m": "COBRO;50",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1447"
+  ],
+  "m": "COBROS;91",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1448"
+  ],
+  "m": "COBRAR;5",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1449"
+  ],
+  "m": "INTERES;90",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1450"
+  ],
+  "m": "INTERESES;47",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1451"
+  ],
+  "m": "COMISION;68",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1452"
+  ],
+  "m": "COMISIONES;66",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1453"
+  ],
+  "m": "CONGELAR;31",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1454"
+  ],
+  "m": "CONGELA;29",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1455"
+  ],
+  "m": "DESCONGELAR;17",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1456"
+  ],
+  "m": "ACTIVAR;61",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1457"
+  ],
+  "m": "ACTIVA;39",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1458"
+  ],
+  "m": "DESACTIVAR;24",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1459"
+  ],
+  "m": "DESACTIVA;59",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1460"
+  ],
+  "m": "RENOMBRAR;35",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1461"
+  ],
+  "m": "MODIFICAR;17",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1462"
+  ],
+  "m": "MODIFICA;89",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1463"
+  ],
+  "m": "ELIMINAR;51",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1464"
+  ],
+  "m": "ELIMINA;68",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1465"
+  ],
+  "m": "BORRAR;19",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1466"
+  ],
+  "m": "BORRA;25",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1467"
+  ],
+  "m": "BUSCAR;72",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1468"
+  ],
+  "m": "BUSCA;75",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1469"
+  ],
+  "m": "DETALLE;77",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1470"
+  ],
+  "m": "DETALLES;75",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1471"
+  ],
+  "m": "RESUMEN;39",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1472"
+  ],
+  "m": "RESUMENES;69",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1473"
+  ],
+  "m": "REPORTE;7",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1474"
+  ],
+  "m": "REPORTES;59",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1475"
+  ],
+  "m": "AUDITORIA;51",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1476"
+  ],
+  "m": "AUDITORIAS;94",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1477"
+  ],
+  "m": "AUDITAR;97",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1478"
+  ],
+  "m": "TRANSFERENCIA;49",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1479"
+  ],
+  "m": "TRANSFERENCIAS;88",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1480"
+  ],
+  "m": "TRANSFERIR;81",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"TRANSFER\"}"
+ },
+ {
+  "ids": [
+   "1481"
+  ],
+  "m": "TRANSFIERE;90",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"TRANSFER\"}"
+ },
+ {
+  "ids": [
+   "1482"
+  ],
+  "m": "TRANSFIERES;17",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1483"
+  ],
+  "m": "DEPOSITAR;46",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"DEPOSITO\"}"
+ },
+ {
+  "ids": [
+   "1484"
+  ],
+  "m": "DEPOSITOS;16",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"DEPOSITO\"}"
+ },
+ {
+  "ids": [
+   "1485"
+  ],
+  "m": "CONSULTAR;74",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"CONSULTA\"}"
+ },
+ {
+  "ids": [
+   "1486"
+  ],
+  "m": "CONSULTAS;71",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"CONSULTA\"}"
+ },
+ {
+  "ids": [
+   "1487"
+  ],
+  "m": "ANULAR;79",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ANULA\"}"
+ },
+ {
+  "ids": [
+   "1488"
+  ],
+  "m": "ANULACION;56",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1489"
+  ],
+  "m": "ANULACIONES;94",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1490"
+  ],
+  "m": "ALTAS;2",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ALTA\"}"
+ },
+ {
+  "ids": [
+   "1492"
+  ],
+  "m": "APERTURA;87",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1493"
+  ],
+  "m": "APERTURAR;11",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1494"
+  ],
+  "m": "ABRIR;50",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1495"
+  ],
+  "m": "ABRE;15",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1496"
+  ],
+  "m": "CREAR;20",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1497"
+  ],
+  "m": "CREA;90",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1498"
+  ],
+  "m": "NUEVA;97",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1499"
+  ],
+  "m": "NUEVO;73",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1500"
+  ],
+  "m": "TITULAR;96",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1501"
+  ],
+  "m": "TITULARES;33",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1502"
+  ],
+  "m": "SUCURSAL;9",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1503"
+  ],
+  "m": "SUCURSALES;42",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1504"
+  ],
+  "m": "OFICINA;14",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1505"
+  ],
+  "m": "SOCIO;86",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1506"
+  ],
+  "m": "SOCIOS;5",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1507"
+  ],
+  "m": "CLIENTE;86",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1508"
+  ],
+  "m": "CLIENTES;5",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1509"
+  ],
+  "m": "DIVISA;69",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1510"
+  ],
+  "m": "DIVISAS;51",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1511"
+  ],
+  "m": "MONEDA;95",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1512"
+  ],
+  "m": "MONEDAS;32",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1513"
+  ],
+  "m": "TIPO_CAMBIO;32",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1514"
+  ],
+  "m": "CAMBIO;34",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1515"
+  ],
+  "m": "CONVERTIR;74",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1516"
+  ],
+  "m": "CONVIERTE;38",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1517"
+  ],
+  "m": "CONVERSION;87",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1518"
+  ],
+  "m": "IMPORTE;53",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1519"
+  ],
+  "m": "MONTO;68",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1520"
+  ],
+  "m": "SALDO_TOTAL;19",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1521"
+  ],
+  "m": "SALDO_DISPONIBLE;22",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1522"
+  ],
+  "m": "SALDO_RETENIDO;27",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1523"
+  ],
+  "m": "RETENER;90",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1524"
+  ],
+  "m": "RETENCION;46",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1525"
+  ],
+  "m": "RETENIDO;20",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1526"
+  ],
+  "m": "LIBERAR;83",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1527"
+  ],
+  "m": "LIBERACION;92",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1528"
+  ],
+  "m": "LIBERA;14",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1529"
+  ],
+  "m": "BONIFICAR;84",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1530"
+  ],
+  "m": "BONIFICACION;4",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1531"
+  ],
+  "m": "DEVOLVER;80",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1532"
+  ],
+  "m": "DEVOLUCION;21",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1533"
+  ],
+  "m": "DEVUELVE;15",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1534"
+  ],
+  "m": "RECLAMO;15",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1535"
+  ],
+  "m": "RECLAMOS;83",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1536"
+  ],
+  "m": "CONTRACARGO;16",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1537"
+  ],
+  "m": "PRESTAMO;44",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1538"
+  ],
+  "m": "PRESTAMOS;73",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1539"
+  ],
+  "m": "CUOTA;36",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1540"
+  ],
+  "m": "CUOTAS;49",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"NOTAS\"}"
+ },
+ {
+  "ids": [
+   "1541"
+  ],
+  "m": "AMORTIZAR;89",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1543"
+  ],
+  "m": "AMORTIZACION;49",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1544"
+  ],
+  "m": "VENCIMIENTO;32",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1545"
+  ],
+  "m": "VENCIMIENTOS;37",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1546"
+  ],
+  "m": "TASA;59",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1547"
+  ],
+  "m": "TASAS;21",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1548"
+  ],
+  "m": "PLAZO;82",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1549"
+  ],
+  "m": "PLAZOS;90",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1550"
+  ],
+  "m": "DEPOSITO_PLAZO_FIJO;9",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1551"
+  ],
+  "m": "TARJETA;78",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1552"
+  ],
+  "m": "TARJETAS;78",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1553"
+  ],
+  "m": "PIN;87",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"PING\"}"
+ },
+ {
+  "ids": [
+   "1554"
+  ],
+  "m": "CLAVE;27",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1555"
+  ],
+  "m": "PASSWORD;82",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1556"
+  ],
+  "m": "CONTRASENA;24",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1557"
+  ],
+  "m": "SESION;43",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1558"
+  ],
+  "m": "LOGIN;5",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1559"
+  ],
+  "m": "LOGOUT;53",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1560"
+  ],
+  "m": "SALIDA;12",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1561"
+  ],
+  "m": "ENTRADA;11",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1562"
+  ],
+  "m": "ACCESO;18",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1563"
+  ],
+  "m": "PERFIL;43",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1564"
+  ],
+  "m": "PERFILES;92",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1565"
+  ],
+  "m": "ROL;23",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1566"
+  ],
+  "m": "ROLES;74",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1567"
+  ],
+  "m": "PERMISO;27",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1568"
+  ],
+  "m": "PERMISOS;22",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1569"
+  ],
+  "m": "AUTORIZAR;15",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1570"
+  ],
+  "m": "AUTORIZA;56",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1571"
+  ],
+  "m": "AUTORIZACION;62",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1572"
+  ],
+  "m": "APROBAR;68",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1573"
+  ],
+  "m": "APRUEBA;63",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1574"
+  ],
+  "m": "RECHAZAR;26",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1575"
+  ],
+  "m": "RECHAZA;92",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1576"
+  ],
+  "m": "VALIDAR;27",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1577"
+  ],
+  "m": "VALIDA;60",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1578"
+  ],
+  "m": "VERIFICAR;92",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1579"
+  ],
+  "m": "VERIFICA;17",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1580"
+  ],
+  "m": "CONCILIAR;64",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1581"
+  ],
+  "m": "CONCILIACION;18",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1582"
+  ],
+  "m": "CONCILIA;40",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1583"
+  ],
+  "m": "CUADRE;77",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1584"
+  ],
+  "m": "CIERRE_DIA;59",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1585"
+  ],
+  "m": "APERTURA_DIA;41",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1586"
+  ],
+  "m": "FIN_DIA;75",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1587"
+  ],
+  "m": "INICIO_DIA;47",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1588"
+  ],
+  "m": "LOTE;34",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1589"
+  ],
+  "m": "LOTES;43",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"NOTAS\"}"
+ },
+ {
+  "ids": [
+   "1590"
+  ],
+  "m": "BATCH;13",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1591"
+  ],
+  "m": "PROCESAR;63",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1592"
+  ],
+  "m": "PROCESA;72",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1594"
+  ],
+  "m": "PROCESO;17",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1595"
+  ],
+  "m": "PROCESOS;89",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1596"
+  ],
+  "m": "COLA;97",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1597"
+  ],
+  "m": "ENVIAR;65",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1598"
+  ],
+  "m": "ENVIO;56",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1599"
+  ],
+  "m": "RECIBIR;41",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1600"
+  ],
+  "m": "RECIBO;22",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1601"
+  ],
+  "m": "RECIBOS;7",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1602"
+  ],
+  "m": "COMPROBANTE;13",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1603"
+  ],
+  "m": "COMPROBANTES;77",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1604"
+  ],
+  "m": "FACTURA;38",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1605"
+  ],
+  "m": "FACTURAS;55",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1606"
+  ],
+  "m": "ORDEN;84",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1607"
+  ],
+  "m": "ORDENES;61",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1608"
+  ],
+  "m": "INSTRUCCION;55",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1609"
+  ],
+  "m": "INSTRUCCIONES;64",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1610"
+  ],
+  "m": "DOMICILIACION;63",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1611"
+  ],
+  "m": "DOMICILIAR;69",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1612"
+  ],
+  "m": "ADEUDO;8",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1613"
+  ],
+  "m": "ADEUDOS;62",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1614"
+  ],
+  "m": "ESTADO_CUENTA;29",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1615"
+  ],
+  "m": "SITUACION;32",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1616"
+  ],
+  "m": "POSICION;88",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1617"
+  ],
+  "m": "POSICIONES;84",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1618"
+  ],
+  "m": "ARQUEO;89",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1619"
+  ],
+  "m": "EXPORTAR;57",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1620"
+  ],
+  "m": "EXPORTA;70",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1621"
+  ],
+  "m": "IMPORTAR;42",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1622"
+  ],
+  "m": "IMPORTA;65",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1623"
+  ],
+  "m": "LEER;98",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1624"
+  ],
+  "m": "ESCRIBIR;90",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1625"
+  ],
+  "m": "GUARDAR;8",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1626"
+  ],
+  "m": "GUARDA;86",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1627"
+  ],
+  "m": "CARGAR_SALDO;5",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1628"
+  ],
+  "m": "AJUSTE;3",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1629"
+  ],
+  "m": "AJUSTAR;86",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1630"
+  ],
+  "m": "AJUSTA;15",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1631"
+  ],
+  "m": "CORRECCION;57",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1632"
+  ],
+  "m": "CORREGIR;8",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1633"
+  ],
+  "m": "CORRIGE;62",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1634"
+  ],
+  "m": "RECTIFICAR;32",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1635"
+  ],
+  "m": "RECTIFICA;94",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1636",
+   "1947",
+   "1978"
+  ],
+  "m": "NOTA;88",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"NOTAS\"}"
+ },
+ {
+  "ids": [
+   "1638"
+  ],
+  "m": "ANOTAR;9",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"NOTAS\"}"
+ },
+ {
+  "ids": [
+   "1639"
+  ],
+  "m": "MEMO;74",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1640"
+  ],
+  "m": "OBSERVACION;53",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1641"
+  ],
+  "m": "OBSERVACIONES;4",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1642"
+  ],
+  "m": "ALERTA;63",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ALTA\"}"
+ },
+ {
+  "ids": [
+   "1643"
+  ],
+  "m": "ALERTAS;33",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1645"
+  ],
+  "m": "AVISO;67",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1646"
+  ],
+  "m": "AVISOS;45",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1647"
+  ],
+  "m": "NOTIFICAR;88",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1648"
+  ],
+  "m": "NOTIFICA;48",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1649"
+  ],
+  "m": "SUSCRIBIR;29",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1650"
+  ],
+  "m": "WITHDRAW;35",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1651"
+  ],
+  "m": "WITHDRAWAL;6",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1652"
+  ],
+  "m": "WITHDRAWALS;56",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1653"
+  ],
+  "m": "BALANCE;57",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1654"
+  ],
+  "m": "BALANCES;15",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1655"
+  ],
+  "m": "HISTORY;21",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1656"
+  ],
+  "m": "LIST;70",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1657"
+  ],
+  "m": "ACCOUNTS;97",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1658"
+  ],
+  "m": "ACCOUNT;52",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1659"
+  ],
+  "m": "CLOSE;59",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1660"
+  ],
+  "m": "OPEN;50",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1661"
+  ],
+  "m": "CREATE;19",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1662"
+  ],
+  "m": "DELETE;11",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1663"
+  ],
+  "m": "REMOVE;10",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1664"
+  ],
+  "m": "UPDATE;71",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1665"
+  ],
+  "m": "RENAME;51",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1666"
+  ],
+  "m": "MODIFY;88",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1667"
+  ],
+  "m": "FREEZE;56",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1668"
+  ],
+  "m": "UNFREEZE;66",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1669"
+  ],
+  "m": "LOCK;7",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1670"
+  ],
+  "m": "UNLOCK;8",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1671"
+  ],
+  "m": "PAY;29",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1672"
+  ],
+  "m": "PAYMENT;44",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1673"
+  ],
+  "m": "PAYMENTS;73",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1674"
+  ],
+  "m": "REFUND;86",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1675"
+  ],
+  "m": "REFUNDS;5",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1676"
+  ],
+  "m": "REVERSE;52",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1677"
+  ],
+  "m": "REVERSAL;57",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1678"
+  ],
+  "m": "VOID;57",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1679"
+  ],
+  "m": "CANCEL;59",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1680"
+  ],
+  "m": "CANCELLATION;87",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1681"
+  ],
+  "m": "STATUS;8",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1682"
+  ],
+  "m": "STATEMENT;23",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1683"
+  ],
+  "m": "STATEMENTS;10",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1684"
+  ],
+  "m": "TRANSFERS;14",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"TRANSFER\"}"
+ },
+ {
+  "ids": [
+   "1685"
+  ],
+  "m": "TRANSFER_LIST;65",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1686"
+  ],
+  "m": "DEPOSIT;24",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"DEPOSITO\"}"
+ },
+ {
+  "ids": [
+   "1687"
+  ],
+  "m": "DEPOSITS;13",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"DEPOSITO\"}"
+ },
+ {
+  "ids": [
+   "1688"
+  ],
+  "m": "CHARGE;94",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1689"
+  ],
+  "m": "CHARGES;29",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1690"
+  ],
+  "m": "CREDIT;29",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1691"
+  ],
+  "m": "DEBIT;17",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1692"
+  ],
+  "m": "FEE;73",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1693"
+  ],
+  "m": "FEES;63",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1694"
+  ],
+  "m": "INTEREST;14",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1696"
+  ],
+  "m": "LIMIT;41",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1697"
+  ],
+  "m": "LIMITS;64",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1698"
+  ],
+  "m": "ACTIVATE;41",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1699"
+  ],
+  "m": "DEACTIVATE;45",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1700"
+  ],
+  "m": "ENABLE;28",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1701"
+  ],
+  "m": "DISABLE;92",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1702"
+  ],
+  "m": "SEARCH;10",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1703"
+  ],
+  "m": "FIND;52",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"PING\"}"
+ },
+ {
+  "ids": [
+   "1704"
+  ],
+  "m": "DETAIL;71",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1705"
+  ],
+  "m": "DETAILS;57",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1706"
+  ],
+  "m": "SUMMARY;51",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1707"
+  ],
+  "m": "REPORT;71",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1708"
+  ],
+  "m": "REPORTS;57",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1709"
+  ],
+  "m": "AUDIT;16",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1710"
+  ],
+  "m": "AUDITS;86",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1711"
+  ],
+  "m": "LOOKUP;21",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1712"
+  ],
+  "m": "GET;42",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1713"
+  ],
+  "m": "FETCH;86",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1714"
+  ],
+  "m": "QUERY;74",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1715"
+  ],
+  "m": "INQUIRY;52",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1716"
+  ],
+  "m": "MOVEMENTS;81",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1717"
+  ],
+  "m": "MOVEMENT;79",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1718"
+  ],
+  "m": "OPERATION;54",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1719"
+  ],
+  "m": "OPERATIONS;6",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1720"
+  ],
+  "m": "HOLD;96",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"HALT\"}"
+ },
+ {
+  "ids": [
+   "1721"
+  ],
+  "m": "RELEASE;40",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1722"
+  ],
+  "m": "RESERVE;11",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1723"
+  ],
+  "m": "UNRESERVE;20",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1724"
+  ],
+  "m": "COLLECT;96",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1725"
+  ],
+  "m": "COLLECTION;80",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1726"
+  ],
+  "m": "SETTLE;55",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1727"
+  ],
+  "m": "SETTLEMENT;80",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1728"
+  ],
+  "m": "CLEAR;85",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1729"
+  ],
+  "m": "RECONCILE;21",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1730"
+  ],
+  "m": "RECONCILIATION;33",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1731"
+  ],
+  "m": "APPROVE;43",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1732"
+  ],
+  "m": "REJECT;20",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1733"
+  ],
+  "m": "VALIDATE;89",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1734"
+  ],
+  "m": "VERIFY;42",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1735"
+  ],
+  "m": "AUTHORIZE;14",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1736"
+  ],
+  "m": "AUTH;30",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ALTA\"}"
+ },
+ {
+  "ids": [
+   "1737"
+  ],
+  "m": "ASSIGN;89",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1738"
+  ],
+  "m": "OWNER;70",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1739"
+  ],
+  "m": "ISSUE;67",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1740"
+  ],
+  "m": "ISSUED;67",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1741"
+  ],
+  "m": "CONVERT;92",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1742"
+  ],
+  "m": "EXCHANGE;65",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1743"
+  ],
+  "m": "RATE;71",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1744"
+  ],
+  "m": "RATES;57",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1745"
+  ],
+  "m": "CURRENCY;45",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1747"
+  ],
+  "m": "CURRENCIES;28",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1748"
+  ],
+  "m": "BULK;4",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1749"
+  ],
+  "m": "IMPORT;95",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1750"
+  ],
+  "m": "EXPORT;47",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1751"
+  ],
+  "m": "SYNC;49",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1752"
+  ],
+  "m": "FLUSH;87",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1753"
+  ],
+  "m": "COMMIT;87",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1754"
+  ],
+  "m": "ROLLBACK;72",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1755"
+  ],
+  "m": "SAVE;81",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1756"
+  ],
+  "m": "LOAD;82",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1757"
+  ],
+  "m": "AYUDA;97",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ANULA\"}"
+ },
+ {
+  "ids": [
+   "1758"
+  ],
+  "m": "HELP;72",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"HALT\"}"
+ },
+ {
+  "ids": [
+   "1759"
+  ],
+  "m": "VERSION;86",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1760"
+  ],
+  "m": "VER;56",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1761"
+  ],
+  "m": "INFO;92",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1762"
+  ],
+  "m": "ECHO;61",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1763"
+  ],
+  "m": "RESET;34",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1764"
+  ],
+  "m": "STATS;93",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1765"
+  ],
+  "m": "STATUS_SERVICIO;42",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1766"
+  ],
+  "m": "DEBUG;89",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1767"
+  ],
+  "m": "ADMIN;69",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1768"
+  ],
+  "m": "TIME;89",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1769"
+  ],
+  "m": "HORA;22",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1770"
+  ],
+  "m": "FECHA;89",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1771"
+  ],
+  "m": "NOW;98",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1772"
+  ],
+  "m": "DATE;61",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1773"
+  ],
+  "m": "DUMP;12",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1774"
+  ],
+  "m": "CONFIG;64",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1775"
+  ],
+  "m": "CONFIGURAR;55",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1776"
+  ],
+  "m": "SETUP;16",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1777"
+  ],
+  "m": "PONG;98",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"PING\"}"
+ },
+ {
+  "ids": [
+   "1778"
+  ],
+  "m": "HEALTH;66",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"HALT\"}"
+ },
+ {
+  "ids": [
+   "1779"
+  ],
+  "m": "SALUD;59",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1780"
+  ],
+  "m": "LOG;2",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1781"
+  ],
+  "m": "LOGS;44",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1782"
+  ],
+  "m": "TOKEN;14",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1783"
+  ],
+  "m": "WHOAMI;84",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1784"
+  ],
+  "m": "QUIT;73",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1785"
+  ],
+  "m": "EXIT;36",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1786"
+  ],
+  "m": "SALIR;81",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1787"
+  ],
+  "m": "NOOP;25",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1788"
+  ],
+  "m": "NOP;22",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1789"
+  ],
+  "m": "HELO;75",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"HALT\"}"
+ },
+ {
+  "ids": [
+   "1790"
+  ],
+  "m": "HELLO;11",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1791"
+  ],
+  "m": "HI;25",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1792"
+  ],
+  "m": "HOLA;8",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"HALT\"}"
+ },
+ {
+  "ids": [
+   "1793"
+  ],
+  "m": "BYE;26",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1794"
+  ],
+  "m": "ADIOS;54",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1795"
+  ],
+  "m": "ROOT;77",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1796"
+  ],
+  "m": "SUDO;78",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1798"
+  ],
+  "m": "SHELL;97",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1799"
+  ],
+  "m": "CMD;8",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1800"
+  ],
+  "m": "COMMANDS;47",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1801"
+  ],
+  "m": "COMANDOS;64",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1802"
+  ],
+  "m": "MENU;47",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1803"
+  ],
+  "m": "OPCIONES;39",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1804"
+  ],
+  "m": "OPTIONS;27",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1805"
+  ],
+  "m": "DIAG;91",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"PING\"}"
+ },
+ {
+  "ids": [
+   "1806"
+  ],
+  "m": "DIAGNOSTICO;8",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1807"
+  ],
+  "m": "PRUEBA;68",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1808"
+  ],
+  "m": "TEST;55",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1809"
+  ],
+  "m": "TESTS;9",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1810"
+  ],
+  "m": "CHECK;17",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1811"
+  ],
+  "m": "CHEQUEO;32",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1812"
+  ],
+  "m": "KEEPALIVE;37",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1813"
+  ],
+  "m": "VIVO;74",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1814"
+  ],
+  "m": "ALIVE;51",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1815"
+  ],
+  "m": "STATUS_CHECK;12",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1816"
+  ],
+  "m": "WHO;45",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1817"
+  ],
+  "m": "QUIEN;70",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1818"
+  ],
+  "m": "ECO;61",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1819"
+  ],
+  "m": "TICK;46",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1820"
+  ],
+  "m": "UPTIME;92",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1821"
+  ],
+  "m": "METRICS;86",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1822"
+  ],
+  "m": "METRICAS;94",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1823"
+  ],
+  "m": "MONITOR;28",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1824"
+  ],
+  "m": "VERSION_API;72",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1825"
+  ],
+  "m": "SCHEMA;85",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1826"
+  ],
+  "m": "ESQUEMA;10",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1827"
+  ],
+  "m": "CAPS;30",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1828"
+  ],
+  "m": "CAPABILITIES;11",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1829"
+  ],
+  "m": "CAPACIDADES;14",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1830"
+  ],
+  "m": "SHUTDOWN;21",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1831"
+  ],
+  "m": "APAGAR;68",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1832"
+  ],
+  "m": "REBOOT;30",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1833"
+  ],
+  "m": "REINICIAR;34",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1834"
+  ],
+  "m": "DEBUG_ON;34",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1835"
+  ],
+  "m": "DEBUG_OFF;72",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1836"
+  ],
+  "m": "TRACE;45",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1837"
+  ],
+  "m": "TRAZA;29",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1838"
+  ],
+  "m": "FLAGS;48",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1839"
+  ],
+  "m": "PARAMS;39",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1840"
+  ],
+  "m": "PARAMETROS;22",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1841"
+  ],
+  "m": "ENV;62",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1842"
+  ],
+  "m": "ENTORNO;64",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1843"
+  ],
+  "m": "SECRET;4",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1844"
+  ],
+  "m": "CLAVES;22",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1845"
+  ],
+  "m": "KEYS;9",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1846"
+  ],
+  "m": "CONS;43",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1847"
+  ],
+  "m": "DEP;33",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1849"
+  ],
+  "m": "RET;22",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1850"
+  ],
+  "m": "TRF;68",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1851"
+  ],
+  "m": "TRX;3",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1852"
+  ],
+  "m": "TX;40",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1853"
+  ],
+  "m": "SLD;53",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1854"
+  ],
+  "m": "BAL;67",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"HALT\"}"
+ },
+ {
+  "ids": [
+   "1855"
+  ],
+  "m": "ANUL;93",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ANULA\"}"
+ },
+ {
+  "ids": [
+   "1856"
+  ],
+  "m": "LST;28",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1857"
+  ],
+  "m": "HIST;83",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"HALT\"}"
+ },
+ {
+  "ids": [
+   "1858"
+  ],
+  "m": "EXT;75",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1859"
+  ],
+  "m": "ACC;87",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1860"
+  ],
+  "m": "ACT;18",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ALTA\"}"
+ },
+ {
+  "ids": [
+   "1861"
+  ],
+  "m": "BLQ;79",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1862"
+  ],
+  "m": "DSB;35",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1863"
+  ],
+  "m": "LIM;62",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1864"
+  ],
+  "m": "PGO;5",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1865"
+  ],
+  "m": "PAG;97",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"PING\"}"
+ },
+ {
+  "ids": [
+   "1866"
+  ],
+  "m": "REV;16",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1867"
+  ],
+  "m": "CRG;43",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1868"
+  ],
+  "m": "ABO;42",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1869"
+  ],
+  "m": "COB;51",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1870"
+  ],
+  "m": "INT;57",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"PING\"}"
+ },
+ {
+  "ids": [
+   "1871"
+  ],
+  "m": "COM;37",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1872"
+  ],
+  "m": "CNG;66",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"PING\"}"
+ },
+ {
+  "ids": [
+   "1873"
+  ],
+  "m": "MOD;18",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1874"
+  ],
+  "m": "ELI;37",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1875"
+  ],
+  "m": "BOR;49",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1876"
+  ],
+  "m": "BUS;89",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1877"
+  ],
+  "m": "DET;21",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1878"
+  ],
+  "m": "RES;25",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1879"
+  ],
+  "m": "REP;34",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1880"
+  ],
+  "m": "AUD;45",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1881"
+  ],
+  "m": "TRN;33",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1882"
+  ],
+  "m": "XFER;72",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1883"
+  ],
+  "m": "XF;39",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1884"
+  ],
+  "m": "WD;75",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1885"
+  ],
+  "m": "DPS;80",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1886"
+  ],
+  "m": "DEPO;52",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1887"
+  ],
+  "m": "CONSU;64",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1889"
+  ],
+  "m": "ALTA_CTA;78",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1890"
+  ],
+  "m": "BAJA_CTA;52",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1891"
+  ],
+  "m": "SLDO;15",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1892"
+  ],
+  "m": "HST;39",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"HALT\"}"
+ },
+ {
+  "ids": [
+   "1893"
+  ],
+  "m": "STM;45",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1894"
+  ],
+  "m": "MVT;71",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1895"
+  ],
+  "m": "MOVS;34",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1896"
+  ],
+  "m": "CTACTE;86",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1897"
+  ],
+  "m": "SDO;53",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1898"
+  ],
+  "m": "SDOS;3",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1900"
+  ],
+  "m": "EST;23",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1901"
+  ],
+  "m": "STAT;83",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1902"
+  ],
+  "m": "CHK;14",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1903"
+  ],
+  "m": "VAL;13",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"HALT\"}"
+ },
+ {
+  "ids": [
+   "1904"
+  ],
+  "m": "LIQ;50",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1905"
+  ],
+  "m": "RESV;7",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1906"
+  ],
+  "m": "ANU;76",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ANULA\"}"
+ },
+ {
+  "ids": [
+   "1907"
+  ],
+  "m": "ANULA_OP;20",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1908"
+  ],
+  "m": "RVRS;58",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1909"
+  ],
+  "m": "RVS;36",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1910"
+  ],
+  "m": "PNG;60",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"PING\"}"
+ },
+ {
+  "ids": [
+   "1911"
+  ],
+  "m": "PNGS;24",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"PING\"}"
+ },
+ {
+  "ids": [
+   "1912"
+  ],
+  "m": "HSTRY;9",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1913"
+  ],
+  "m": "OPER;38",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1914"
+  ],
+  "m": "OPR;77",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1915"
+  ],
+  "m": "OPRS;75",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1916"
+  ],
+  "m": "FCH;27",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1917"
+  ],
+  "m": "HRA;96",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1918"
+  ],
+  "m": "TMP;72",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1919"
+  ],
+  "m": "DBG;78",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1920"
+  ],
+  "m": "PINGS;36",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"PING\"}"
+ },
+ {
+  "ids": [
+   "1921"
+  ],
+  "m": "CONSULTA_SALDO;72",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1922"
+  ],
+  "m": "SALDO_CUENTA;78",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1923"
+  ],
+  "m": "MOVIMIENTO_CUENTA;80",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1924"
+  ],
+  "m": "LISTA_CUENTAS;30",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1925"
+  ],
+  "m": "LISTA_OPS;96",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1926"
+  ],
+  "m": "HISTORIAL_CUENTA;4",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1927"
+  ],
+  "m": "ESTADO_OP;61",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1928"
+  ],
+  "m": "CONSULTA_OP;5",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1929"
+  ],
+  "m": "DEPOSITO_CUENTA;24",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1930"
+  ],
+  "m": "TRANSFERENCIA_CUENTA;64",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1931"
+  ],
+  "m": "ALTA_CLIENTE;31",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1932"
+  ],
+  "m": "BAJA_CLIENTE;8",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1933"
+  ],
+  "m": "SALDO_HISTORICO;7",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1934"
+  ],
+  "m": "MOVIMIENTOS_CUENTA;80",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1939",
+   "1970"
+  ],
+  "m": "NOTAS;12",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "1940",
+   "1971"
+  ],
+  "m": "NOTAS;x;56",
+  "status": 400,
+  "body": "{\"error\":\"E302\",\"mensaje\":\"aridad inválida\"}"
+ },
+ {
+  "ids": [
+   "1941",
+   "1945",
+   "1972",
+   "1976"
+  ],
+  "m": "NOTAS;AC-0001;14",
+  "status": 400,
+  "body": "{\"error\":\"E302\",\"mensaje\":\"aridad inválida\"}"
+ },
+ {
+  "ids": [
+   "1946",
+   "1977"
+  ],
+  "m": "NOTAS;x;y;91",
+  "status": 400,
+  "body": "{\"error\":\"E302\",\"mensaje\":\"aridad inválida\"}"
+ },
+ {
+  "ids": [
+   "1951",
+   "1982"
+  ],
+  "m": "HALT;72",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "1953",
+   "1984"
+  ],
+  "m": "HALT;x;y;49",
+  "status": 400,
+  "body": "{\"error\":\"E302\",\"mensaje\":\"aridad inválida\"}"
+ },
+ {
+  "ids": [
+   "1954",
+   "1959",
+   "1985",
+   "1990"
+  ],
+  "m": "HALT;71",
+  "status": 400,
+  "body": "{\"error\":\"E302\",\"mensaje\":\"aridad inválida\"}"
+ },
+ {
+  "ids": [
+   "1965",
+   "1996"
+  ],
+  "m": "halt;71",
+  "status": 400,
+  "body": "{\"error\":\"E302\",\"mensaje\":\"aridad inválida\"}"
+ }
+]
