@@ -28,8 +28,8 @@ type Operation struct {
 type State struct {
 	Accounts      map[string]*Account
 	Operations    map[string]*Operation
-	NextAccount   int
-	NextOperation int
+	NextAccount   int64
+	NextOperation int64
 }
 
 func New() *State {
@@ -81,6 +81,6 @@ func (s *State) Annul(id string) (found, already bool) {
 
 // FormatID da `AC-0001`/`OP-0001`. Pasado 9999 crece sin truncar: supuesto,
 // el original no se observó más allá de AC-0013.
-func FormatID(prefix string, n int) string {
+func FormatID(prefix string, n int64) string {
 	return fmt.Sprintf("%s-%04d", prefix, n)
 }
