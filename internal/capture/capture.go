@@ -74,13 +74,19 @@ func (r *recorder) Write(b []byte) (int, error) {
 }
 
 // Middleware envuelve next. Un reset autenticado con 200 abre una secuencia
-// nueva; lo anterior al primer reset queda en la secuencia 0.
+// nueva; lo anterior al primer reset queda en la secuencia 0. N y seq se fijan
+// a la llegada, así un request lento no cambia de secuencia por un reset paralelo.
+// No ve lo que net/http rechaza antes del handler (request mal formado, 431).
 func Middleware(next http.Handler, o Options) http.Handler {
 	var mu sync.Mutex
 	n, seq := 0, 0
 	boot := time.Now().UTC().Format(time.RFC3339Nano)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
+		mu.Lock()
+		n++
+		line := Record{N: n, Seq: seq}
+		mu.Unlock()
 		body, readErr := io.ReadAll(r.Body)
 		r.Body = io.NopCloser(bytes.NewReader(body))
 		rec := &recorder{ResponseWriter: w}
@@ -94,18 +100,12 @@ func Middleware(next http.Handler, o Options) http.Handler {
 			next.ServeHTTP(rec, r)
 		}()
 
-		auth := authLabel(r.Header, o.Token)
-		mu.Lock()
-		defer mu.Unlock()
-		n++
-		if r.Method == http.MethodPost && path(r.RequestURI) == "/__reset" && auth == "team" && rec.status == http.StatusOK {
-			seq++
-		}
-		line := Record{
-			Kind: "capture", TS: start.UTC().Format(time.RFC3339Nano), Boot: boot, N: n, Seq: seq, Version: o.Version,
-			Method: r.Method, URI: r.RequestURI, Proto: r.Proto, Host: r.Host, RemoteAddr: r.RemoteAddr,
-			Auth: auth, Headers: redactHeaders(r.Header, o.Token),
-			Status: rec.status, DurationMS: float64(time.Since(start).Microseconds()) / 1000,
+		line.Kind, line.TS, line.Boot, line.Version = "capture", start.UTC().Format(time.RFC3339Nano), boot, o.Version
+		line.Method, line.URI, line.Proto, line.Host, line.RemoteAddr = r.Method, r.RequestURI, r.Proto, r.Host, r.RemoteAddr
+		line.Auth, line.Headers = authLabel(r.Header, o.Token), redactHeaders(r.Header, o.Token)
+		line.Status, line.DurationMS = rec.status, float64(time.Since(start).Microseconds())/1000
+		if o.Token != "" && strings.Contains(line.URI, o.Token) {
+			line.URI, line.Redacted = strings.ReplaceAll(line.URI, o.Token, redacted), true
 		}
 		if readErr != nil {
 			line.BodyError = readErr.Error()
@@ -117,6 +117,12 @@ func Middleware(next http.Handler, o Options) http.Handler {
 		line.RespB64, line.Resp = encode(rec.body.Bytes())
 		if panicked != nil {
 			line.Panic = fmt.Sprint(panicked)
+		}
+		mu.Lock()
+		defer mu.Unlock()
+		if r.Method == http.MethodPost && path(r.RequestURI) == "/__reset" && line.Auth == "team" && rec.status == http.StatusOK {
+			seq++
+			line.Seq = seq
 		}
 		emit(o.Sinks, line)
 	})
@@ -146,12 +152,12 @@ func encode(b []byte) (string, *string) {
 	return enc, &s
 }
 
+// authLabel usa el primer valor, igual que el handler (Header.Get).
 func authLabel(h http.Header, token string) string {
-	v, ok := h["Authorization"]
 	switch {
-	case !ok:
+	case len(h.Values("Authorization")) == 0:
 		return "none"
-	case len(v) == 1 && token != "" && v[0] == "Bearer "+token:
+	case token != "" && h.Get("Authorization") == "Bearer "+token:
 		return "team"
 	}
 	return "other"

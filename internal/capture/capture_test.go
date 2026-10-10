@@ -154,3 +154,57 @@ func TestPanicIsCapturedAndAnswered500(t *testing.T) {
 		t.Fatalf("pánico no registrado: %+v", got)
 	}
 }
+
+func TestTokenRedactedFromURI(t *testing.T) {
+	var buf bytes.Buffer
+	h := Middleware(http.HandlerFunc(echo), Options{Token: token, Sinks: []io.Writer{&buf}})
+	do(h, "GET", "/health?t="+token, "", "")
+	got := records(t, &buf)[0]
+	if got.URI != "/health?t=${TEAM_TOKEN}" || !got.Redacted || strings.Contains(buf.String(), token) {
+		t.Fatalf("URI sin redactar: %q redacted=%v", got.URI, got.Redacted)
+	}
+}
+
+// La etiqueta debe coincidir con lo que decide el handler (Header.Get: primer valor).
+func TestDuplicateAuthorizationUsesFirstValue(t *testing.T) {
+	var buf bytes.Buffer
+	h := Middleware(http.HandlerFunc(echo), Options{Token: token, Sinks: []io.Writer{&buf}})
+	req := httptest.NewRequest("POST", "/__reset", nil)
+	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Add("Authorization", "x")
+	h.ServeHTTP(httptest.NewRecorder(), req)
+	if got := records(t, &buf)[0]; got.Auth != "team" || got.Seq != 1 {
+		t.Fatalf("auth=%q seq=%d", got.Auth, got.Seq)
+	}
+}
+
+// N y seq se asignan a la llegada: un request lento que empezó antes de un
+// reset sigue en su secuencia aunque termine después.
+func TestNumberingByArrival(t *testing.T) {
+	var buf bytes.Buffer
+	release, entered := make(chan struct{}), make(chan struct{})
+	slow := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.RequestURI == "/lento" {
+			close(entered)
+			<-release
+		}
+		echo(w, r)
+	})
+	h := Middleware(slow, Options{Token: token, Sinks: []io.Writer{&buf}})
+	done := make(chan struct{})
+	go func() { do(h, "POST", "/lento", "Bearer "+token, "a"); close(done) }()
+	<-entered
+	do(h, "POST", "/__reset", "Bearer "+token, "")
+	close(release)
+	<-done
+	byURI := map[string]Record{}
+	for _, r := range records(t, &buf) {
+		byURI[r.URI] = r
+	}
+	if r := byURI["/lento"]; r.N != 1 || r.Seq != 0 {
+		t.Fatalf("lento: n=%d seq=%d, want 1 0", r.N, r.Seq)
+	}
+	if r := byURI["/__reset"]; r.N != 2 || r.Seq != 1 {
+		t.Fatalf("reset: n=%d seq=%d, want 2 1", r.N, r.Seq)
+	}
+}
