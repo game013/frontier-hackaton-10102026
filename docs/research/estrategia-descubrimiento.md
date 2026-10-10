@@ -1,5 +1,9 @@
 # Estrategia de descubrimiento y fuzzing (análisis inicial)
 
+> Documento histórico del análisis inicial, anterior a las solicitudes al original.
+> A1 ya confirmó la fórmula: ver [informe A1](control-a1.md),
+> [especificación](../specification.md) y `PROGRESS.md` para el estado vigente.
+
 Estado: borrador, 0 requests gastados al original. Todo lo que sigue sale del enunciado y de
 `docs/old-system/pruebas/ejemplos.jsonl` (E1..E20 = líneas del corpus). Nada está confirmado
 todavía: estas son hipótesis para planificar los experimentos.

@@ -6,15 +6,15 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 
 ## Estado ahora
 
-- **Fase:** plan de exploración e implementación acordado; ninguna tarea iniciada.
-- **Versión observada:** `v1`. Último ID del log: 50.
-- **Próximo paso:** A0 y B1 en paralelo; después A1 (fórmula) y A2 (línea base antes de las 15:20).
+- **Fase:** A0, A1 y B1 completados; fórmula del control confirmada. A1 está en rama separada, pendiente de autorización para fast-forward.
+- **Versión observada:** `v1`. Último ID del log en la rama A1: 225 (174 respuestas nuevas; intento 51 sin respuesta).
+- **Próximo paso:** A2 (línea base completa) y B3 (integridad con fórmula A1); B2 también está desbloqueado por B1.
 - **Bloqueos:** ninguno.
 
 ## Hitos de hoy (Bogotá, UTC−5)
 
-- [ ] 13:15 · A0 listo: cliente con base64, `--no-cache`, runner de secuencias con lock.
-- [ ] 15:00 · Fórmula del control con candidato validado (objetivo, no corte).
+- [x] 13:15 · A0 listo (completado a las 13:59): cliente con base64, `--no-cache`, runner de secuencias con lock.
+- [x] 15:00 · Fórmula del control con candidato validado (A1 completado a las 14:42; objetivo, no corte).
 - [ ] 15:20 · **Línea base `v1` completa** en `tests/corpus/` (A2).
 - [ ] 15:35 · Primer replay tras el cambio anunciado (A6).
 - [ ] 16:35 · Segundo replay (por si la hora del cambio es de CDMX).
@@ -66,7 +66,7 @@ La captura de requests del evaluador sí se hace, en versión simple (JSONL a st
 
 Se borran cuando pasan a la spec con IDs.
 
-- Control: fórmula desconocida. `ALTA;Lucia;82` válido, `83` E202 (log 3–4). PING lo ignora o lo trata aparte (log 2, 33).
+- PING: excepción de integridad pendiente de ampliar en A4 (log 2, 33). La fórmula general ya está confirmada en INT-01; no usar PING como oráculo.
 - E506: ¿límite por operación o acumulado? Visto con 120000 (log 10).
 - IDs: ¿un comando fallido consume `AC-`/`OP-`?
 - Reset: ¿alcance por token?, ¿reinicia contadores a 1?
@@ -117,3 +117,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [codex] 2026-10-10 14:26: A1 reclamado en feat/a1-control, worktree separado; bb.py sin cambios, cuota compartida con el coordinador original y exploración centralizada.
 
 - [codex] 2026-10-10 14:42: A1 completado en feat/a1-control: fórmula A=1…Z=26, filtrado ASCII antes de caja, decimal +00 y 98−(resto módulo 97), sin reducción final. Nueve mensajes reservados/vecinos repetidos desde dos resets; bordes 97/98 y Unicode revalidados. IDs 52–225, intento 51 DNS excluido de evidencia; 175 reservas nuevas, cuota 225/7800, quedan 7575. bb.py sin cambios; fixtures tests/corpus/a1, herramienta offline y escáner instrumentado. B3 desbloqueado; A2/A6 siguen pendientes. Rama sin mezclar, a la espera de autorización del usuario.
+
+- [codex] 2026-10-10 14:45: cierre de auditoría A1: 44 pruebas Python y go test ./... en verde; Luna confirma fórmula en 167 mensajes y trazabilidad/bytes en 174 fixtures. Actualización mínima del resumen e hitos propios de A0/A1 para retirar la cabecera desactualizada, sin alterar filas de otras tareas. Fast-forward posible desde master; mezcla pendiente de autorización.
