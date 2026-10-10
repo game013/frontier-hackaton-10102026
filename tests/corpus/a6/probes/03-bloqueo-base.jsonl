@@ -1,0 +1,16 @@
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;Mateo;3"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;1000000;51"}, "hipotesis": "depósito válido, fondos para la sonda"}
+{"request": {"m": "DEPOSITO;AC-0002;5000;36"}, "hipotesis": "depósito válido, fondos para la sonda"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;100000;12"}, "hipotesis": "E506 #1 del origen AC-0001"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;100000;12"}, "hipotesis": "E506 #2 del origen AC-0001"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;100000;12"}, "hipotesis": "E506 #3 del origen AC-0001; v2 ¿todavía E506?"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;1000;37"}, "hipotesis": "CAM-V2 bloqueo: tras 3 E506 un TRANSFER válido del origen da 423 E510"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;1000;37"}, "hipotesis": "CAM-V2 bloqueo: segundo intento bloqueado; ¿intentos crece a 2?"}
+{"request": {"m": "DEPOSITO;AC-0001;100;82"}, "hipotesis": "CAM-V2 bloqueo: ¿DEPOSITO a la cuenta bloqueada también da E510?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "CAM-V2 bloqueo: CONSULTA de la cuenta bloqueada (replay: no bloquea)"}
+{"request": {"m": "TRANSFER;AC-0002;AC-0001;1000;14"}, "hipotesis": "CAM-V2 bloqueo: ¿la cuenta bloqueada puede recibir como destino?"}
+{"request": {"m": "ANULA;OP-0001;72"}, "hipotesis": "CAM-V2 bloqueo: ¿ANULA del depósito de la cuenta bloqueada?"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;1000;37"}, "hipotesis": "CAM-V2 bloqueo: tercer intento; ¿intentos crece?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo final del origen bloqueado"}
+{"request": {"m": "CONSULTA;AC-0002;11"}, "hipotesis": "saldo final del destino"}

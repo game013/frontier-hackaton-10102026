@@ -1,0 +1,8 @@
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "CAM-V2 saldo: v2 da saldo 0 como texto \"0.00\" (v1: número 0)"}
+{"request": {"m": "DEPOSITO;AC-0001;5;16"}, "hipotesis": "depósito de 5 unidades mínimas"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "CAM-V2 saldo: 5 se muestra \"0.05\" (centésimas, dos decimales)"}
+{"request": {"m": "DEPOSITO;AC-0001;12340;14"}, "hipotesis": "depósito de 12340"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "CAM-V2 saldo: 12345 se muestra \"123.45\""}
+{"request": {"m": "ALTA;Mateo;3"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "CONSULTA;AC-0002;11"}, "hipotesis": "CAM-V2 saldo: otra cuenta en cero también \"0.00\""}

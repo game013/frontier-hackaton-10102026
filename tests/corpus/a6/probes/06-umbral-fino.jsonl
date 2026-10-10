@@ -1,0 +1,10 @@
+{"request": {"m": "ALTA;Destino;41"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;Origen2;78"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0002;1000000;17"}, "hipotesis": "depósito válido, fondos para la sonda"}
+{"request": {"m": "TRANSFER;AC-0002;AC-0001;50001;20"}, "hipotesis": "CAM-V2 umbral: TRANSFER de 50001 (v1 aceptaba hasta 100000); 200 si está bajo el nuevo umbral, 422 E506 si lo supera"}
+{"request": {"m": "ALTA;Origen3;75"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0003;1000000;80"}, "hipotesis": "depósito válido, fondos para la sonda"}
+{"request": {"m": "TRANSFER;AC-0003;AC-0001;55000;43"}, "hipotesis": "CAM-V2 umbral: TRANSFER de 55000 (v1 aceptaba hasta 100000); 200 si está bajo el nuevo umbral, 422 E506 si lo supera"}
+{"request": {"m": "ALTA;Origen4;72"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0004;1000000;46"}, "hipotesis": "depósito válido, fondos para la sonda"}
+{"request": {"m": "TRANSFER;AC-0004;AC-0001;59999;66"}, "hipotesis": "CAM-V2 umbral: TRANSFER de 59999 (v1 aceptaba hasta 100000); 200 si está bajo el nuevo umbral, 422 E506 si lo supera"}

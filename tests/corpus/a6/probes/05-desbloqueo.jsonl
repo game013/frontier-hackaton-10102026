@@ -1,0 +1,27 @@
+{"request": {"m": "ALTA;Destino;41"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;A;62"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;B;59"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;C;56"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0002;1000000;17"}, "hipotesis": "depósito válido, fondos para la sonda"}
+{"request": {"m": "DEPOSITO;AC-0003;1000000;80"}, "hipotesis": "depósito válido, fondos para la sonda"}
+{"request": {"m": "DEPOSITO;AC-0004;1000000;46"}, "hipotesis": "depósito válido, fondos para la sonda"}
+{"request": {"m": "DEPOSITO;AC-0004;500;67"}, "hipotesis": "depósito para anular"}
+{"request": {"m": "TRANSFER;AC-0002;AC-0001;100000;40"}, "hipotesis": "E506 #1 de AC-0002"}
+{"request": {"m": "TRANSFER;AC-0002;AC-0001;100000;40"}, "hipotesis": "E506 #2 de AC-0002"}
+{"request": {"m": "TRANSFER;AC-0002;AC-0001;100000;40"}, "hipotesis": "E506 #3 de AC-0002"}
+{"request": {"m": "TRANSFER;AC-0002;AC-0001;1000;14"}, "hipotesis": "AC-0002 bloqueada: E510 intentos 1"}
+{"request": {"m": "TRANSFER;AC-0002;AC-0001;1000;14"}, "hipotesis": "CAM-V2 bloqueo: intento 2; ¿sigue E510 o se libera solo?"}
+{"request": {"m": "TRANSFER;AC-0002;AC-0001;1000;14"}, "hipotesis": "CAM-V2 bloqueo: intento 3; ¿sigue E510 o se libera solo?"}
+{"request": {"m": "TRANSFER;AC-0002;AC-0001;1000;14"}, "hipotesis": "CAM-V2 bloqueo: intento 4; ¿sigue E510 o se libera solo?"}
+{"request": {"m": "TRANSFER;AC-0003;AC-0001;100000;84"}, "hipotesis": "E506 #1 de AC-0003"}
+{"request": {"m": "TRANSFER;AC-0003;AC-0001;100000;84"}, "hipotesis": "E506 #2 de AC-0003"}
+{"request": {"m": "TRANSFER;AC-0003;AC-0001;100000;84"}, "hipotesis": "E506 #3 de AC-0003"}
+{"request": {"m": "TRANSFER;AC-0003;AC-0001;1000;61"}, "hipotesis": "AC-0003 bloqueada: E510 intentos 1"}
+{"request": {"m": "DEPOSITO;AC-0003;100;96"}, "hipotesis": "depósito a la cuenta bloqueada"}
+{"request": {"m": "TRANSFER;AC-0003;AC-0001;1000;61"}, "hipotesis": "CAM-V2 bloqueo: ¿el depósito propio libera la cuenta?"}
+{"request": {"m": "TRANSFER;AC-0004;AC-0001;100000;31"}, "hipotesis": "E506 #1 de AC-0004"}
+{"request": {"m": "TRANSFER;AC-0004;AC-0001;100000;31"}, "hipotesis": "E506 #2 de AC-0004"}
+{"request": {"m": "TRANSFER;AC-0004;AC-0001;100000;31"}, "hipotesis": "E506 #3 de AC-0004"}
+{"request": {"m": "TRANSFER;AC-0004;AC-0001;1000;11"}, "hipotesis": "AC-0004 bloqueada: E510 intentos 1"}
+{"request": {"m": "ANULA;OP-0004;63"}, "hipotesis": "anula el depósito de 500 de la cuenta bloqueada"}
+{"request": {"m": "TRANSFER;AC-0004;AC-0001;1000;11"}, "hipotesis": "CAM-V2 bloqueo: ¿ANULA sobre la cuenta la libera?"}
