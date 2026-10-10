@@ -1,0 +1,6 @@
+{"request": {"m": "ANULA;OP-0001;72"}, "hipotesis": "ANULA OP-0001 sin operaciones tras reset: E402"}
+{"request": {"m": "ANULA;AC-0001;59"}, "hipotesis": "ANULA con AC inexistente: ¿E402 o E401?"}
+{"request": {"m": "ANULA;OP-0001;OP-0002;25"}, "hipotesis": "ANULA con dos argumentos: E302"}
+{"request": {"m": "ANULA;45"}, "hipotesis": "ANULA sin argumentos: E302"}
+{"request": {"m": "ANULA;OP-0042;45"}, "hipotesis": "E202 antes que E402 (repetición)"}
+{"request": {"m": "ANULA;OP-9999;51"}, "hipotesis": "ANULA OP-9999: E402"}

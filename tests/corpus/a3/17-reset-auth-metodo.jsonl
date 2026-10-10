@@ -1,0 +1,8 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"method": "POST", "path": "/__reset", "hipotesis": "reset sin auth: 401 y no resetea", "auth": "none"}
+{"method": "POST", "path": "/__reset", "hipotesis": "reset con token inválido: 401 y no resetea", "auth": "invalid"}
+{"method": "GET", "path": "/__reset", "hipotesis": "GET /__reset: ¿404 y no resetea?"}
+{"method": "PUT", "path": "/__reset", "hipotesis": "PUT /__reset: ¿404 y no resetea?"}
+{"method": "POST", "path": "/__reset/", "hipotesis": "POST /__reset/ con barra final: ¿404 o reset?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "la cuenta sigue: ningún reset anterior surtió efecto"}
+{"request": {"m": "ALTA;Beto;11"}, "hipotesis": "contador intacto: AC-0002 (o AC-0001 si /__reset/ reseteó)"}

@@ -1,0 +1,6 @@
+{"request": {"m": "ALTA;Ana;49"}, "hipotesis": "ALTA con E202 no debería asignar AC"}
+{"request": {"m": "ALTA;Ana;5X"}, "hipotesis": "ALTA con E201 no debería asignar AC"}
+{"request": {"m": "ALTA;Ana;Lopez;11"}, "hipotesis": "ALTA con E302 no debería asignar AC"}
+{"request": {"m": "ALTA;;85"}, "hipotesis": "ALTA con nombre vacío: ¿error o alta? ¿consume AC?"}
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "primera ALTA válida tras errores: ¿AC-0001 o salta?"}
+{"request": {"m": "ALTA;Beto;11"}, "hipotesis": "segunda ALTA válida: consecutiva"}

@@ -1,0 +1,7 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;Beto;11"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;1000;35"}, "hipotesis": "depósito OP-0001"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;800;58"}, "hipotesis": "transferir 800 de lo depositado: OP-0002"}
+{"request": {"m": "ANULA;OP-0001;72"}, "hipotesis": "ANULA de depósito ya gastado: ¿ok con saldo negativo, E507 u otro?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo de A tras anular depósito gastado"}
+{"request": {"m": "CONSULTA;AC-0002;11"}, "hipotesis": "saldo de B intacto"}

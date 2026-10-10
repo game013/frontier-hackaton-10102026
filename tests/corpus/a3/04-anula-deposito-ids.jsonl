@@ -1,0 +1,9 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;1000;35"}, "hipotesis": "depósito OP-0001"}
+{"request": {"m": "ANULA;OP-0001;72"}, "hipotesis": "ANULA de un depósito: ¿ok y revierte saldo?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras anular depósito: ¿0?"}
+{"request": {"m": "DEPOSITO;AC-0001;500;46"}, "hipotesis": "depósito tras ANULA: ¿ANULA consume OP (OP-0003) o no (OP-0002)?"}
+{"request": {"m": "ANULA;OP-0001;72"}, "hipotesis": "segunda ANULA del mismo depósito: ya anulada"}
+{"request": {"m": "ANULA;OP-0009;48"}, "hipotesis": "ANULA inexistente E402: ¿consume OP?"}
+{"request": {"m": "DEPOSITO;AC-0001;1;28"}, "hipotesis": "depósito tras E402: ¿siguiente OP sin salto?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo final A = 501"}

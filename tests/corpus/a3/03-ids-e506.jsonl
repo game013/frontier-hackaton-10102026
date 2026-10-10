@@ -1,0 +1,6 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;Beto;11"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;250000;86"}, "hipotesis": "fondos para probar E506: OP-0001"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;120000;55"}, "hipotesis": "TRANSFER 120000 → E506: ¿consume OP?"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;1000;37"}, "hipotesis": "TRANSFER válida tras E506: ¿OP-0002 o OP-0003?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo A = 249000: E506 no movió saldo"}

@@ -1,0 +1,8 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;500;46"}, "hipotesis": "OP-0001 antes del reset intermedio"}
+{"method": "POST", "path": "/__reset", "hipotesis": "reset intermedio con auth válida: respuesta"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "tras reset la cuenta ya no existe: E401"}
+{"request": {"m": "ANULA;OP-0001;72"}, "hipotesis": "tras reset la operación ya no existe: E402"}
+{"request": {"m": "ALTA;Beto;11"}, "hipotesis": "tras reset el contador de AC vuelve a AC-0001"}
+{"request": {"m": "DEPOSITO;AC-0001;7;10"}, "hipotesis": "tras reset el contador de OP vuelve a OP-0001"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo de la cuenta nueva: 7"}

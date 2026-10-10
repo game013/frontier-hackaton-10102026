@@ -1,0 +1,9 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;Beto;11"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;250000;86"}, "hipotesis": "fondos OP-0001"}
+{"request": {"m": "DEPOSITO;AC-0001;250000;86"}, "hipotesis": "fondos OP-0002"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;100000;12"}, "hipotesis": "OP-0003"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;100000;12"}, "hipotesis": "OP-0004 (o E506 si es acumulado)"}
+{"request": {"m": "ANULA;OP-0003;66"}, "hipotesis": "ANULA de transferencia"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;100000;12"}, "hipotesis": "tras ANULA: ¿recupera capacidad si el límite es acumulado?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo A"}

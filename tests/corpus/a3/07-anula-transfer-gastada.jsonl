@@ -1,0 +1,13 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;Beto;11"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;Caro;61"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;1000;35"}, "hipotesis": "depósito OP-0001"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;1000;37"}, "hipotesis": "A→B 1000: OP-0002"}
+{"request": {"m": "TRANSFER;AC-0002;AC-0003;1000;57"}, "hipotesis": "B→C 1000: OP-0003 (B queda en 0)"}
+{"request": {"m": "ANULA;OP-0002;69"}, "hipotesis": "ANULA de transferencia cuyo receptor ya gastó: ¿ok, negativo o error?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo A tras anular OP-0002"}
+{"request": {"m": "CONSULTA;AC-0002;11"}, "hipotesis": "saldo B tras anular OP-0002"}
+{"request": {"m": "CONSULTA;AC-0003;8"}, "hipotesis": "saldo C intacto"}
+{"request": {"m": "ANULA;OP-0003;66"}, "hipotesis": "ANULA de la segunda transferencia"}
+{"request": {"m": "CONSULTA;AC-0002;11"}, "hipotesis": "saldo B tras anular OP-0003"}
+{"request": {"m": "CONSULTA;AC-0003;8"}, "hipotesis": "saldo C tras anular OP-0003"}

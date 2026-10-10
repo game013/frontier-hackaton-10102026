@@ -1,0 +1,9 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;Beto;11"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;Caro;61"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;250000;86"}, "hipotesis": "fondos A"}
+{"request": {"m": "DEPOSITO;AC-0003;250000;21"}, "hipotesis": "fondos C"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;100000;12"}, "hipotesis": "A→B 100000"}
+{"request": {"m": "TRANSFER;AC-0003;AC-0002;100000;3"}, "hipotesis": "C→B 100000: ¿límite compartido entre cuentas?"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0003;100000;28"}, "hipotesis": "A→C 100000: ¿límite por destino?"}
+{"request": {"m": "CONSULTA;AC-0002;11"}, "hipotesis": "saldo B"}

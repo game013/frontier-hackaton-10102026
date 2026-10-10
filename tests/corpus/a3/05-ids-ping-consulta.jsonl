@@ -1,0 +1,6 @@
+{"request": {"m": "PING;64"}, "hipotesis": "PING no debería consumir IDs"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "CONSULTA a inexistente tras reset: E401"}
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA tras PING y CONSULTA fallida: AC-0001"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "CONSULTA de cuenta nueva: saldo 0"}
+{"request": {"m": "ALTA;Beto;11"}, "hipotesis": "ALTA tras CONSULTA exitosa: AC-0002"}
+{"request": {"m": "DEPOSITO;AC-0002;10;68"}, "hipotesis": "primer depósito: OP-0001 (CONSULTA/ALTA no consumen OP)"}

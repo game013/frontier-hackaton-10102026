@@ -177,3 +177,21 @@ comparación del contrato: status más JSON con tipos exactos, objetos sin orden
 arrays ordenados; texto se compara literalmente. `request_b64` se envía sin decodificar a texto,
 `raw_body` se preserva para casos históricos como el cuerpo `{`, y cada captura nueva conserva
 `source_id`. Salida 0 significa sin deltas de contrato, 1 indica deltas y 2 indica replay incompleto.
+
+## A3: batería de estado
+
+`a3_battery.py` genera offline `tests/corpus/a3/*.jsonl`, una secuencia por hipótesis de estado
+(consumo de IDs, anulación, alcance del reset, límite E506 y orden de errores). Los controles salen
+de `control.py`; `bad()` fuerza E202 a propósito. El runner añade el reset inicial; los resets
+intermedios del archivo son parte del experimento.
+
+```sh
+python3 tools/explorer/a3_battery.py          # regenera; cero requests
+for f in tests/corpus/a3/*.jsonl; do
+  python3 tools/explorer/bb.py run "a3-<epoch>-$(basename $f .jsonl)" "$f" --no-cache
+done
+```
+
+Tras el cambio de versión, repetir con `BB_EPOCH=v2` y nombres nuevos para detectar deltas de
+estado. `a3_isolation.py` intentó medir el aislamiento con `TEAM_TOKEN`, pero el original lo
+rechaza con 401 E001 (log 618): no se vuelve a ejecutar.

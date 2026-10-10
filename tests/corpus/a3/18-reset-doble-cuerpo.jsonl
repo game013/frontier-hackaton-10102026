@@ -1,0 +1,3 @@
+{"method": "POST", "path": "/__reset", "hipotesis": "segundo reset consecutivo: misma respuesta"}
+{"method": "POST", "path": "/__reset", "hipotesis": "reset con cuerpo JSON arbitrario", "request": {"m": "PING;64"}}
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "tras resets: AC-0001"}

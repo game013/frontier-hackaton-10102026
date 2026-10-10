@@ -1,0 +1,5 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;1000;35"}, "hipotesis": "OP-0001"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0001;500;78"}, "hipotesis": "TRANSFER a la misma cuenta: ¿ok, error o consume OP?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras auto-transferencia"}
+{"request": {"m": "DEPOSITO;AC-0001;1;28"}, "hipotesis": "siguiente OP tras auto-transferencia"}

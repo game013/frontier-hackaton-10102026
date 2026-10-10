@@ -1,0 +1,7 @@
+{"request": {"m": "ALTA;;84"}, "hipotesis": "E104 frente a E202 (segmento vacío con control incorrecto)"}
+{"request": {"m": "CONSULTA;;11"}, "hipotesis": "CONSULTA con segmento vacío: E104"}
+{"request": {"m": "DEPOSITO;AC-0001;;4"}, "hipotesis": "DEPOSITO con monto vacío: ¿E104 antes que E401?"}
+{"request": {"m": "TRANSFER;AC-0001;;100;27"}, "hipotesis": "TRANSFER con destino vacío: E104"}
+{"request": {"m": "ALTA;;;85"}, "hipotesis": "ALTA con dos vacíos: ¿E104 o E302 primero?"}
+{"request": {"m": "ANULA;;45"}, "hipotesis": "ANULA vacío: E104"}
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "tras E104 la primera alta es AC-0001"}

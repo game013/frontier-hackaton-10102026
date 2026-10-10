@@ -1,0 +1,5 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;Beto;11"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;120000;55"}, "hipotesis": "TRANSFER 120000 sin saldo: ¿E506 o E507 primero?"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;100;24"}, "hipotesis": "TRANSFER 100 sin saldo: E507"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;100001;9"}, "hipotesis": "TRANSFER 100001 sin saldo"}

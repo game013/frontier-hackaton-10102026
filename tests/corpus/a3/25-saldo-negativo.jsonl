@@ -1,0 +1,11 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;Beto;11"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;1000;35"}, "hipotesis": "OP-0001"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;1000;37"}, "hipotesis": "OP-0002"}
+{"request": {"m": "ANULA;OP-0001;72"}, "hipotesis": "A queda en -1000"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;1;41"}, "hipotesis": "cuenta con saldo negativo transfiere: E507"}
+{"request": {"m": "DEPOSITO;AC-0001;500;46"}, "hipotesis": "depósito en cuenta negativa: OP-0003"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo -500"}
+{"request": {"m": "ANULA;OP-0002;69"}, "hipotesis": "anular la transferencia restituye A: 500, B: 0"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo de A tras anular la transferencia"}
+{"request": {"m": "CONSULTA;AC-0002;11"}, "hipotesis": "saldo de B tras anular la transferencia"}

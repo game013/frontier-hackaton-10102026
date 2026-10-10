@@ -1,0 +1,10 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;100;82"}, "hipotesis": "depósito OP-0001"}
+{"request": {"m": "ANULA;AC-0001;59"}, "hipotesis": "ANULA con ID de cuenta: ¿E402, E401 u otro?"}
+{"request": {"m": "ANULA;op-0001;72"}, "hipotesis": "ANULA con prefijo en minúsculas"}
+{"request": {"m": "ANULA;OP-1;91"}, "hipotesis": "ANULA sin ceros a la izquierda"}
+{"request": {"m": "ANULA;OP-00001;59"}, "hipotesis": "ANULA con cinco dígitos"}
+{"request": {"m": "ANULA;OP-0000;75"}, "hipotesis": "ANULA OP-0000"}
+{"request": {"m": "ANULA;OP-0002;69"}, "hipotesis": "ANULA del siguiente OP aún no emitido"}
+{"request": {"m": "ANULA;OP-0001;72"}, "hipotesis": "ANULA canónica: ok si los formatos anteriores no anularon"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras anulación canónica"}

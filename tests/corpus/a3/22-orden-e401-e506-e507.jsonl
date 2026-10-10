@@ -1,0 +1,7 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0009;120000;70"}, "hipotesis": "E401 (destino) frente a E506"}
+{"request": {"m": "TRANSFER;AC-0009;AC-0001;120000;3"}, "hipotesis": "E401 (origen) frente a E506"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0009;100;73"}, "hipotesis": "E401 (destino) frente a E507 (origen sin saldo)"}
+{"request": {"m": "DEPOSITO;AC-0009;007;29"}, "hipotesis": "E401 frente a E303 en DEPOSITO"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0009;007;61"}, "hipotesis": "E401 frente a E303 en TRANSFER"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0001;120000;39"}, "hipotesis": "repetición E304 frente a E506"}

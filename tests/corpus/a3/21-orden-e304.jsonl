@@ -1,0 +1,6 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0001;200000;17"}, "hipotesis": "E304 frente a E506 (misma cuenta, monto sobre límite)"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0001;100;17"}, "hipotesis": "E304 frente a E507 (misma cuenta sin saldo)"}
+{"request": {"m": "TRANSFER;AC-0009;AC-0009;100;33"}, "hipotesis": "E304 frente a E401 (misma cuenta inexistente)"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0001;007;5"}, "hipotesis": "E304 frente a E303 (monto inválido)"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0001;100;16"}, "hipotesis": "E202 antes que E304"}

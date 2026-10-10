@@ -1,0 +1,8 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;Beto;11"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;250000;86"}, "hipotesis": "fondos"}
+{"request": {"m": "DEPOSITO;AC-0001;250000;86"}, "hipotesis": "fondos"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;100001;9"}, "hipotesis": "TRANSFER 100001: ¿E506? (borde superior de 100000)"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;110000;82"}, "hipotesis": "TRANSFER 110000"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;119999;58"}, "hipotesis": "TRANSFER 119999"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo A"}

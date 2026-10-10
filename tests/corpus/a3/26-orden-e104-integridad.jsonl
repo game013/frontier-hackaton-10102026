@@ -1,0 +1,5 @@
+{"request": {"m": "ALTA;;5X"}, "hipotesis": "E104 frente a E201 (control mal formado)"}
+{"request": {"m": "ZZZ;;53"}, "hipotesis": "E104 frente a E301 con control incorrecto"}
+{"request": {"m": "ZZZ;;54"}, "hipotesis": "E104 frente a E301 con control correcto"}
+{"request": {"m": "ALTA;Ana;;49"}, "hipotesis": "E104 frente a E302 con segmento vacío al final"}
+{"request": {"m": "ALTA;Ana;"}, "hipotesis": "control vacío: ¿E104 o E201?"}

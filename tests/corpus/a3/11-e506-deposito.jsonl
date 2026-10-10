@@ -1,0 +1,5 @@
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;120000;49"}, "hipotesis": "DEPOSITO 120000: ¿aplica E506 a depósitos?"}
+{"request": {"m": "DEPOSITO;AC-0001;1000000;51"}, "hipotesis": "DEPOSITO 1000000"}
+{"request": {"m": "DEPOSITO;AC-0001;99999999;4"}, "hipotesis": "DEPOSITO 99999999"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras depósitos grandes"}
