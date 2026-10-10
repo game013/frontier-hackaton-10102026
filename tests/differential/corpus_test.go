@@ -1,10 +1,10 @@
 package differential
 
 import (
+	"flag"
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"path/filepath"
 	"slices"
 	"sort"
 	"testing"
@@ -18,6 +18,10 @@ const (
 	repoRoot  = "../.."
 	testToken = "equipo-secreto"
 )
+
+// Con -update-pending, TestCorpus reescribe pending-<version>.txt con los pasos
+// que difieren hoy, en vez de fallar. Revisar el diff antes de commitear.
+var updatePending = flag.Bool("update-pending", false, "reescribe pending-<version>.txt")
 
 // stepTimeout es el tiempo que el evaluador da a cada paso, cuerpo incluido.
 const stepTimeout = 5 * time.Second
@@ -41,9 +45,9 @@ func serve(t *testing.T, version string) (*httptest.Server, *http.Client) {
 	return srv, client
 }
 
-// TestCorpus reproduce la suite de BEHAVIOR_VERSION. Una secuencia en
-// pending-<version>.txt se ejecuta y se informa sin fallar; si ya coincide en
-// todos sus pasos, falla para que se quite de la lista.
+// TestCorpus reproduce la suite de BEHAVIOR_VERSION. Los pasos listados en
+// pending-<version>.txt pueden diferir; falla si difiere cualquier otro paso
+// (regresión) o si uno listado ya coincide (hay que sacarlo de la lista).
 func TestCorpus(t *testing.T) {
 	version := behaviorVersion()
 	if !slices.Contains(config.Versions, version) {
@@ -53,45 +57,76 @@ func TestCorpus(t *testing.T) {
 	if err != nil {
 		t.Fatalf("la versión %s necesita su suite: %v", version, err)
 	}
-	pending, err := LoadPending(filepath.Join(".", "pending-"+version+".txt"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	known := map[string]bool{}
-	for _, q := range seqs {
-		known[q.Name] = true
-	}
-	var stale []string
-	for name := range pending {
-		if !known[name] {
-			stale = append(stale, name)
+	pendingFile := "pending-" + version + ".txt"
+	// Al regenerar, la lista actual no se lee: puede estar desfasada o mal formada.
+	pending := Pending{}
+	if !*updatePending {
+		if pending, err = LoadPending(pendingFile); err != nil {
+			t.Fatal(err)
+		}
+		known := map[string]bool{}
+		for _, q := range seqs {
+			known[q.Name] = true
+		}
+		var stale []string
+		for name := range pending {
+			if !known[name] {
+				stale = append(stale, name)
+			}
+		}
+		sort.Strings(stale)
+		for _, name := range stale {
+			t.Errorf("%s nombra %q, que no está en la suite", pendingFile, name)
 		}
 	}
-	sort.Strings(stale)
-	for _, name := range stale {
-		t.Errorf("pending-%s.txt nombra %q, que no está en la suite", version, name)
-	}
 
+	current := Pending{}
 	passed, pend := 0, 0
 	for _, q := range seqs {
 		t.Run(q.Name, func(t *testing.T) {
 			srv, client := serve(t, version)
-			m, err := Replay(client, srv.URL, testToken, q)
+			diffs, err := Replay(client, srv.URL, testToken, q)
 			if err != nil {
 				t.Fatal(err)
 			}
+			allowed := pending[q.Name]
+			differing := map[int]bool{}
+			for _, m := range diffs {
+				differing[m.Index] = true
+				if !allowed[m.Index] && !*updatePending {
+					t.Errorf("regresión: %s", m)
+				}
+			}
+			if len(differing) > 0 {
+				current[q.Name] = differing
+			}
+			if *updatePending {
+				return
+			}
+			fixed := map[int]bool{}
+			for i := range allowed {
+				if !differing[i] {
+					fixed[i] = true
+				}
+			}
+			if len(fixed) > 0 {
+				t.Errorf("pasos %s ya coinciden: quitarlos de %s (-update-pending)", FormatSteps(fixed), pendingFile)
+			}
 			switch {
-			case pending[q.Name] && m == nil:
-				t.Errorf("ya coincide en sus %d pasos: quitarla de pending-%s.txt", len(q.Steps), version)
-			case pending[q.Name]:
-				pend++
-				t.Logf("pendiente:\n%s", m)
-			case m != nil:
-				t.Errorf("%s", m)
-			default:
+			case len(diffs) == 0:
 				passed++
+			case len(diffs) > 0 && !t.Failed():
+				pend++
+				t.Logf("pendiente, %d pasos difieren; primero:\n%s", len(diffs), diffs[0])
 			}
 		})
+	}
+	if *updatePending {
+		if err := WritePending(pendingFile, seqs, current); err != nil {
+			t.Fatal(err)
+		}
+		t.Logf("%s reescrito: %d secuencias con pasos pendientes", pendingFile, len(current))
+		return
 	}
 	t.Logf("%s: %d secuencias, %d coinciden, %d pendientes", version, len(seqs), passed, pend)
 }

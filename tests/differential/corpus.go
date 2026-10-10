@@ -3,8 +3,8 @@
 // original: lee los registros de evidencia que escribe tools/explorer/bb.py.
 //
 // Una suite por versión (<version>.json) lista los archivos de evidencia y los
-// patrones de seq que entran; pending-<version>.txt lista las secuencias que el
-// reemplazo todavía no reproduce. Formato y uso: README.md.
+// patrones de seq que entran; pending-<version>.txt lista, por secuencia, los
+// pasos que el reemplazo todavía no reproduce. Formato y uso: README.md.
 package differential
 
 import (
@@ -19,6 +19,8 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
+	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -245,35 +247,29 @@ func authHeader(label, token string) (string, bool) {
 	return "", false
 }
 
-// Mismatch describe el primer paso que no coincide y cuántos más fallaron.
+// Mismatch describe un paso cuya respuesta no coincide con la grabada.
 type Mismatch struct {
 	Index  int // posición del paso (0 = reset)
 	Step   Step
 	Status int
 	Body   []byte
-	Others int
 }
 
-func (m *Mismatch) Error() string {
+func (m Mismatch) Error() string {
 	equiv := "no"
 	if jsonEqual(m.Body, m.Step.Response) {
 		equiv = "sí"
 	}
-	var b strings.Builder
-	fmt.Fprintf(&b, "paso %d (id %d) %s %s auth=%s cuerpo=%q\n", m.Index, m.Step.ID, m.Step.Method,
-		m.Step.Path, m.Step.Auth, m.Step.Body)
-	fmt.Fprintf(&b, "  esperado %d %q\n  obtenido %d %q\n  JSON equivalente: %s", m.Step.Status,
-		m.Step.Response, m.Status, m.Body, equiv)
-	if m.Others > 0 {
-		fmt.Fprintf(&b, "\n  y %d pasos más difieren", m.Others)
-	}
-	return b.String()
+	return fmt.Sprintf("paso %d (id %d) %s %s auth=%s cuerpo=%q\n  esperado %d %q\n  obtenido %d %q\n  JSON equivalente: %s",
+		m.Index, m.Step.ID, m.Step.Method, m.Step.Path, m.Step.Auth, m.Step.Body,
+		m.Step.Status, m.Step.Response, m.Status, m.Body, equiv)
 }
 
-// Replay ejecuta la secuencia contra baseURL en orden y devuelve el primer
-// desacuerdo (nil si todo coincide). err solo indica un fallo de transporte.
-func Replay(client *http.Client, baseURL, token string, q Sequence) (*Mismatch, error) {
-	var first *Mismatch
+// Replay ejecuta la secuencia contra baseURL en orden y devuelve todos los
+// pasos que no coinciden. err solo indica un fallo de transporte (incluido
+// superar el timeout del cliente).
+func Replay(client *http.Client, baseURL, token string, q Sequence) ([]Mismatch, error) {
+	var out []Mismatch
 	for i, st := range q.Steps {
 		var body io.Reader
 		if st.Body != nil {
@@ -298,16 +294,11 @@ func Replay(client *http.Client, baseURL, token string, q Sequence) (*Mismatch, 
 		if err != nil {
 			return nil, fmt.Errorf("%s paso %d: %w", q.Name, i, err)
 		}
-		if resp.StatusCode == st.Status && bytes.Equal(got, st.Response) {
-			continue
-		}
-		if first == nil {
-			first = &Mismatch{Index: i, Step: st, Status: resp.StatusCode, Body: got}
-		} else {
-			first.Others++
+		if resp.StatusCode != st.Status || !bytes.Equal(got, st.Response) {
+			out = append(out, Mismatch{Index: i, Step: st, Status: resp.StatusCode, Body: got})
 		}
 	}
-	return first, nil
+	return out, nil
 }
 
 // jsonEqual compara como el evaluador: orden de claves libre, arrays en orden,
@@ -331,20 +322,97 @@ func decodeJSON(b []byte) (any, bool) {
 	return v, true
 }
 
-// LoadPending lee una secuencia por línea; # comenta. Archivo ausente = vacío.
-func LoadPending(file string) (map[string]bool, error) {
+// Pending son, por secuencia, los pasos que todavía pueden diferir.
+type Pending map[string]map[int]bool
+
+// LoadPending lee líneas "<seq> <pasos>", con pasos como 1,3-17 (posición en
+// la secuencia; 0 es el reset). # comenta. Archivo ausente = vacío.
+func LoadPending(file string) (Pending, error) {
 	raw, err := os.ReadFile(file)
 	if os.IsNotExist(err) {
-		return map[string]bool{}, nil
+		return Pending{}, nil
 	}
 	if err != nil {
 		return nil, err
 	}
-	out := map[string]bool{}
-	for _, line := range strings.Split(string(raw), "\n") {
-		if name, _, _ := strings.Cut(line, "#"); strings.TrimSpace(name) != "" {
-			out[strings.TrimSpace(name)] = true
+	out := Pending{}
+	for n, line := range strings.Split(string(raw), "\n") {
+		line, _, _ = strings.Cut(line, "#")
+		fields := strings.Fields(line)
+		if len(fields) == 0 {
+			continue
+		}
+		if len(fields) != 2 {
+			return nil, fmt.Errorf("%s:%d: se espera \"<seq> <pasos>\"", file, n+1)
+		}
+		if _, dup := out[fields[0]]; dup {
+			return nil, fmt.Errorf("%s:%d: %q repetida", file, n+1, fields[0])
+		}
+		steps, err := parseSteps(fields[1])
+		if err != nil {
+			return nil, fmt.Errorf("%s:%d: %w", file, n+1, err)
+		}
+		out[fields[0]] = steps
+	}
+	return out, nil
+}
+
+func parseSteps(s string) (map[int]bool, error) {
+	out := map[int]bool{}
+	for _, part := range strings.Split(s, ",") {
+		lo, hi, isRange := strings.Cut(part, "-")
+		a, err := strconv.Atoi(lo)
+		b := a
+		if err == nil && isRange {
+			b, err = strconv.Atoi(hi)
+		}
+		if err != nil || a < 0 || b < a {
+			return nil, fmt.Errorf("pasos inválidos %q", part)
+		}
+		for i := a; i <= b; i++ {
+			out[i] = true
 		}
 	}
 	return out, nil
+}
+
+// FormatSteps es la inversa de parseSteps, con rangos compactos y ordenados.
+func FormatSteps(steps map[int]bool) string {
+	idx := make([]int, 0, len(steps))
+	for i := range steps {
+		idx = append(idx, i)
+	}
+	sort.Ints(idx)
+	var parts []string
+	for i := 0; i < len(idx); {
+		j := i
+		for j+1 < len(idx) && idx[j+1] == idx[j]+1 {
+			j++
+		}
+		if i == j {
+			parts = append(parts, strconv.Itoa(idx[i]))
+		} else {
+			parts = append(parts, fmt.Sprintf("%d-%d", idx[i], idx[j]))
+		}
+		i = j + 1
+	}
+	return strings.Join(parts, ",")
+}
+
+const pendingHeader = `# Pasos que el reemplazo todavía no reproduce, por secuencia de la suite.
+# Formato: <seq> <pasos> (posición en la secuencia; 0 es el reset).
+# TestCorpus falla si difiere un paso fuera de la lista (regresión) o si uno de
+# la lista ya coincide. Regenerar con -update-pending y revisar el diff.
+`
+
+// WritePending escribe las secuencias en el orden de la suite.
+func WritePending(file string, seqs []Sequence, p Pending) error {
+	var b strings.Builder
+	b.WriteString(pendingHeader)
+	for _, q := range seqs {
+		if len(p[q.Name]) > 0 {
+			fmt.Fprintf(&b, "%s %s\n", q.Name, FormatSteps(p[q.Name]))
+		}
+	}
+	return os.WriteFile(file, []byte(b.String()), 0o644)
 }

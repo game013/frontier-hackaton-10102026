@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -49,16 +50,16 @@ func TestLoadSuiteGroupsBySeqAndDropsInfrastructure(t *testing.T) {
 func TestReplayMatchesAndReportsByteDiffs(t *testing.T) {
 	seqs := loadFixture(t)
 	srv, client := serve(t, "v1")
-	if m, err := Replay(client, srv.URL, testToken, seqs["ok"]); err != nil || m != nil {
-		t.Fatalf("ok debería coincidir: %v %v", m, err)
+	if diffs, err := Replay(client, srv.URL, testToken, seqs["ok"]); err != nil || len(diffs) != 0 {
+		t.Fatalf("ok debería coincidir: %v %v", diffs, err)
 	}
 	srv, client = serve(t, "v1")
-	m, err := Replay(client, srv.URL, testToken, seqs["reordenado"])
-	if err != nil || m == nil {
-		t.Fatalf("reordenado debería diferir en bytes: %v %v", m, err)
+	diffs, err := Replay(client, srv.URL, testToken, seqs["reordenado"])
+	if err != nil || len(diffs) != 1 {
+		t.Fatalf("reordenado debería diferir en un paso: %v %v", diffs, err)
 	}
-	if m.Index != 1 || !strings.Contains(m.Error(), "JSON equivalente: sí") {
-		t.Fatalf("mensaje inesperado:\n%s", m)
+	if diffs[0].Index != 1 || !strings.Contains(diffs[0].Error(), "JSON equivalente: sí") {
+		t.Fatalf("mensaje inesperado:\n%s", diffs[0])
 	}
 }
 
@@ -113,16 +114,42 @@ func TestLoadSuiteRejectsUnreproducibleSequences(t *testing.T) {
 }
 
 func TestLoadPending(t *testing.T) {
-	file := filepath.Join(t.TempDir(), "pending.txt")
-	if err := os.WriteFile(file, []byte("# comentario\n a  # nota\n\nb\n"), 0o600); err != nil {
-		t.Fatal(err)
+	dir := t.TempDir()
+	write := func(body string) string {
+		file := filepath.Join(dir, "pending.txt")
+		if err := os.WriteFile(file, []byte(body), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		return file
 	}
-	got, err := LoadPending(file)
-	if err != nil || len(got) != 2 || !got["a"] || !got["b"] {
+	got, err := LoadPending(write("# comentario\n a 1,3-5  # nota\n\nb 0\n"))
+	if err != nil || len(got) != 2 || FormatSteps(got["a"]) != "1,3-5" || FormatSteps(got["b"]) != "0" {
 		t.Fatalf("%v %v", got, err)
 	}
-	if got, err := LoadPending(file + ".no"); err != nil || len(got) != 0 {
+	for _, bad := range []string{"a\n", "a 1 2\n", "a 5-3\n", "a x\n", "a -1\n", "a 1\na 2\n"} {
+		if _, err := LoadPending(write(bad)); err == nil {
+			t.Errorf("%q debería ser inválido", bad)
+		}
+	}
+	if got, err := LoadPending(filepath.Join(dir, "no-existe")); err != nil || len(got) != 0 {
 		t.Fatalf("ausente: %v %v", got, err)
+	}
+}
+
+func TestWritePendingRoundTrip(t *testing.T) {
+	file := filepath.Join(t.TempDir(), "pending.txt")
+	seqs := []Sequence{{Name: "b"}, {Name: "a"}, {Name: "c"}}
+	in := Pending{"a": {1: true, 2: true, 3: true, 7: true}, "b": {0: true}}
+	if err := WritePending(file, seqs, in); err != nil {
+		t.Fatal(err)
+	}
+	raw, _ := os.ReadFile(file)
+	if !strings.HasSuffix(string(raw), "b 0\na 1-3,7\n") {
+		t.Fatalf("orden o rangos inesperados:\n%s", raw)
+	}
+	out, err := LoadPending(file)
+	if err != nil || !reflect.DeepEqual(in, out) {
+		t.Fatalf("%v %v", out, err)
 	}
 }
 
