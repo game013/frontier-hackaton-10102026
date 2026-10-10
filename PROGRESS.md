@@ -6,8 +6,8 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 
 ## Estado ahora
 
-- **Fase:** A0, A1 y B1 completados; fórmula del control confirmada. A1 está en rama separada, pendiente de autorización para fast-forward.
-- **Versión observada:** `v1`. Último ID del log en la rama A1: 225 (174 respuestas nuevas; intento 51 sin respuesta).
+- **Fase:** A0, A1 y B1 completados; fórmula del control confirmada. A1 integrado en master mediante fast-forward autorizado (310a1be).
+- **Versión observada:** `v1`. Último ID del log: 225 (174 respuestas nuevas; intento 51 sin respuesta).
 - **Próximo paso:** A2 (línea base completa) y B3 (integridad con fórmula A1); B2 también está desbloqueado por B1.
 - **Bloqueos:** ninguno.
 
@@ -121,3 +121,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [codex] 2026-10-10 14:45: cierre de auditoría A1: 44 pruebas Python y go test ./... en verde; Luna confirma fórmula en 167 mensajes y trazabilidad/bytes en 174 fixtures. Actualización mínima del resumen e hitos propios de A0/A1 para retirar la cabecera desactualizada, sin alterar filas de otras tareas. Fast-forward posible desde master; mezcla pendiente de autorización.
 
 - [codex] 2026-10-10 14:50: revisión de cobertura A1: 0–99 es el rango de candidatos con parada al primer acierto, según estrategia inicial §2.3; no exige barrido exhaustivo. ALTA A se barró 0–62 (IDs62–124); vecino63 rechazado después (ID147). Informe y tablero aclarados; sin nuevas llamadas ni cambios en bb.py; mezcla sigue pendiente de autorización.
+
+- [codex] 2026-10-10 14:51: usuario autoriza mezcla; feat/a1-control integrado en master con git merge --ff-only hasta 310a1be, sin commit de merge. Checkout verificado limpio tras el fast-forward; sin nuevas llamadas al original.
