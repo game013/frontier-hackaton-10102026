@@ -120,8 +120,8 @@ Técnicas para ahorrar:
 5. **Fuzzing diferencial al final:** generar secuencias aleatorias de 2–12 pasos con la mezcla
    del set de evaluación (40/45/15), ejecutarlas en local y luego en el original, y priorizar
    las regiones donde fallan.
-6. **Repartir el trabajo entre los tokens del equipo** (estado independiente): uno para control
-   y sobre, otro para comandos y semántica, otro para regresión y 15:30.
+6. **Un solo token por ahora.** Las fases son secuenciales y comparten los 8.000 requests. Si
+   luego hay más tokens, se reparten así: control y sobre; comandos y semántica; regresión y 15:30.
 7. **Limitador en el cliente** a ~8 req/s y contador persistente por token y día. Las
    respuestas con `X-Frontier-Infra: rate-limit` se descartan, no se registran como evidencia y
    se reintentan con backoff.
@@ -138,29 +138,48 @@ Técnicas para ahorrar:
 | 5. Descubrimiento de comandos | ~300 | lista cerrada de comandos |
 | 6. Semántica y estado | ~1.500 | secciones 3 y 4 |
 | 7. Errores y su orden | ~600 | sección 5 |
-| 8. Corpus de regresión (antes de 15:30) | ~300 | baseline para comparar |
+| 8. Corpus de regresión (antes de 15:30 Bogotá) | ~300 | baseline para comparar |
 | 9. Re-ejecución tras 15:30 y diff | ~300 + exploración del delta ~800 | sección 6 |
 | 10. Fuzzing diferencial | ~1.500 | cerrar huecos |
 | Reserva | ~2.000 | imprevistos y cambio de la tarde |
 
+**Horario** (Bogotá UTC−5, CDMX UTC−6):
+
+| Hito | Bogotá | CDMX | UTC |
+| --- | --- | --- | --- |
+| Corpus de regresión listo y ejecutado | 15:00 | 14:00 | 20:00 |
+| Cambio del servicio | 15:30 | 14:30 | 20:30 |
+| Entrega; los tokens dejan de funcionar | 20:00 | 19:00 | 01:00 (+1 día) |
+
 ## 8. Qué necesitamos construir primero
 
-1. **Cliente instrumentado** (única vía al original). Debe exigir `hipotesis`, añadir la línea a
-   `experimentos.jsonl` (`id`, `seq`, `x_req`, `request`, `status`, `response`, `conclusion`),
-   aplicar el rate limit y el contador, mantener la caché y nunca escribir el token.
+La exploración se hace en Python y el reemplazo en Go.
+
+1. **Cliente instrumentado** en Python (única vía al original). Debe exigir `hipotesis` y
+   registrar en `experimentos.jsonl` todos los requests, incluidos `/__reset` y las sondas
+   de rutas y auth (`id`, `seq`, `x_req`, `request`, `status`, `response`, `conclusion`).
+   También aplica el rate limit, lleva el contador y la caché, y nunca escribe el token.
 2. **Generador de control** local que se pueda probar con el corpus.
 3. **Runner de secuencias** (reset + N pasos) que sirva tanto para el original como para el
    reemplazo, y que compare con las reglas del evaluador (JSON sin orden de claves, texto exacto).
 4. **Corpus de regresión** versionado que crece con cada hallazgo confirmado.
 
-## 9. Preguntas abiertas para el equipo
+## 9. Decisiones y pendientes
 
-1. ¿Cuántos tokens o personas hay? Con eso se reparte el presupuesto (la tabla asume uno).
-2. ¿`POST /__reset` y las sondas de rutas o auth se registran también en `experimentos.jsonl`?
-   El README dice "cada request al original". Propuesta: sí, con su hipótesis.
-3. ¿En qué zona horaria son las 15:30 y las 20:00? Hace falta para programar el baseline y la
-   re-ejecución.
-4. ¿El cliente y el fuzzer van en Go, como el reemplazo, o se acepta un script (por ejemplo
-   Python) para explorar?
-5. ¿Damos por bueno gastar hasta ~400 requests en descifrar el control antes de pasar a
-   comandos, o preferimos descubrir comandos primero si E301 resulta ir antes del control?
+1. Tokens: uno solo por ahora. Decidido.
+2. Se registran todos los requests, incluidos `/__reset` y las sondas de rutas y auth. Decidido.
+3. Las horas del reto son de Bogotá (UTC−5); el usuario está en CDMX (UTC−6). Decidido.
+4. Exploración en Python. Decidido.
+5. Pendiente: tope de gasto para descifrar el control y qué hacer si se alcanza (ver abajo).
+
+**Pendiente 5.** El reemplazo tiene que calcular el control para responder `E202` igual que el
+original, así que la fórmula hace falta sí o sí. La duda es cuánto gastar en ella de entrada:
+
+- **A. Control primero, con tope de 400.** Si se descifra, todo lo demás cuesta 1 request por
+  prueba. Si se llega a 400 sin fórmula, se para, se pasa a comandos y se retoma más tarde con
+  los datos acumulados.
+- **B. Comandos primero, si la fase 2 muestra que "comando desconocido" se valida antes que el
+  control.** Se buscan comandos con 1 request cada uno sin conocer la fórmula, y el control se
+  ataca después con más ejemplos válidos a mano.
+
+Propuesta: medir primero la precedencia (~10 requests) y aplicar B si es posible, si no A.
