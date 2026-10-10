@@ -1,8 +1,8 @@
 # Caja negra: diseño del reemplazo HTTP
 
 **Estado:** decisiones de diseño ampliadas con evidencia `v1`, 10 de octubre de 2026.
-Capas de compatibilidad y persistencia implementadas hasta B5; detección de deltas v2
-y despliegue pendientes. Los tiempos los controla manualmente el operador.
+Capas de compatibilidad y persistencia implementadas hasta B5; aplicación de los deltas v2
+y despliegue pendientes. A6 ya aporta la evidencia del incidente. Los tiempos los controla manualmente el operador.
 **Objetivo:** reproducir el servicio vigente a la entrega, incluidos errores y memoria entre
 requests. El reemplazo es autónomo, responde en menos de 5 segundos por paso y conserva
 su estado tras reinicios. La [especificación incremental](specification.md) queda separada

@@ -54,7 +54,8 @@ antes de cerrar la base. Un fallo de almacenamiento durante un comando o reset d
   y bytes exactos, sin agregar pendientes ni modificar evidencia.
 
 Estos tests validan el reemplazo; no son experimentos ni evidencia del ciclo de
-vida del original. A6/B7 siguen pendientes para los tres deltas y conformidad v2.
+vida del original. A6 ya aporta evidencia de los deltas; B7 sigue pendiente
+para implementarlos y validar conformidad v2.
 
 ## Límites operativos
 
