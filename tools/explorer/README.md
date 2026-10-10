@@ -220,3 +220,19 @@ for f in tests/corpus/a4/*.jsonl; do
   python3 tools/explorer/bb.py run "a4-<epoch>-$(basename $f .jsonl)" "$f" --no-cache
 done
 ```
+
+## A7: replay final de la versión vigente
+
+`a7_replay.py` repite sin caché toda la evidencia v2 de A6 (la captura
+`tests/corpus/a6/a6-v2/corpus.jsonl` más las sondas `a6-v2-sonda-*` del log: 65
+secuencias, 842 requests) con la mecánica de `a6_replay.replay`, y compara status,
+contrato y bytes. Se esperan cero deltas. `a7_probes.py` genera offline las sondas
+del bloqueo E510 en `tests/corpus/a7/probes/`.
+
+```sh
+python3 tools/explorer/a7_replay.py --epoch v2 --prefix X --dry-run   # cero requests
+python3 tools/explorer/a7_probes.py                                    # regenera; cero requests
+BB_EPOCH=v2 python3 tools/explorer/a7_replay.py --epoch v2 --prefix PREFIJO_NUEVO --max-requests 842
+```
+
+Resultados en `docs/research/replay-a7.md`.
