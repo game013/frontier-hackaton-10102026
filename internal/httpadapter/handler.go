@@ -18,6 +18,7 @@ var (
 	respPong = []byte(`{"pong":true}`)
 	respE001 = []byte(`{"error":"E001","mensaje":"no autorizado"}`)
 	respE100 = []byte(`{"error":"E100","mensaje":"json inválido"}`)
+	respE101 = []byte(`{"error":"E101","mensaje":"cuerpo demasiado grande"}`)
 	respE102 = []byte(`{"error":"E102","mensaje":"falta m"}`)
 	respE404 = []byte(`{"error":"E404","mensaje":"ruta desconocida"}`)
 	// No es del original: marca los comandos con estado hasta que B4 conecte
@@ -88,8 +89,15 @@ func (h *Handler) precedence(r *http.Request) (int, []byte) {
 	return http.StatusOK, respOK // GET /health
 }
 
+// maxBody es el mayor cuerpo de /msg que el original acepta (ENT-10).
+const maxBody = 8192
+
 func (h *Handler) msg(r *http.Request) (int, []byte) {
-	raw, err := io.ReadAll(r.Body)
+	// Se lee un byte de más para distinguir 8192 (pasa) de 8193 (E101).
+	raw, err := io.ReadAll(io.LimitReader(r.Body, maxBody+1))
+	if err == nil && len(raw) > maxBody {
+		return http.StatusRequestEntityTooLarge, respE101
+	}
 	if err != nil || !json.Valid(raw) {
 		return http.StatusBadRequest, respE100
 	}

@@ -16,6 +16,7 @@ const (
 	bodyPong     = `{"pong":true}`
 	bodyE001     = `{"error":"E001","mensaje":"no autorizado"}`
 	bodyE100     = `{"error":"E100","mensaje":"json inválido"}`
+	bodyE101     = `{"error":"E101","mensaje":"cuerpo demasiado grande"}`
 	bodyE102     = `{"error":"E102","mensaje":"falta m"}`
 	bodyE103     = `{"error":"E103","mensaje":"falta control"}`
 	bodyE202     = `{"error":"E202","mensaje":"control inválido"}`
@@ -107,6 +108,21 @@ func TestPrecedence(t *testing.T) {
 		{"log1301_ruta_inexistente_cuerpo_grande", "POST", "/nada", authValid, "", big, 404, bodyE404},
 		{"ruta_inexistente_json_malformado", "POST", "/no-existe", authValid, "", str(`{`), 404, bodyE404},
 		{"head_health_sin_auth", "HEAD", "/health", authNone, "", nil, 404, bodyE404},
+	})
+}
+
+// ENT-10: el cuerpo de /msg admite 8192 bytes; 8193 → 413 E101, antes que el
+// JSON (A4 log 1298–1299, 958). El tope en otras rutas no se midió: /__reset
+// ignora el cuerpo (supuesto: sin tope).
+func TestBodyLimit(t *testing.T) {
+	pad := func(n int) *string {
+		head, tail := `{"m":"PING;64","x":"`, `"}`
+		return str(head + strings.Repeat("a", n-len(head)-len(tail)) + tail)
+	}
+	run(t, []exchange{
+		{"log1298_8192_pasa", "POST", "/msg", authValid, "", pad(8192), 200, bodyPong},
+		{"log1299_8193_e101", "POST", "/msg", authValid, "", pad(8193), 413, bodyE101},
+		{"e101_antes_que_json", "POST", "/msg", authValid, "", str("{" + strings.Repeat(" ", 9000)), 413, bodyE101},
 	})
 }
 
