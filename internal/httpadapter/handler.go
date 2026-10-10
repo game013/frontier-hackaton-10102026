@@ -21,8 +21,8 @@ var (
 	respE101 = []byte(`{"error":"E101","mensaje":"cuerpo demasiado grande"}`)
 	respE102 = []byte(`{"error":"E102","mensaje":"falta m"}`)
 	respE404 = []byte(`{"error":"E404","mensaje":"ruta desconocida"}`)
-	// No es del original: marca los comandos con estado hasta que B4 conecte
-	// el motor. 501 para que nunca se confunda con una respuesta observada.
+	// No es del original: solo lo ve un Handler sin WithExec (pruebas del
+	// sobre); app conecta el motor. 501 para no confundirlo con lo observado.
 	respNoEngine = []byte(`{"error":"B4","mensaje":"comando sin motor"}`)
 )
 
