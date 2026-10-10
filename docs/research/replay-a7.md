@@ -90,5 +90,7 @@ Las reglas del [informe A6](deltas-a6.md#para-el-reemplazo-b7) siguen vigentes s
 A7 añade el orden E303 → E304 → E401 → E510 → E506 → E507, los errores que son neutros para el
 contador, que el DEPOSITO fallido no libera y que `intentos` vuelve a empezar en 1. La suite
 `tests/differential/v2.json` incluye la repetición de las sondas (`a7-v2r-sonda-*`), y sus
-pasos pendientes están en `pending-v2.txt`. El replay final no se añade porque repite byte a
-byte las fuentes que ya están en la suite.
+pasos pendientes se registraron en `pending-v2.txt` mientras B7 estaba pendiente.
+Tras integrar B7, la suite conjunta pasa 72 secuencias/917 requests sin pendientes.
+El replay final no se añade porque repite byte a byte las fuentes que ya están
+en la suite.

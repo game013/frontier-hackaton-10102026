@@ -31,15 +31,18 @@ cuentas, operaciones, bloqueo y contadores en la misma transacción.
 
 ## Supuestos aprobados por el operador
 
-Estas fronteras no se midieron en el original. Las pruebas locales verifican la
-implementación elegida; no elevan su confianza a confirmado:
+B7 arrancó con estas fronteras como supuestos aprobados. Al integrar A7 se
+conserva su evidencia nueva (IDs 2979–3128), que confirma las precedencias de
+negocio, la neutralidad de E303/E304/E401 y el rebloqueo. No se eleva confianza por
+pruebas locales; la confirmación procede de [las sondas A7](research/replay-a7.md):
 
 - Orden de negocio en v2: E303 → E304 → E401 → E510 → E506 → E507.
-  A6 sí midió que E510 gana sobre E506; no midió las demás combinaciones.
+  A6 midió E510 ante E506/E507; A7 confirmó E303/E304/E401 antes de E510.
 - Solo E506/E507 incrementan la racha. Otros errores de negocio o protocolo no
-  incrementan ni reinician la racha y no consumen intentos bloqueados.
+  incrementan ni reinician la racha y no consumen intentos bloqueados. A7 midió
+  E303/E304/E401; la neutralidad de errores de protocolo no sondeados sigue supuesta.
 - Se comprueba racha ≥ 3. Un depósito exitoso pone ambos contadores en cero;
-  tras otro bloqueo, `intentos` vuelve a empezar en 1.
+  tras otro bloqueo, `intentos` vuelve a empezar en 1 (A7 3035–3044).
 - Saldos negativos entre −99 y −1 se muestran como `"-0.XX"`.
 - v1 no aplica bloqueo. Que este sea un delta histórico sigue siendo inferido,
   pendiente de confirmar con conformidad externa (CAM-V2-3).
@@ -67,16 +70,16 @@ historial completo por request con estado, sin nuevas promesas de rendimiento.
 ## Validación local
 
 - Diferencial v1: **55 secuencias / 694 requests**, incluidos resets.
-- Diferencial v2: **65 secuencias / 842 requests**, incluidos resets: replay A6
-  de 58 secuencias/725 requests y 7 sondas repetidas/117 requests. El canario
-  independiente no se duplica en esta suite.
+- Diferencial v2: **72 secuencias / 917 requests**, incluidos resets: replay A6
+  de 58 secuencias/725 requests, 7 sondas A6 repetidas/117 requests y 7 sondas
+  A7 repetidas/75 requests. No se duplican el canario ni el replay final A7.
 - Sin `BEHAVIOR_VERSION`, el arnés ejecuta ambas versiones; una variable explícita
   filtra una sola. `-update-pending` exige versión explícita y corrida completa.
   Sus guards se prueban en un subproceso sin permitir cambios en las listas.
 - Ambas listas `pending-v1.txt` y `pending-v2.txt` sin pasos pendientes. No se
   modifican corpus, evidencia, status esperados ni comparación de bytes.
 - `internal/engine/v2_test.go`: formato y extremos int64, fronteras de límite,
-  ciclo de bloqueo/rebloqueo/reset, precedencia supuesta, cuentas independientes,
+  ciclo de bloqueo/rebloqueo/reset, precedencia medida por A7, cuentas independientes,
   rollback ante overflow y 30 intentos bloqueados concurrentes; memoria y SQLite.
 - `internal/storage/sqlite/migration_test.go`: migración B5, conservación de
   entidades/IDs, reapertura idempotente, fallo con rollback del esquema,
@@ -96,8 +99,9 @@ BEHAVIOR_VERSION=v1 go test -count=1 ./tests/differential
 BEHAVIOR_VERSION=v2 go test -count=1 ./tests/differential
 ```
 
-B7 no llama al original ni modifica `experimentos.jsonl`. El despliegue B6,
-el replay final A7 y la conformidad pública siguen siendo pasos separados.
+B7 no llama al original ni modifica `experimentos.jsonl`. A7 ya está completado
+e integrado, con 842/842 respuestas revalidadas contra el original. El despliegue
+B6 y la conformidad pública siguen siendo pasos separados.
 
 ## Resolución de la revisión adversaria
 
@@ -115,5 +119,6 @@ Correcciones sobre `feat/b7-v2`, sin cambiar respuestas ni evidencia:
 | Spec a: ERR-ORD desactualizado | Acatado | La propia fila separa orden v1 y v2, evidencia de E510 ante E506 y las demás precedencias supuestas. |
 | Spec b: retorno v2→v1→v2 no aprobado como supuesto | Acatado | Se retira de CAM-V2-SUP y se registra como decisión de diseño del reemplazo en MEM-08 y la sección de rollback; no se atribuye al operador ni al original. |
 
-Se conservan todos los commits anteriores y las pruebas de conformidad locales;
-estas correcciones no autorizan integración ni limpieza de rama/worktree.
+Estas correcciones se cerraron antes de la autorización de integración. El
+rebase posterior conserva los cambios de A7 y actualiza la confianza únicamente
+con su evidencia; no cambia reglas del motor para resolver conflictos.

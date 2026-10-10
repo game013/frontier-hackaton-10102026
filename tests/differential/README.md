@@ -67,7 +67,7 @@ explícita y una corrida completa sin errores de esa suite antes de escribir.
 
 ## Suite `v2`
 
-Objetivo de conformidad (incidente FR-0153). Todo corrió contra `v2` en A6:
+Objetivo de conformidad (incidente FR-0153). Evidencia grabada contra `v2` en A6/A7:
 
 - Replay sin caché de toda la base v1 (`tests/corpus/a6/a6-v2/corpus.jsonl`,
   IDs 2020–2744): A2, A3 (sin `20-aislamiento`), A4 y la caracterización A5 de
@@ -83,8 +83,9 @@ Objetivo de conformidad (incidente FR-0153). Todo corrió contra `v2` en A6:
 B7 implementa `v2` y la hace predeterminada. `pending-v2.txt` se regeneró tras
 comparar toda la suite: no quedan pasos pendientes, como en `pending-v1.txt`.
 Solo se retiraron pendientes; no se modificaron fuentes de evidencia ni criterios
-de comparación. La suite v2 tiene 65 secuencias/842 requests (resets incluidos):
-58/725 del replay y 7/117 de las sondas repetidas; no añade el canario independiente.
+de comparación. La suite v2 tiene 72 secuencias/917 requests (resets incluidos):
+58/725 del replay A6, 7/117 de sus sondas repetidas y 7/75 de las sondas A7.
+No añade el canario independiente ni duplica el replay final A7.
 La suite v1 conserva 55 secuencias/694 requests. Sin variable de entorno se
 validan ambas versiones al ejecutar el arnés.
 

@@ -153,5 +153,6 @@ Con `BEHAVIOR_VERSION=v2`:
 
 La suite `tests/differential/v2.json` contiene todo lo anterior. `pending-v2.txt` lista los
 pasos que faltan. Tras implementar B7 no quedan pasos pendientes: 65 secuencias y
-842 requests coinciden en status y bytes; v1 conserva sus 55 secuencias sin
-pendientes. Las fronteras no medidas siguen siendo supuestos.
+842 requests de A6 coinciden en status y bytes; al integrar las 7 sondas A7,
+la suite vigente pasa 72 secuencias/917 requests. v1 conserva sus 55 secuencias
+sin pendientes. Solo las fronteras aún no medidas siguen siendo supuestos.

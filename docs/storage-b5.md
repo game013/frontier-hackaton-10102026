@@ -64,8 +64,9 @@ Estos tests validan el reemplazo; no son experimentos ni evidencia del ciclo de
 vida del original. B7 implementa los deltas medidos por A6 y añade pruebas de
 migración, contadores persistentes, bloqueo, desbloqueo, concurrencia y reinicio
 real de procesos. Ambas suites diferenciales pasan sin pendientes: v1 con
-55 secuencias/694 requests y v2 con 65 secuencias/842 requests. La conformidad
-pública y el replay final contra el original siguen siendo pasos separados.
+55 secuencias/694 requests y v2 con 72 secuencias/917 requests (incluye las
+sondas A7). El replay final A7 ya está integrado; la conformidad pública sigue
+siendo un paso separado.
 
 ## Límites operativos
 
