@@ -24,6 +24,7 @@ import os
 import sys
 import time
 import urllib.error
+import uuid
 import urllib.request
 from contextlib import contextmanager
 from pathlib import Path
@@ -117,6 +118,17 @@ class Client:
             finally:
                 fcntl.flock(fh, fcntl.LOCK_UN)
 
+    @contextmanager
+    def _quota_locked(self):
+        """Bloquea el recurso compartido de cuota, no un log concreto."""
+        self.side_dir.mkdir(parents=True, exist_ok=True)
+        with open(self.side_dir / "quota.lock", "w") as fh:
+            fcntl.flock(fh, fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(fh, fcntl.LOCK_UN)
+
     def entries(self) -> list[dict]:
         if not self.log_path.exists():
             return []
@@ -171,13 +183,13 @@ class Client:
 
     def used_today(self) -> int:
         today = bogota_day(now_iso())
-        with self._locked():
+        with self._quota_locked():
             return self._quota_state(self._read_quota(), today)["used"]
 
     def _reserve_request(self) -> None:
         """Reserva atómicamente una unidad de la cuota diaria (el turno se toma al enviar)."""
         today = bogota_day(now_iso())
-        with self._locked():
+        with self._quota_locked():
             quota = self._read_quota()
             state = self._quota_state(quota, today)
             if state["used"] >= self.daily_cap:
@@ -193,7 +205,7 @@ class Client:
         retrasos nunca se acumulan en una ráfaga.
         """
         while True:
-            with self._locked():
+            with self._quota_locked():
                 quota = self._read_quota()
                 state = self._quota_state(quota, bogota_day(now_iso()))
                 now = time.time()
@@ -227,15 +239,15 @@ class Client:
     def pending_steps(self, seq: str) -> list[dict]:
         return [e for e in self._side("pending.jsonl") if e["seq"] == seq]
 
-    def _append_pending(self, seq: str, args: tuple, kw: dict) -> None:
-        self._append_side("pending.jsonl", {"seq": seq, "args": args, "kw": kw})
+    def _append_pending(self, seq: str, args: tuple, kw: dict, pending_id: str) -> None:
+        self._append_side("pending.jsonl", {"seq": seq, "args": args, "kw": kw,
+                                             "pending_id": pending_id})
 
-    def _remove_pending(self, seq: str, args: tuple, kw: dict) -> None:
+    def _remove_pending(self, seq: str, pending_id: str) -> None:
         with self._locked():
             pending = self._side("pending.jsonl")
-            target = {"seq": seq, "args": list(args), "kw": kw}
             for index, item in enumerate(pending):
-                if item == target:
+                if item["seq"] == seq and item.get("pending_id") == pending_id:
                     pending.pop(index)
                     break
             else:
@@ -253,14 +265,23 @@ class Client:
 
     def resume(self, seq: str) -> "Sequence":
         steps = self.seq_steps(seq)
-        pending = [(tuple(e["args"]), e["kw"]) for e in self.pending_steps(seq)]
+        completed_pending = {e.get("pending_id") for e in steps
+                             if e.get("outcome") == "completed" and e.get("pending_id")}
+        pending_records = self.pending_steps(seq)
+        # Un corte tras registrar la respuesta deja el pendiente. La respuesta ya representa
+        # la operación lógica: se consume el pendiente al recuperar para no repetirla.
+        for item in pending_records:
+            if item.get("pending_id") in completed_pending:
+                self._remove_pending(seq, item["pending_id"])
+        pending = [(tuple(e["args"]), e["kw"], e.get("pending_id"))
+                   for e in pending_records if e.get("pending_id") not in completed_pending]
         if not steps and not pending:
             raise ValueError(f"la secuencia {seq!r} no existe")
         if any(e.get("outcome") in ("transport_error", "pending") for e in steps):
             raise ValueError(f"la secuencia {seq!r} tiene un transporte incierto; empieza otra desde reset")
         logical_steps = [self._step_key(e) for e in steps
                          if "status" in e and not e.get("infrastructure")]
-        logical_steps.extend(self.step_key(args[0], args[1], args[2], kw) for args, kw in pending)
+        logical_steps.extend(self.step_key(args[0], args[1], args[2], kw) for args, kw, _ in pending)
         return Sequence(self, seq, steps=logical_steps, pending=pending)
 
     # ---------- caché ----------
@@ -316,7 +337,8 @@ class Client:
 
     def execute(self, seq: str, method: str, path: str, body, hipotesis: str, *,
                 auth: str = "valid", raw_body: str | None = None, content_type: str | None = None,
-                conclusion: str | None = None, retries: int = 3) -> Result:
+                conclusion: str | None = None, retries: int = 3,
+                pending_id: str | None = None) -> Result:
         """Envía de verdad y registra. Usar a través de Sequence, que maneja caché y reset."""
         if not hipotesis or not hipotesis.strip():
             raise ValueError("cada request necesita una hipótesis")
@@ -340,7 +362,7 @@ class Client:
                     "seq": seq, "x_req": None, "hipotesis": hipotesis, "request": body,
                     "conclusion": conclusion, "method": method, "path": path, "auth": auth,
                     "raw_body": raw_body, "content_type": content_type, "epoch": self.epoch, "ts": ts,
-                    "outcome": "pending",
+                    "pending_id": pending_id, "outcome": "pending",
                 }
                 with open(self.log_path, "a") as fh:
                     fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
@@ -389,30 +411,32 @@ class Sequence:
     """
 
     def __init__(self, client: Client, seq: str, steps: list | None = None,
-                 pending: list[tuple[tuple, dict]] | None = None, reset_hipotesis: str | None = None):
+                 pending: list[tuple[tuple, dict, str | None]] | None = None, reset_hipotesis: str | None = None):
         self.client, self.seq = client, seq
         self.steps: list = list(steps or [])
-        self.pending: list[tuple[tuple, dict]] = list(pending or [])
+        self.pending: list[tuple[tuple, dict, str | None]] = list(pending or [])
         if reset_hipotesis is not None:
             self._queue(("POST", "/__reset", None, reset_hipotesis), {}, persist=True)
 
     def _queue(self, args: tuple, kw: dict, *, persist: bool = False) -> None:
         method, path, body, _ = args
         self.steps.append(self.client.step_key(method, path, body, kw))
-        self.pending.append((args, kw))
+        pending_id = str(uuid.uuid4())
+        self.pending.append((args, kw, pending_id))
         if persist:
-            self.client._append_pending(self.seq, args, kw)
+            self.client._append_pending(self.seq, args, kw, pending_id)
 
     def flush(self) -> None:
-        if self.pending and self.pending[0][0][1] == "/__reset" and self.client.seq_steps(self.seq):
+        if self.pending and self.pending[0][0][1] == "/__reset" and any(
+                not e.get("infrastructure") for e in self.client.seq_steps(self.seq)):
             raise ValueError(f"la secuencia {self.seq!r} ya existe en el log")
         while self.pending:
-            args, kw = self.pending[0]
+            args, kw, pending_id = self.pending[0]
             method, path, body, hip = args
             replay_hip = f"[replay de prefijo] {hip}" if path != "/__reset" else hip
-            self.client.execute(self.seq, method, path, body, replay_hip, **kw)
+            self.client.execute(self.seq, method, path, body, replay_hip, **kw, pending_id=pending_id)
             self.pending.pop(0)
-            self.client._remove_pending(self.seq, args, kw)
+            self.client._remove_pending(self.seq, pending_id)
 
     def call(self, method: str, path: str, body, hipotesis: str, *, confirm: bool = False,
              **kw) -> Result:

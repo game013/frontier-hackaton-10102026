@@ -152,6 +152,26 @@ class ClientTest(unittest.TestCase):
         self.assertEqual([path for path, _, _ in Fake.calls], ["/__reset", "/msg", "/msg"])
         self.assertEqual(fresh.pending_steps("b"), [])
 
+    def test_resume_consumes_pending_already_completed_before_interruption(self):
+        self.c.sequence("a").msg("ALTA;X;1", "alta")
+        self.assertTrue(self.c.sequence("b").msg("ALTA;X;1", "alta").cached)
+        original_remove = self.c._remove_pending
+        alta_pending_id = self.c.pending_steps("b")[-1]["pending_id"]
+
+        def interrupted_remove(_seq, pending_id):
+            if pending_id == alta_pending_id:
+                raise KeyboardInterrupt("corte después de registrar la respuesta")
+            original_remove(_seq, pending_id)
+
+        self.c._remove_pending = interrupted_remove
+        with self.assertRaises(KeyboardInterrupt):
+            self.c.resume("b").flush()
+        self.c._remove_pending = original_remove
+        Fake.calls.clear()
+        self.client().resume("b").msg("CONSULTA;AC-0001;2", "consulta")
+        self.assertEqual([path for path, _, _ in Fake.calls], ["/msg"])
+        self.assertEqual(self.c.pending_steps("b"), [])
+
     def test_resume_rejects_unfinished_attempt(self):
         self.c.sequence("a").flush()
         with self.c._locked():
@@ -195,6 +215,17 @@ class ClientTest(unittest.TestCase):
                 self.assertNotIn("response", entry)
         self.assertEqual(self.c.used_today(), 4)  # también cuentan para el presupuesto
 
+    def test_resume_retries_reset_after_infrastructure_rate_limits(self):
+        sequence = self.c.sequence("s1")
+        Fake.rate_limit_next = 4  # retries=3: los cuatro intentos se descartan
+        with self.assertRaises(bb.RateLimited):
+            sequence.flush()
+        self.assertTrue(all(e.get("infrastructure") == "rate-limit" for e in self.c.entries()))
+        Fake.rate_limit_next = 0
+        self.client().resume("s1").flush()
+        self.assertEqual([e["outcome"] for e in self.c.entries()][-1], "completed")
+        self.assertEqual(self.c.pending_steps("s1"), [])
+
     def test_budget_cap_stops(self):
         c = self.client(daily_cap=2)
         s = c.sequence("s1")
@@ -209,6 +240,32 @@ class ClientTest(unittest.TestCase):
         second.resume("s1").msg("PING;1", "h", confirm=True)
         with self.assertRaises(bb.BudgetExceeded):
             first.resume("s1").msg("PING;2", "h", confirm=True)
+
+    def test_budget_is_atomic_with_distinct_log_paths(self):
+        first = self.client(log_path=Path(self.tmp.name) / "a.jsonl", daily_cap=1)
+        second = self.client(log_path=Path(self.tmp.name) / "b.jsonl", daily_cap=1)
+        start = threading.Barrier(3)
+        outcomes = []
+
+        def reserve(client):
+            start.wait()
+            try:
+                client._reserve_request()
+            except bb.BudgetExceeded:
+                outcomes.append("budget")
+            except Exception as err:  # la carrera previa podía perder quota.tmp aquí
+                outcomes.append(type(err).__name__)
+            else:
+                outcomes.append("reserved")
+
+        workers = [threading.Thread(target=reserve, args=(client,)) for client in (first, second)]
+        for worker in workers:
+            worker.start()
+        start.wait()
+        for worker in workers:
+            worker.join()
+        self.assertCountEqual(outcomes, ["reserved", "budget"])
+        self.assertEqual(first.used_today(), 1)
 
     def test_delayed_turns_do_not_burst(self):
         sent: list[float] = []
