@@ -29,7 +29,6 @@ CREATE TABLE operation_deltas (
 );
 CREATE TABLE counters (id INTEGER PRIMARY KEY CHECK (id = 1), next_account INTEGER NOT NULL, next_operation INTEGER NOT NULL);
 INSERT INTO counters VALUES (1, 1, 1);
-PRAGMA user_version = 1;
 `
 
 type Store struct {
@@ -93,6 +92,9 @@ func (s *Store) initialize() error {
 	switch version {
 	case 0:
 		if _, err := tx.Exec(schema); err != nil {
+			return err
+		}
+		if _, err := tx.Exec(fmt.Sprintf("PRAGMA user_version = %d", schemaVersion)); err != nil {
 			return err
 		}
 	case schemaVersion:
