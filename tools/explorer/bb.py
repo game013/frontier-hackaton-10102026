@@ -254,10 +254,26 @@ class Client:
                     break
             else:
                 return
-            path = self.side_dir / "pending.jsonl"
-            tmp = path.with_suffix(".tmp")
-            tmp.write_text("".join(json.dumps(e, ensure_ascii=False) + "\n" for e in pending))
-            tmp.replace(path)
+            self._write_pending(pending)
+
+    def _write_pending(self, pending: list[dict]) -> None:
+        path = self.side_dir / "pending.jsonl"
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text("".join(json.dumps(e, ensure_ascii=False) + "\n" for e in pending))
+        tmp.replace(path)
+
+    def _ensure_pending_ids(self, seq: str) -> None:
+        """Da identidad persistente a pendientes antiguos antes de reenviarlos.
+
+        Sin ella, la respuesta registrada no podría reconciliarse con su pendiente tras un corte.
+        """
+        with self._locked():
+            pending = self._side("pending.jsonl")
+            legacy = [e for e in pending if e["seq"] == seq and not e.get("pending_id")]
+            for item in legacy:
+                item["pending_id"] = str(uuid.uuid4())
+            if legacy:
+                self._write_pending(pending)
 
     def sequence(self, seq: str, hipotesis: str = "inicio de secuencia: estado limpio") -> "Sequence":
         """Abre una secuencia. El reset se envía de forma perezosa (ver Sequence)."""
@@ -266,6 +282,7 @@ class Client:
         return Sequence(self, seq, reset_hipotesis=hipotesis)
 
     def resume(self, seq: str) -> "Sequence":
+        self._ensure_pending_ids(seq)
         steps = self.seq_steps(seq)
         completed_pending = {e.get("pending_id") for e in steps
                              if e.get("outcome") == "completed" and e.get("pending_id")}

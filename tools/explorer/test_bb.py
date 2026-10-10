@@ -172,6 +172,31 @@ class ClientTest(unittest.TestCase):
         self.assertEqual([path for path, _, _ in Fake.calls], ["/msg"])
         self.assertEqual(self.c.pending_steps("b"), [])
 
+    def test_resume_assigns_identity_to_legacy_pending_before_sending(self):
+        self.c.sequence("a").msg("ALTA;X;1", "alta")
+        self.assertTrue(self.c.sequence("b").msg("ALTA;X;1", "alta").cached)
+        path = self.c.side_dir / "pending.jsonl"
+        legacy = [{k: v for k, v in e.items() if k != "pending_id"} for e in self.c._side("pending.jsonl")]
+        path.write_text("".join(json.dumps(e, ensure_ascii=False) + "\n" for e in legacy))
+        original_remove = self.c._remove_pending
+        removed = []
+
+        def interrupted_remove(_seq, pending_id):
+            removed.append(pending_id)
+            if len(removed) == 2:
+                raise KeyboardInterrupt("corte después de registrar ALTA")
+            original_remove(_seq, pending_id)
+
+        self.c._remove_pending = interrupted_remove
+        with self.assertRaises(KeyboardInterrupt):
+            self.c.resume("b").flush()
+        self.c._remove_pending = original_remove
+        self.assertNotIn(None, removed)
+        Fake.calls.clear()
+        self.client().resume("b").msg("CONSULTA;AC-0001;2", "consulta")
+        self.assertEqual([path for path, _, _ in Fake.calls], ["/msg"])
+        self.assertEqual(self.c.pending_steps("b"), [])
+
     def test_resume_rejects_unfinished_attempt(self):
         self.c.sequence("a").flush()
         with self.c._locked():
