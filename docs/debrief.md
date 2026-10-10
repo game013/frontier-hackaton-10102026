@@ -52,6 +52,14 @@ aunque el servicio seguía en v1. Lo detectó el testigo incluido en el replay, 
 la especificación (CAM-04) y en el informe A5. Para A7, la versión se
 comprueba con un canario (el formato de `saldo` en CONSULTA), no con la hora anunciada.
 
+**Replay final (A7).** A las 17:20–17:25 repetimos sin caché toda la evidencia v2 de A6: el
+replay de la base y las sondas, 842 requests. Las 842 respuestas fueron iguales byte a byte
+(IDs 3129–3970 frente a 2020–2861), así que no hubo un cuarto cambio y la v2 vigente es la que
+medimos. Con 150 requests más (2979–3128, repetidas sin caché) cerramos los huecos del
+bloqueo: E303, E304 y E401 se evalúan antes que E510 y no cuentan como fallo. CONSULTA, ALTA
+o un depósito a otra cuenta no rompen la racha. Un depósito con error no libera la cuenta, e
+`intentos` vuelve a 1 en cada bloqueo nuevo. Detalle en el [informe A7](research/replay-a7.md).
+
 **En el reemplazo.** Las reglas v2 se activarán con `BEHAVIOR_VERSION=v2` al arrancar (B7),
 nunca por reloj. La suite `tests/differential/v2.json` contiene el replay v2 y las sondas como pruebas de
 regresión.
