@@ -109,7 +109,7 @@ func TestParseOrder(t *testing.T) {
 		{";", "E104"},             // 1305: comando vacío y control vacío
 		{";54", "E104"},           // INT-09
 		{"ZZZ;Lucia;5X", "E201"},  // E201 antes que E301
-		{"ZZZ;Lucia;53", "E202"},  // E202 antes que E301 (log 23-32)
+		{"ZZZ;Lucia;53", "E202"},  // E202 antes que E301 (orden de log 23-32; m sintético)
 		{"ALTA;Q;R;66", "E202"},   // INT-03: integridad antes que aridad
 		{"PING;5X;1", "E302"},     // PING no valida control pero sí aridad
 		{"ALTA;Lucia;8٢", "E201"}, // dígito no ASCII

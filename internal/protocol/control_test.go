@@ -26,7 +26,7 @@ func TestControl(t *testing.T) {
 		{"ALTA;Q;R", 65, "179"},
 		// Unicode filtrado antes de la caja, sin normalizar (INT-05).
 		{"ALTA;Ána", 61, "139"},
-		{"ALTA;Äna", 50, "149–152"},
+		{"ALTA;Äna", 50, "142–144"},
 		{"ALTA;ßa", 62, "149"},
 		{"ALTA;ıa", 62, "151"},
 		// Ceros como texto (INT-06, INT-07).

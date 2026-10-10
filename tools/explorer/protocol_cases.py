@@ -62,7 +62,7 @@ def main(argv=None) -> int:
         return 1
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps(cases, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    print(f"{len(cases)} casos en {a.out.relative_to(ROOT)}")
+    print(f"{len(cases)} casos en {a.out}")
     return 0
 
 
