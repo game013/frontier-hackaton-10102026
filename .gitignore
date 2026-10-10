@@ -6,3 +6,5 @@ experimentos.tmp
 __pycache__/
 # Archivos temporales: excluir la carpeta completa, con cualquier capitalización.
 [tT][mM][pP]/
+# Capturas locales del reemplazo (CAPTURE_PATH por defecto).
+/var/
