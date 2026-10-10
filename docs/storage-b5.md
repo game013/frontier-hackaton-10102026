@@ -13,11 +13,18 @@ SQLite usa un mutex, una conexión, transacciones `IMMEDIATE`, WAL,
 `modernc.org/sqlite` está fijado a v1.39.1, compatible con Go 1.24 del proyecto.
 Opciones de conexión: [documentación del driver](https://pkg.go.dev/modernc.org/sqlite@v1.39.1#Driver.Open).
 
-El esquema versión 1 contiene `accounts`, `operations`, `operation_deltas` con
+El esquema original de B5 (versión 1) contiene `accounts`, `operations`, `operation_deltas` con
 posición explícita, y una fila `counters`. Saldos y contadores son enteros exactos
 `int64`; no hay restricciones de saldo positivo. Nombres e IDs se conservan sin
 normalización. El adaptador guarda la representación de State; no inventa campos
 de operación que el motor actual no necesita.
+
+B7 migra transaccionalmente al esquema 2: añade `transfer_failures` y
+`blocked_attempts` por cuenta, inicializados en cero. La validación y actualización
+de `user_version` participan en la misma transacción; un fallo revierte incluso
+los ALTER. Bases nuevas y ambas versiones de comportamiento usan el esquema 2.
+El rollback admitido es configurar `v1` en el binario actual, no abrir esta base
+con el binario B5 anterior. Detalle: [B7](behavior-b7.md#persistencia-y-rollback-de-comportamiento).
 
 Cada Update carga el estado dentro de la transacción, entrega una copia aislada
 al callback, y escribe solo entidades cambiadas y contadores antes de confirmar.
@@ -54,8 +61,11 @@ antes de cerrar la base. Un fallo de almacenamiento durante un comando o reset d
   y bytes exactos, sin agregar pendientes ni modificar evidencia.
 
 Estos tests validan el reemplazo; no son experimentos ni evidencia del ciclo de
-vida del original. A6 ya aporta evidencia de los deltas; B7 sigue pendiente
-para implementarlos y validar conformidad v2.
+vida del original. B7 implementa los deltas medidos por A6 y añade pruebas de
+migración, contadores persistentes, bloqueo, desbloqueo, concurrencia y reinicio
+real de procesos. Ambas suites diferenciales pasan sin pendientes: v1 con
+55 secuencias/694 requests y v2 con 65 secuencias/842 requests. La conformidad
+pública y el replay final contra el original siguen siendo pasos separados.
 
 ## Límites operativos
 

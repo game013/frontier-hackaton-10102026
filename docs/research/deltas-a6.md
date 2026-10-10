@@ -102,11 +102,13 @@ origen, así que v1 no lo descarta directamente. El único caso del replay (544 
 porque CAM-V2-2 convirtió en fallos tres transferencias que en v1 pasaban. Es el único
 comportamiento nuevo frente a los 725 pasos, y el ticket fija tres cambios.
 
-Sin medir (B7 decide y lo anota como supuesto): si `intentos` vuelve a 1 tras desbloquear y
-volver a bloquear; si E401 o E304 en TRANSFER cuentan como fallo; si la regla es «≥ 3» o
-«= 3» tras desbloquear; y el orden de E510 frente a E303, E304, E401 y E507. **A7 los midió**
-(IDs 2979–3128): ver el [informe A7](replay-a7.md#sondas-nuevas-de-cam-v2-3). Frente a E507
-el orden ya se veía en 2801.
+A6 dejó sin medir si `intentos` vuelve a 1 al rebloquear, qué hacen E303/E304/E401
+y su precedencia frente a E510. B7 los implementó como supuestos aprobados;
+**A7 los midió y repitió** (IDs 2979–3128): ver el
+[informe A7](replay-a7.md#sondas-nuevas-de-cam-v2-3). Frente a E507 el orden ya se
+veía en 2801. Las fronteras que siguen sin evidencia están en
+[CAM-V2-SUP](../specification.md#6-cambios-durante-el-día) y
+[el informe B7](../behavior-b7.md#supuestos-aprobados-por-el-operador).
 
 ## Cuándo cambió y qué pasa con A5
 
@@ -150,4 +152,6 @@ Con `BEHAVIOR_VERSION=v2`:
    contador. El reset lo borra todo.
 
 La suite `tests/differential/v2.json` contiene todo lo anterior. `pending-v2.txt` lista los
-pasos que faltan.
+pasos que faltan. Tras implementar B7 no quedan pasos pendientes: 65 secuencias y
+842 requests coinciden en status y bytes; v1 conserva sus 55 secuencias sin
+pendientes. Las fronteras no medidas siguen siendo supuestos.

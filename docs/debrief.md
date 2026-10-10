@@ -60,8 +60,19 @@ bloqueo: E303, E304 y E401 se evalúan antes que E510 y no cuentan como fallo. C
 o un depósito a otra cuenta no rompen la racha. Un depósito con error no libera la cuenta, e
 `intentos` vuelve a 1 en cada bloqueo nuevo. Detalle en el [informe A7](research/replay-a7.md).
 
-**En el reemplazo.** Las reglas v2 se activarán con `BEHAVIOR_VERSION=v2` al arrancar (B7),
-nunca por reloj. La suite `tests/differential/v2.json` contiene el replay v2 y las sondas como pruebas de
-regresión.
+**En el reemplazo.** B7 implementa las reglas con `BEHAVIOR_VERSION=v2` al arrancar,
+v2 predeterminada y nunca por reloj. El mismo binario conserva `v1` explícita.
+La suite `tests/differential/v2.json` pasa sin pendientes: 65 secuencias/842 requests
+(replay A6 y sondas repetidas), comparados en status y bytes. v1 conserva sus
+55 secuencias/694 requests también sin pendientes. SQLite migra sin perder estado
+B5 y persiste los contadores de bloqueo, incluidos fallos que no consumen OP.
+Se verifican reinicios reales tras SIGKILL, desbloqueo y reset.
+
+Las fronteras no medidas se implementan como supuestos aprobados: E303/E304/E401
+antes de E510, solo E506/E507 cuentan, depósito exitoso reinicia ambos contadores
+y el próximo bloqueo empieza en `intentos:1`; saldos negativos subunidad como
+`"-0.XX"`. Detalle en [CAM-V2-SUP](specification.md#6-cambios-durante-el-día) y
+[B7](behavior-b7.md). Estas pruebas son locales, no nuevas mediciones del original;
+la conformidad pública y A7 siguen pendientes.
 
 Detalle: [informe A6](research/deltas-a6.md) y [especificación §6](specification.md#6-cambios-durante-el-día).

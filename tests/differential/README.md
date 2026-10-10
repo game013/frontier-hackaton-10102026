@@ -10,8 +10,9 @@ es equivalente según el criterio del evaluador (orden de claves libre, arrays e
 orden, números por su texto). Así se ve si la diferencia es solo de serialización.
 
 ```sh
-make differential                          # BEHAVIOR_VERSION=v1 por defecto
-make differential BEHAVIOR_VERSION=v2      # falla si v2 no está en config.Versions o no tiene v2.json
+make differential                          # BEHAVIOR_VERSION=v2 por defecto
+make differential BEHAVIOR_VERSION=v1      # contrato histórico
+make differential BEHAVIOR_VERSION=v2      # objetivo de conformidad
 go test ./tests/differential -run 'TestCorpus/a3-v1r-17' -v
 go test ./tests/differential -run TestCorpus -update-pending   # regenera pending-<version>.txt
 ```
@@ -75,12 +76,16 @@ Objetivo de conformidad (incidente FR-0153). Todo corrió contra `v2` en A6:
   2979–3053) dio los mismos bytes. El replay final A7 (IDs 3129–3970) repitió
   byte a byte las fuentes anteriores y no se añade.
 
-`pending-v2.txt` se generó con `v2` añadida a `config.Versions` solo en local:
-hoy el reemplazo responde como v1 (B4, sin pendientes en `v1`), así que lista
-exactamente los pasos de los tres deltas (CAM-V2-1…3) y sus cascadas: en el
-replay son los mismos 78 pasos que encontró A6, más las sondas. Añadir
-`v2` a `config.Versions` le toca a B7: cambia la versión por defecto. Hasta entonces,
-`make differential BEHAVIOR_VERSION=v2` falla con «versión desconocida».
+B7 implementa `v2` y la hace predeterminada. `pending-v2.txt` se regeneró tras
+comparar toda la suite: no quedan pasos pendientes, como en `pending-v1.txt`.
+Solo se retiraron pendientes; no se modificaron fuentes de evidencia ni criterios
+de comparación. La suite v2 tiene 65 secuencias/842 requests (resets incluidos):
+58/725 del replay y 7/117 de las sondas repetidas; no añade el canario independiente.
+La suite v1 conserva 55 secuencias/694 requests. Ejecutar explícitamente ambas
+versiones al validar cambios al motor o al almacenamiento.
+
+Las pruebas sintéticas de B7 sobre supuestos no son evidencia del original;
+ver [reglas, fronteras y persistencia](../../docs/behavior-b7.md).
 
 Para añadir corpus nuevo, agregar una fuente o un patrón a la suite y regenerar
 `pending-<version>.txt` con `-update-pending`.

@@ -1,8 +1,8 @@
 # Caja negra: diseño del reemplazo HTTP
 
 **Estado:** decisiones de diseño ampliadas con evidencia `v1`, 10 de octubre de 2026.
-Capas de compatibilidad y persistencia implementadas hasta B5; aplicación de los deltas v2
-y despliegue pendientes. A6 ya aporta la evidencia del incidente. Los tiempos los controla manualmente el operador.
+Capas de compatibilidad y persistencia implementadas hasta B7, incluidos los tres deltas v2;
+despliegue pendiente. A6 ya aporta la evidencia del incidente. Los tiempos los controla manualmente el operador.
 **Objetivo:** reproducir el servicio vigente a la entrega, incluidos errores y memoria entre
 requests. El reemplazo es autónomo, responde en menos de 5 segundos por paso y conserva
 su estado tras reinicios. La [especificación incremental](specification.md) queda separada
@@ -130,7 +130,8 @@ de los campos. Guardar deltas permite revertir una operación sin recalcular reg
 
 Una única conexión escritora SQLite y serialización de requests con estado, incluidos
 consultas y reset, proporcionan una vista consistente. Cada comando que modifica estado
-confirma una transacción antes de responder; reset borra el alcance y reinicia contadores
+confirma una transacción antes de responder, incluidos los contadores de
+E506/E507/E510 en v2 (B7); reset borra el alcance y reinicia contadores
 en una transacción. El alcance exacto del reset sigue pendiente de evidencia. Un error
 de validación no debe mutar estado salvo que el original demuestre lo contrario.
 
@@ -201,8 +202,12 @@ no demuestra cobertura del transporte completo.
 
 `BEHAVIOR_VERSION` se lee solo al arrancar, junto con `TEAM_TOKEN`, `STORAGE` y `STATE_PATH`.
 Cada versión conserva un conjunto de reglas; `v2` reutiliza `v1` y sobrescribe su delta,
-con esquema SQLite común. Rollback: configurar `v1` y reiniciar el mismo artefacto sin
-recompilar; verificar corpus y compatibilidad del estado antes de usarlo. La versión no
+con esquema SQLite común. B7 hace `v2` predeterminada y migra el esquema B5 de 1 a 2
+sin perder entidades ni IDs, añadiendo los contadores por cuenta. Rollback:
+configurar `v1` y reiniciar el mismo artefacto sin recompilar; v1 ignora y conserva
+los contadores de bloqueo. No hay downgrade de esquema al binario B5 anterior.
+Ambos corpus pasan sin pendientes. Fronteras no medidas y pruebas:
+[implementación B7](behavior-b7.md). La versión no
 aparece en rutas ni respuestas. Cada prueba y cada regla cita una `epoch` del explorador.
 
 Capturar cada request del evaluador en `/data/requests.jsonl` y stdout: timestamp UTC,
