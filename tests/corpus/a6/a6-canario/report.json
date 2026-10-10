@@ -1,0 +1,199 @@
+{
+  "epoch": "v2",
+  "prefix": "a6-canario",
+  "expected_requests": 21,
+  "request_count": 21,
+  "sequences": {
+    "a2-baseline-20261010-retry-s001-corpus": {
+      "replay_seq": "a6-canario-a2-baseline-20261010-retry-s001-corpus",
+      "count": 21,
+      "base_ids": [
+        227,
+        228,
+        229,
+        230,
+        231,
+        232,
+        233,
+        234,
+        235,
+        236,
+        237,
+        238,
+        239,
+        240,
+        241,
+        242,
+        243,
+        244,
+        245,
+        246,
+        247
+      ]
+    }
+  },
+  "contract_deltas": 8,
+  "raw_deltas": 8,
+  "deltas": [
+    {
+      "source_seq": "a2-baseline-20261010-retry-s001-corpus",
+      "n": 5,
+      "base_id": 232,
+      "v2_id": 2004,
+      "method": "POST",
+      "path": "/msg",
+      "auth": "valid",
+      "request": {
+        "m": "CONSULTA;AC-0001;14"
+      },
+      "base_status": 200,
+      "v2_status": 200,
+      "base_raw": "{\"cuenta_id\":\"AC-0001\",\"saldo\":0}",
+      "v2_raw": "{\"cuenta_id\":\"AC-0001\",\"saldo\":\"0.00\"}",
+      "contract_equal": false
+    },
+    {
+      "source_seq": "a2-baseline-20261010-retry-s001-corpus",
+      "n": 8,
+      "base_id": 235,
+      "v2_id": 2007,
+      "method": "POST",
+      "path": "/msg",
+      "auth": "valid",
+      "request": {
+        "m": "CONSULTA;AC-0002;11"
+      },
+      "base_status": 200,
+      "v2_status": 200,
+      "base_raw": "{\"cuenta_id\":\"AC-0002\",\"saldo\":40000}",
+      "v2_raw": "{\"cuenta_id\":\"AC-0002\",\"saldo\":\"400.00\"}",
+      "contract_equal": false
+    },
+    {
+      "source_seq": "a2-baseline-20261010-retry-s001-corpus",
+      "n": 10,
+      "base_id": 237,
+      "v2_id": 2009,
+      "method": "POST",
+      "path": "/msg",
+      "auth": "valid",
+      "request": {
+        "m": "TRANSFER;AC-0001;AC-0002;100000;12"
+      },
+      "base_status": 200,
+      "v2_status": 422,
+      "base_raw": "{\"status\":\"recieved\",\"operacionId\":\"OP-0003\"}",
+      "v2_raw": "{\"error\":\"E506\",\"mensaje\":\"límite excedido\"}",
+      "contract_equal": false
+    },
+    {
+      "source_seq": "a2-baseline-20261010-retry-s001-corpus",
+      "n": 11,
+      "base_id": 238,
+      "v2_id": 2010,
+      "method": "POST",
+      "path": "/msg",
+      "auth": "valid",
+      "request": {
+        "m": "CONSULTa;AC-0001;14"
+      },
+      "base_status": 200,
+      "v2_status": 200,
+      "base_raw": "{\"cuenta_id\":\"AC-0001\",\"saldo\":110000}",
+      "v2_raw": "{\"cuenta_id\":\"AC-0001\",\"saldo\":\"2100.00\"}",
+      "contract_equal": false
+    },
+    {
+      "source_seq": "a2-baseline-20261010-retry-s001-corpus",
+      "n": 13,
+      "base_id": 240,
+      "v2_id": 2012,
+      "method": "POST",
+      "path": "/msg",
+      "auth": "valid",
+      "request": {
+        "m": "ANULA;OP-0003;66"
+      },
+      "base_status": 200,
+      "v2_status": 404,
+      "base_raw": "{\"ok\":true,\"anulada\":\"OP-0003\"}",
+      "v2_raw": "{\"error\":\"E402\",\"mensaje\":\"operación inexistente\"}",
+      "contract_equal": false
+    },
+    {
+      "source_seq": "a2-baseline-20261010-retry-s001-corpus",
+      "n": 14,
+      "base_id": 241,
+      "v2_id": 2013,
+      "method": "POST",
+      "path": "/msg",
+      "auth": "valid",
+      "request": {
+        "m": "ANULA;OP-0003;66"
+      },
+      "base_status": 200,
+      "v2_status": 404,
+      "base_raw": "{\"ok\":false,\"motivo\":\"ya anulada\"}",
+      "v2_raw": "{\"error\":\"E402\",\"mensaje\":\"operación inexistente\"}",
+      "contract_equal": false
+    },
+    {
+      "source_seq": "a2-baseline-20261010-retry-s001-corpus",
+      "n": 18,
+      "base_id": 245,
+      "v2_id": 2017,
+      "method": "POST",
+      "path": "/msg",
+      "auth": "valid",
+      "request": {
+        "m": "DEPOSITO;AC-0002;700;35"
+      },
+      "base_status": 200,
+      "v2_status": 200,
+      "base_raw": "{\"status\":\"recieved\",\"operacionId\":\"OP-0004\"}",
+      "v2_raw": "{\"status\":\"recieved\",\"operacionId\":\"OP-0003\"}",
+      "contract_equal": false
+    },
+    {
+      "source_seq": "a2-baseline-20261010-retry-s001-corpus",
+      "n": 19,
+      "base_id": 246,
+      "v2_id": 2018,
+      "method": "POST",
+      "path": "/msg",
+      "auth": "valid",
+      "request": {
+        "m": "CONSULTA;AC-0002;11"
+      },
+      "base_status": 200,
+      "v2_status": 200,
+      "base_raw": "{\"cuenta_id\":\"AC-0002\",\"saldo\":40700}",
+      "v2_raw": "{\"cuenta_id\":\"AC-0002\",\"saldo\":\"407.00\"}",
+      "contract_equal": false
+    }
+  ],
+  "new_evidence_ids": [
+    1999,
+    2000,
+    2001,
+    2002,
+    2003,
+    2004,
+    2005,
+    2006,
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019
+  ],
+  "incomplete": false
+}
