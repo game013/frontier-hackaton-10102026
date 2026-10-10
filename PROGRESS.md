@@ -29,7 +29,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 | Paso | Qué | Presupuesto | Depende de | Responsable | Estado | IDs del log |
 | --- | --- | --- | --- | --- | --- | --- |
 | A0 | Completar `bb.py`: request/response en base64, `--no-cache`, runner de secuencias (reset + lock por token mientras dura la secuencia, entre procesos de esta máquina). | 0 | — | Codex (orquestación), Luna (revisión/pruebas) | Completado | — (0 requests) |
-| A1 | **Fórmula del control:** pares mínimos sobre ALTA/CONSULTA que cambien una sola propiedad (longitud, caja, acento, separador, ceros) y búsqueda 0–99; validar candidatos con mensajes reservados. | ≤100 por tanda | A0 | — | Pendiente | — |
+| A1 | **Fórmula del control:** pares mínimos sobre ALTA/CONSULTA que cambien una sola propiedad (longitud, caja, acento, separador, ceros) y búsqueda 0–99; validar candidatos con mensajes reservados. | ≤100 por tanda | A0 | Codex (orquestación), Luna (análisis/revisión) | En curso | — |
 | A2 | **Línea base `v1`:** corpus de ejemplos, secuencias 1–50 y lo de A1 en `tests/corpus/`; repetir sin caché. | ~150 | A0 | — | Pendiente | — |
 | A3 | **Estado:** consumo de IDs ante errores, anulación de transferencias, ANULA sobre operación inexistente, alcance del reset, naturaleza del límite E506. | ~500 | A0 (mejor con A1) | — | Pendiente | — |
 | A4 | **Sobre HTTP y números:** matriz de cierre del diseño (precedencia auth/ruta/JSON, cuerpos, HEAD/OPTIONS, escapes) y bordes (`0`, `-1`, `+1`, `01`, `1.0`, int64). | ~300 | A0 | — | Pendiente | — |
@@ -113,3 +113,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [codex] 2026-10-10 14:10: corregido P1 de revisión A0: migración de cuota filtrada por token_tag y día, sin atribuir entradas sin etiqueta; rate limits laterales etiquetados. Regresión con dos tokens y log común reproduce el fallo antes del fix; 25 pruebas en verde después. 0 requests al original.
 
 - [claude] 2026-10-10 14:21: revisión de B1 corregida (d76cf00, 232337b): la captura conserva el error de lectura del cuerpo (antes un cuerpo truncado daba 200 en vez de E100) y registra solo el cuerpo que sale al cable (HEAD, 204/304 vacíos).
+
+- [codex] 2026-10-10 14:26: A1 reclamado en feat/a1-control, worktree separado; bb.py sin cambios, cuota compartida con el coordinador original y exploración centralizada.
