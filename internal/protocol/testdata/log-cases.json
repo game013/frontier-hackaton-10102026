@@ -1,0 +1,1610 @@
+[
+ {
+  "ids": [
+   "54",
+   "279"
+  ],
+  "m": "CONSULTA;AC-0001;15",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "60",
+   "229",
+   "285"
+  ],
+  "m": "ALTA;Lucia;83",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "62",
+   "287"
+  ],
+  "m": "ALTA;A;0",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "63",
+   "288"
+  ],
+  "m": "ALTA;A;1",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "64",
+   "289"
+  ],
+  "m": "ALTA;A;2",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "65",
+   "290"
+  ],
+  "m": "ALTA;A;3",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "66",
+   "291"
+  ],
+  "m": "ALTA;A;4",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "67",
+   "292"
+  ],
+  "m": "ALTA;A;5",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "68",
+   "293"
+  ],
+  "m": "ALTA;A;6",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "69",
+   "294"
+  ],
+  "m": "ALTA;A;7",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "70",
+   "295"
+  ],
+  "m": "ALTA;A;8",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "71",
+   "296"
+  ],
+  "m": "ALTA;A;9",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "72",
+   "297"
+  ],
+  "m": "ALTA;A;10",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "73",
+   "298"
+  ],
+  "m": "ALTA;A;11",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "74",
+   "299"
+  ],
+  "m": "ALTA;A;12",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "75",
+   "300"
+  ],
+  "m": "ALTA;A;13",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "76",
+   "301"
+  ],
+  "m": "ALTA;A;14",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "77",
+   "302"
+  ],
+  "m": "ALTA;A;15",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "78",
+   "303"
+  ],
+  "m": "ALTA;A;16",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "79",
+   "304"
+  ],
+  "m": "ALTA;A;17",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "80",
+   "305"
+  ],
+  "m": "ALTA;A;18",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "81",
+   "306"
+  ],
+  "m": "ALTA;A;19",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "82",
+   "307"
+  ],
+  "m": "ALTA;A;20",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "83",
+   "308"
+  ],
+  "m": "ALTA;A;21",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "84",
+   "309"
+  ],
+  "m": "ALTA;A;22",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "85",
+   "310"
+  ],
+  "m": "ALTA;A;23",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "86",
+   "311"
+  ],
+  "m": "ALTA;A;24",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "87",
+   "312"
+  ],
+  "m": "ALTA;A;25",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "88",
+   "313"
+  ],
+  "m": "ALTA;A;26",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "89",
+   "314"
+  ],
+  "m": "ALTA;A;27",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "90",
+   "315"
+  ],
+  "m": "ALTA;A;28",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "91",
+   "316"
+  ],
+  "m": "ALTA;A;29",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "92",
+   "317"
+  ],
+  "m": "ALTA;A;30",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "93",
+   "318"
+  ],
+  "m": "ALTA;A;31",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "94",
+   "319"
+  ],
+  "m": "ALTA;A;32",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "95",
+   "320"
+  ],
+  "m": "ALTA;A;33",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "96",
+   "321"
+  ],
+  "m": "ALTA;A;34",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "97",
+   "322"
+  ],
+  "m": "ALTA;A;35",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "98",
+   "323"
+  ],
+  "m": "ALTA;A;36",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "99",
+   "324"
+  ],
+  "m": "ALTA;A;37",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "100",
+   "325"
+  ],
+  "m": "ALTA;A;38",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "101",
+   "326"
+  ],
+  "m": "ALTA;A;39",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "102",
+   "327"
+  ],
+  "m": "ALTA;A;40",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "103",
+   "328"
+  ],
+  "m": "ALTA;A;41",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "104",
+   "329"
+  ],
+  "m": "ALTA;A;42",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "105",
+   "330"
+  ],
+  "m": "ALTA;A;43",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "106",
+   "331"
+  ],
+  "m": "ALTA;A;44",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "107",
+   "332"
+  ],
+  "m": "ALTA;A;45",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "108",
+   "333"
+  ],
+  "m": "ALTA;A;46",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "109",
+   "334"
+  ],
+  "m": "ALTA;A;47",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "110",
+   "335"
+  ],
+  "m": "ALTA;A;48",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "111",
+   "336"
+  ],
+  "m": "ALTA;A;49",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "112",
+   "337"
+  ],
+  "m": "ALTA;A;50",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "113",
+   "338"
+  ],
+  "m": "ALTA;A;51",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "114",
+   "339"
+  ],
+  "m": "ALTA;A;52",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "115",
+   "340"
+  ],
+  "m": "ALTA;A;53",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "116",
+   "341"
+  ],
+  "m": "ALTA;A;54",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "117",
+   "342"
+  ],
+  "m": "ALTA;A;55",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "118",
+   "343"
+  ],
+  "m": "ALTA;A;56",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "119",
+   "344"
+  ],
+  "m": "ALTA;A;57",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "120",
+   "345"
+  ],
+  "m": "ALTA;A;58",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "121",
+   "346"
+  ],
+  "m": "ALTA;A;59",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "122",
+   "347"
+  ],
+  "m": "ALTA;A;60",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "123",
+   "348"
+  ],
+  "m": "ALTA;A;61",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "138",
+   "220",
+   "363",
+   "445"
+  ],
+  "m": "ALTA;A;B;23",
+  "status": 400,
+  "body": "{\"error\":\"E302\",\"mensaje\":\"aridad inválida\"}"
+ },
+ {
+  "ids": [
+   "140",
+   "206",
+   "365",
+   "431"
+  ],
+  "m": "ALTA;Ána;50",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "141",
+   "366"
+  ],
+  "m": "ALTA;Ána;33",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "145",
+   "221",
+   "370",
+   "446"
+  ],
+  "m": "ALTA;A;062",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "146",
+   "371"
+  ],
+  "m": "ALTA;A;0062",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "147",
+   "372"
+  ],
+  "m": "ALTA;A;63",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "150",
+   "202",
+   "375",
+   "427"
+  ],
+  "m": "ALTA;ßa;40",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "152",
+   "204",
+   "377",
+   "429"
+  ],
+  "m": "ALTA;ıa;77",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "154",
+   "212",
+   "379",
+   "437"
+  ],
+  "m": "ALTA;Mateo;03",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "155",
+   "214",
+   "380",
+   "439"
+  ],
+  "m": "CONSULTA;AC-0004;05",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "156",
+   "208",
+   "381",
+   "433"
+  ],
+  "m": "ALTA;BZ;0",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "158",
+   "383"
+  ],
+  "m": "ALTA;BZ;00",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "159",
+   "210",
+   "384",
+   "435"
+  ],
+  "m": "ALTA;HD;1",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "161",
+   "386"
+  ],
+  "m": "ALTA;HD;01",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "164",
+   "183",
+   "389",
+   "408"
+  ],
+  "m": "ALTA;Zoë;91",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "166",
+   "185",
+   "391",
+   "410"
+  ],
+  "m": "ALTA;Á;63",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "168",
+   "187",
+   "393",
+   "412"
+  ],
+  "m": "CONSULTA;AC-0042;86",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "170",
+   "189",
+   "395",
+   "414"
+  ],
+  "m": "DEPOSITO;AC-0001;1234;13",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "172",
+   "191",
+   "397",
+   "416"
+  ],
+  "m": "TRANSFER;AC-0002;AC-0001;6789;11",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "174",
+   "193",
+   "399",
+   "418"
+  ],
+  "m": "ANULA;OP-0042;47",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "176",
+   "195",
+   "401",
+   "420"
+  ],
+  "m": "alta;Iris;22",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "178",
+   "197",
+   "403",
+   "422"
+  ],
+  "m": "CONSULTA;AC-00042;36",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "179",
+   "198",
+   "404",
+   "423"
+  ],
+  "m": "ALTA;Q;R;65",
+  "status": 400,
+  "body": "{\"error\":\"E302\",\"mensaje\":\"aridad inválida\"}"
+ },
+ {
+  "ids": [
+   "180",
+   "199",
+   "405",
+   "424"
+  ],
+  "m": "ALTA;Q;R;66",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "223",
+   "448"
+  ],
+  "m": "DEPOSITO;AC-0001;7;11",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "225",
+   "450"
+  ],
+  "m": "DEPOSITO;AC-0001;007;71",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "228",
+   "274",
+   "275",
+   "490",
+   "710",
+   "945",
+   "946",
+   "951",
+   "955",
+   "957",
+   "960",
+   "961",
+   "962",
+   "1076",
+   "1149",
+   "1150",
+   "1155",
+   "1159",
+   "1161",
+   "1164",
+   "1165",
+   "1166",
+   "1280",
+   "1296",
+   "1297",
+   "1298",
+   "1341",
+   "1342",
+   "1343"
+  ],
+  "m": "PING;64",
+  "status": 200,
+  "body": "{\"pong\":true}"
+ },
+ {
+  "ids": [
+   "239"
+  ],
+  "m": "SALDOS;AC-0001;38",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "244"
+  ],
+  "m": "DEPOSITO;AC-0002;700;5X",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "247"
+  ],
+  "m": "ALTA;Lucia;Gomez;11",
+  "status": 400,
+  "body": "{\"error\":\"E302\",\"mensaje\":\"aridad inválida\"}"
+ },
+ {
+  "ids": [
+   "249"
+  ],
+  "m": "SALDOS;AC-0001;1",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "250"
+  ],
+  "m": "SALDOS;AC-0001;50",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "251"
+  ],
+  "m": "SALDOS;AC-0001;99",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "252"
+  ],
+  "m": "ALTA;Lucia;Gomez;1",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "253"
+  ],
+  "m": "ALTA;Lucia;Gomez;50",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "254"
+  ],
+  "m": "ALTA;Lucia;Gomez;99",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "255"
+  ],
+  "m": "SALDOS;AC-0001;5X",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "256"
+  ],
+  "m": "ALTA;Lucia;Gomez;5X",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "257"
+  ],
+  "m": "CONSULTA;AC-0009;1",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "258"
+  ],
+  "m": "CONSULTA;AC-0009;50",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "259"
+  ],
+  "m": "PING;1",
+  "status": 200,
+  "body": "{\"pong\":true}"
+ },
+ {
+  "ids": [
+   "452",
+   "672"
+  ],
+  "m": "ALTA;Ana;49",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "453",
+   "673"
+  ],
+  "m": "ALTA;Ana;5X",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "454",
+   "674"
+  ],
+  "m": "ALTA;Ana;Lopez;11",
+  "status": 400,
+  "body": "{\"error\":\"E302\",\"mensaje\":\"aridad inválida\"}"
+ },
+ {
+  "ids": [
+   "455",
+   "675"
+  ],
+  "m": "ALTA;;85",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "464",
+   "684"
+  ],
+  "m": "DEPOSITO;AC-0001;1000;34",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "532",
+   "752"
+  ],
+  "m": "ANULA;OP-0001;OP-0002;25",
+  "status": 400,
+  "body": "{\"error\":\"E302\",\"mensaje\":\"aridad inválida\"}"
+ },
+ {
+  "ids": [
+   "533",
+   "753"
+  ],
+  "m": "ANULA;45",
+  "status": 400,
+  "body": "{\"error\":\"E302\",\"mensaje\":\"aridad inválida\"}"
+ },
+ {
+  "ids": [
+   "534",
+   "754"
+  ],
+  "m": "ANULA;OP-0042;45",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "625",
+   "841"
+  ],
+  "m": "TRANSFER;AC-0001;AC-0001;100;16",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "635",
+   "851"
+  ],
+  "m": "ALTA;;84",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "636",
+   "852"
+  ],
+  "m": "CONSULTA;;11",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "637",
+   "853"
+  ],
+  "m": "DEPOSITO;AC-0001;;4",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "638",
+   "854"
+  ],
+  "m": "TRANSFER;AC-0001;;100;27",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "639",
+   "855"
+  ],
+  "m": "ALTA;;;85",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "640",
+   "856"
+  ],
+  "m": "ANULA;;45",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "666",
+   "882"
+  ],
+  "m": "ALTA;;5X",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "667",
+   "883"
+  ],
+  "m": "ZZZ;;53",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "668",
+   "884"
+  ],
+  "m": "ZZZ;;54",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "669",
+   "885"
+  ],
+  "m": "ALTA;Ana;;49",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "670",
+   "886"
+  ],
+  "m": "ALTA;Ana;",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "939",
+   "1143"
+  ],
+  "m": "",
+  "status": 400,
+  "body": "{\"error\":\"E103\",\"mensaje\":\"falta control\"}"
+ },
+ {
+  "ids": [
+   "963",
+   "1167"
+  ],
+  "m": "PING;64\n",
+  "status": 200,
+  "body": "{\"pong\":true}"
+ },
+ {
+  "ids": [
+   "964",
+   "1168"
+  ],
+  "m": "PING;64\u0000",
+  "status": 200,
+  "body": "{\"pong\":true}"
+ },
+ {
+  "ids": [
+   "967",
+   "1171"
+  ],
+  "m": " ALTA;Lucia;82",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ALTA\"}"
+ },
+ {
+  "ids": [
+   "968",
+   "1172"
+  ],
+  "m": "ALTA ;Lucia;82",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ALTA\"}"
+ },
+ {
+  "ids": [
+   "978",
+   "1182"
+  ],
+  "m": "ALTA;Lucia; 82",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "979",
+   "1183"
+  ],
+  "m": "ALTA;Lucia;82 ",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "980",
+   "1184"
+  ],
+  "m": "ALTA;Lucia;+82",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "981",
+   "1185"
+  ],
+  "m": "ALTA;Lucia;-82",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "982",
+   "1186"
+  ],
+  "m": "ALTA;Lucia;82.0",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "983",
+   "1187"
+  ],
+  "m": "ALTA;Lucia;8.2e1",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "984",
+   "1188"
+  ],
+  "m": "ALTA;Lucia;0x52",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "985",
+   "1189"
+  ],
+  "m": "ALTA;Lucia;٨٢",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "986",
+   "1190"
+  ],
+  "m": "ALTA;Lucia;８２",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "987",
+   "1191"
+  ],
+  "m": "ALTA;Lucia;0",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "988",
+   "1192"
+  ],
+  "m": "ALTA;Lucia;00",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "989",
+   "1193"
+  ],
+  "m": "ALTA;Lucia;1",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "990",
+   "1194"
+  ],
+  "m": "ALTA;Lucia;99",
+  "status": 400,
+  "body": "{\"error\":\"E202\",\"mensaje\":\"control inválido\"}"
+ },
+ {
+  "ids": [
+   "991",
+   "1195"
+  ],
+  "m": "ALTA;Lucia;100",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "992",
+   "1196"
+  ],
+  "m": "ALTA;Lucia;9223372036854775808",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "993",
+   "1197"
+  ],
+  "m": "ALTA;Lucia;082",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ },
+ {
+  "ids": [
+   "994",
+   "1198"
+  ],
+  "m": "ALTA;Lucia;82;",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "1066",
+   "1270"
+  ],
+  "m": "PING;XX",
+  "status": 200,
+  "body": "{\"pong\":true}"
+ },
+ {
+  "ids": [
+   "1067",
+   "1271"
+  ],
+  "m": "PING",
+  "status": 400,
+  "body": "{\"error\":\"E103\",\"mensaje\":\"falta control\"}"
+ },
+ {
+  "ids": [
+   "1068",
+   "1272"
+  ],
+  "m": "PING;",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "1069",
+   "1273"
+  ],
+  "m": "PING;0",
+  "status": 200,
+  "body": "{\"pong\":true}"
+ },
+ {
+  "ids": [
+   "1070",
+   "1274"
+  ],
+  "m": "PING;100",
+  "status": 200,
+  "body": "{\"pong\":true}"
+ },
+ {
+  "ids": [
+   "1071",
+   "1275"
+  ],
+  "m": "PING;-1",
+  "status": 200,
+  "body": "{\"pong\":true}"
+ },
+ {
+  "ids": [
+   "1072",
+   "1276"
+  ],
+  "m": "PING;062",
+  "status": 200,
+  "body": "{\"pong\":true}"
+ },
+ {
+  "ids": [
+   "1073",
+   "1277"
+  ],
+  "m": "PING;1;2",
+  "status": 400,
+  "body": "{\"error\":\"E302\",\"mensaje\":\"aridad inválida\"}"
+ },
+ {
+  "ids": [
+   "1074",
+   "1278"
+  ],
+  "m": "ping;64",
+  "status": 200,
+  "body": "{\"pong\":true}"
+ },
+ {
+  "ids": [
+   "1075",
+   "1279"
+  ],
+  "m": "Ping;64",
+  "status": 200,
+  "body": "{\"pong\":true}"
+ },
+ {
+  "ids": [
+   "1303",
+   "1348"
+  ],
+  "m": "ALTA",
+  "status": 400,
+  "body": "{\"error\":\"E103\",\"mensaje\":\"falta control\"}"
+ },
+ {
+  "ids": [
+   "1304",
+   "1349"
+  ],
+  "m": "ZZZ",
+  "status": 400,
+  "body": "{\"error\":\"E103\",\"mensaje\":\"falta control\"}"
+ },
+ {
+  "ids": [
+   "1305",
+   "1350"
+  ],
+  "m": ";",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "1307",
+   "1352"
+  ],
+  "m": "ALT;Lucia;24",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ALTA\"}"
+ },
+ {
+  "ids": [
+   "1308",
+   "1353"
+  ],
+  "m": "BLTA;Lucia;29",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ALTA\"}"
+ },
+ {
+  "ids": [
+   "1309",
+   "1354"
+  ],
+  "m": "ATLA;Lucia;74",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ALTA\"}"
+ },
+ {
+  "ids": [
+   "1310",
+   "1355"
+  ],
+  "m": "AXXA;Lucia;62",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ALTA\"}"
+ },
+ {
+  "ids": [
+   "1311",
+   "1356"
+  ],
+  "m": "CONSULT;AC-0001;41",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"CONSULTA\"}"
+ },
+ {
+  "ids": [
+   "1312",
+   "1357"
+  ],
+  "m": "TRANSFE;AC-0001;AC-0002;5;98",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"TRANSFER\"}"
+ },
+ {
+  "ids": [
+   "1313",
+   "1358"
+  ],
+  "m": "PIN;87",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"PING\"}"
+ },
+ {
+  "ids": [
+   "1314",
+   "1359"
+  ],
+  "m": "alt;Lucia;24",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \",\"sugerencia\":\"ALTA\"}"
+ },
+ {
+  "ids": [
+   "1315",
+   "1360"
+  ],
+  "m": "ZZZ;Lucia;54",
+  "status": 400,
+  "body": "{\"error\":\"E301\",\"mensaje\":\"comando desconocido \"}"
+ },
+ {
+  "ids": [
+   "1325",
+   "1370"
+  ],
+  "m": "PING;1;46",
+  "status": 400,
+  "body": "{\"error\":\"E302\",\"mensaje\":\"aridad inválida\"}"
+ },
+ {
+  "ids": [
+   "1326",
+   "1371"
+  ],
+  "m": "PING;;1;64",
+  "status": 400,
+  "body": "{\"error\":\"E104\",\"mensaje\":\"segmento vacío\"}"
+ },
+ {
+  "ids": [
+   "1327",
+   "1372"
+  ],
+  "m": "PING;1;2;57",
+  "status": 400,
+  "body": "{\"error\":\"E302\",\"mensaje\":\"aridad inválida\"}"
+ },
+ {
+  "ids": [
+   "1339"
+  ],
+  "m": "ALTA;Lucia;82\n",
+  "status": 400,
+  "body": "{\"error\":\"E201\",\"mensaje\":\"control mal formado\"}"
+ }
+]
