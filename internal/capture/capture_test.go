@@ -208,3 +208,47 @@ func TestNumberingByArrival(t *testing.T) {
 		t.Fatalf("reset: n=%d seq=%d, want 2 1", r.N, r.Seq)
 	}
 }
+
+type failAfter struct {
+	data []byte
+	err  error
+}
+
+func (f *failAfter) Read(p []byte) (int, error) {
+	if len(f.data) == 0 {
+		return 0, f.err
+	}
+	n := copy(p, f.data)
+	f.data = f.data[n:]
+	return n, nil
+}
+
+// La captura no debe ocultar al handler un error de lectura del cuerpo.
+func TestBodyReadErrorReachesHandler(t *testing.T) {
+	strict := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if _, err := io.ReadAll(r.Body); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("E100"))
+			return
+		}
+		w.Write([]byte("pong"))
+	})
+	serve := func(h http.Handler) *httptest.ResponseRecorder {
+		req := httptest.NewRequest("POST", "/msg", nil)
+		req.Body = io.NopCloser(&failAfter{[]byte(`{"m":"PING;1"}`), io.ErrUnexpectedEOF})
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, req)
+		return rec
+	}
+	var buf bytes.Buffer
+	plain := serve(strict)
+	captured := serve(Middleware(strict, Options{Token: token, Sinks: []io.Writer{&buf}}))
+	if captured.Code != plain.Code || captured.Body.String() != plain.Body.String() {
+		t.Fatalf("con captura %d %q, sin captura %d %q", captured.Code, captured.Body, plain.Code, plain.Body)
+	}
+	got := records(t, &buf)[0]
+	if got.BodyError == "" || got.Body == nil || *got.Body != `{"m":"PING;1"}` {
+		t.Fatalf("captura del cuerpo parcial: %+v", got)
+	}
+}
+

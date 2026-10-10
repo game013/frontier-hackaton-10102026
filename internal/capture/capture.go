@@ -73,6 +73,23 @@ func (r *recorder) Write(b []byte) (int, error) {
 	return r.ResponseWriter.Write(b)
 }
 
+// replayBody entrega al handler los bytes ya leídos y después el mismo error
+// de lectura que dio el cuerpo original (EOF si no hubo error).
+type replayBody struct {
+	*bytes.Reader
+	err error
+}
+
+func (b replayBody) Read(p []byte) (int, error) {
+	n, err := b.Reader.Read(p)
+	if err == io.EOF && b.err != nil {
+		err = b.err
+	}
+	return n, err
+}
+
+func (replayBody) Close() error { return nil }
+
 // Middleware envuelve next. Un reset autenticado con 200 abre una secuencia
 // nueva; lo anterior al primer reset queda en la secuencia 0. N y seq se fijan
 // a la llegada, así un request lento no cambia de secuencia por un reset paralelo.
@@ -88,7 +105,7 @@ func Middleware(next http.Handler, o Options) http.Handler {
 		line := Record{N: n, Seq: seq}
 		mu.Unlock()
 		body, readErr := io.ReadAll(r.Body)
-		r.Body = io.NopCloser(bytes.NewReader(body))
+		r.Body = replayBody{bytes.NewReader(body), readErr}
 		rec := &recorder{ResponseWriter: w}
 		var panicked any
 		func() {
