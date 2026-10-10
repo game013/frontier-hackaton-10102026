@@ -152,3 +152,28 @@ su historial. No iniciar un coordinador nuevo para el mismo token.
 
 `make test-explorer` descubre todas las pruebas del cliente, fórmula, escáner y
 trazabilidad. Solo usa un servidor simulado local, nunca el original.
+
+## A2: línea base histórica y replay
+
+El snapshot se construye offline a partir de IDs 1–50 y 52–225. Conserva diez secuencias,
+incluidos los resets originales, y verifica que los 20 requests de `ejemplos.jsonl` ya estén en
+`s001-corpus`. No rellena bytes que faltan en los registros históricos. ID 51, fallo de transporte,
+queda fuera. El reset sin autenticación ID 50 se conserva como último paso de `s003-sobre`.
+
+```sh
+make corpus ARGS="build"
+make corpus ARGS="replay --epoch v1 --prefix a2-v1-10102026"
+```
+
+`build` escribe `tests/corpus/v1-historical/` con diez JSONL y `manifest.json`. `replay` valida el
+corpus completo antes de conectarse y usa `bb.Client` con `no_cache=True`, reset y lock por cada
+secuencia. No repitas un `--prefix`: cada replay debe tener nombres nuevos. La captura resultante y
+el informe se guardan en `tests/corpus/v1-replays/<prefix>/`. El replay limita esta instancia del
+cliente a `min(tope configurado, cuota usada + max-requests)`; por defecto reserva como máximo 250
+requests. Los retries de rate limit cuentan en la cuota real del cliente.
+
+El informe separa comparación de bytes crudos (solo cuando la fuente tiene `response_b64`) y
+comparación del contrato: status más JSON con tipos exactos, objetos sin orden significativo y
+arrays ordenados; texto se compara literalmente. `request_b64` se envía sin decodificar a texto,
+`raw_body` se preserva para casos históricos como el cuerpo `{`, y cada captura nueva conserva
+`source_id`. Salida 0 significa sin deltas de contrato, 1 indica deltas y 2 indica replay incompleto.

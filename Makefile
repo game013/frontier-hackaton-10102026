@@ -1,11 +1,14 @@
 PYTHON ?= python3
 ARGS ?= --help
 
-.PHONY: explore test-explorer serve test-go seeds help
+.PHONY: explore corpus test-explorer serve test-go seeds help
 
 # Ejemplos y formato JSONL: tools/explorer/README.md
 explore:
 	$(PYTHON) tools/explorer/bb.py $(ARGS)
+
+corpus:
+	$(PYTHON) tools/explorer/corpus.py $(ARGS)
 
 test-explorer:
 	$(PYTHON) -m unittest discover -s tools/explorer -p 'test_*.py'
@@ -25,6 +28,8 @@ seeds:
 help:
 	@echo 'make explore ARGS="budget"'
 	@echo 'make explore ARGS="run SEQ tmp/sondas.jsonl --no-cache"'
+	@echo 'make corpus ARGS="build" (snapshot offline)'
+	@echo 'make corpus ARGS="replay --epoch v1 --prefix a2-v1-YYYYMMDD" (224 requests)'
 	@echo 'make test-explorer (servidor simulado; sin requests al original)'
 	@echo 'make serve (reemplazo en :9900, captura en var/capture.jsonl)'
 	@echo 'make test-go'
