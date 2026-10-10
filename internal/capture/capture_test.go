@@ -252,3 +252,34 @@ func TestBodyReadErrorReachesHandler(t *testing.T) {
 	}
 }
 
+// Se registra lo que llega al cliente: HEAD y 204 no llevan cuerpo en el cable.
+func TestCapturesOnlyBytesSentOnTheWire(t *testing.T) {
+	var buf bytes.Buffer
+	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/vacio" {
+			w.WriteHeader(http.StatusNoContent)
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+		w.Write([]byte(`{"error":"E404","mensaje":"ruta desconocida"}`))
+	})
+	srv := httptest.NewServer(Middleware(h, Options{Token: token, Sinks: []io.Writer{&buf}}))
+	defer srv.Close()
+	for _, c := range []struct{ method, path string }{{"HEAD", "/msg"}, {"POST", "/vacio"}} {
+		req, _ := http.NewRequest(c.method, srv.URL+c.path, nil)
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		wire, _ := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if len(wire) != 0 {
+			t.Fatalf("%s %s: el cliente recibió cuerpo %q", c.method, c.path, wire)
+		}
+	}
+	for _, r := range records(t, &buf) {
+		if r.RespB64 != "" || (r.Resp != nil && *r.Resp != "") {
+			t.Fatalf("%s %s: captura con cuerpo inexistente %q", r.Method, r.URI, r.RespB64)
+		}
+	}
+}

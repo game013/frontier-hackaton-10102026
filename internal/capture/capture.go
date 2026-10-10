@@ -52,8 +52,11 @@ type Options struct {
 	Sinks   []io.Writer
 }
 
+// recorder guarda los bytes que llegan al cable: en HEAD net/http los descarta
+// y en estados sin cuerpo (204, 304) Write falla, así que no se registran.
 type recorder struct {
 	http.ResponseWriter
+	head   bool
 	status int
 	body   bytes.Buffer
 }
@@ -69,8 +72,11 @@ func (r *recorder) Write(b []byte) (int, error) {
 	if r.status == 0 {
 		r.status = http.StatusOK
 	}
-	r.body.Write(b)
-	return r.ResponseWriter.Write(b)
+	n, err := r.ResponseWriter.Write(b)
+	if err == nil && !r.head {
+		r.body.Write(b[:n])
+	}
+	return n, err
 }
 
 // replayBody entrega al handler los bytes ya leídos y después el mismo error
@@ -106,7 +112,7 @@ func Middleware(next http.Handler, o Options) http.Handler {
 		mu.Unlock()
 		body, readErr := io.ReadAll(r.Body)
 		r.Body = replayBody{bytes.NewReader(body), readErr}
-		rec := &recorder{ResponseWriter: w}
+		rec := &recorder{ResponseWriter: w, head: r.Method == http.MethodHead}
 		var panicked any
 		func() {
 			defer func() {
