@@ -53,6 +53,7 @@ func New(cfg config.Config) (*App, error) {
 		Handler: httpadapter.New(cfg.Token,
 			httpadapter.WithExec(eng.Exec),
 			httpadapter.WithReset(eng.Reset),
+			httpadapter.WithHalted(eng.Halted, engine.StatusHalted, engine.RespHalted),
 		),
 		close: store.Close,
 	}, nil

@@ -28,9 +28,10 @@ var (
 )
 
 type Handler struct {
-	auth  []byte
-	reset func() error
-	exec  func(protocol.Message) (int, []byte)
+	auth   []byte
+	reset  func() error
+	exec   func(protocol.Message) (int, []byte)
+	halted func() (bool, int, []byte)
 }
 
 type Option func(*Handler)
@@ -44,6 +45,14 @@ func WithExec(fn func(protocol.Message) (int, []byte)) Option {
 	return func(h *Handler) { h.exec = fn }
 }
 
+// WithHalted registra la detención del servicio: mientras fn devuelva true,
+// todo POST /msg autenticado responde status y body, antes del tamaño, el
+// JSON y el protocolo (ERR-599, r1 log 4378–4382, 4404–4407). Rutas, auth,
+// /health y /__reset no cambian (4377, 4380, 4381, 4383, 4406).
+func WithHalted(fn func() bool, status int, body []byte) Option {
+	return func(h *Handler) { h.halted = func() (bool, int, []byte) { return fn(), status, body } }
+}
+
 // defaultExec responde PING (CMD-PING) y marca el resto como sin motor.
 func defaultExec(m protocol.Message) (int, []byte) {
 	if m.Cmd == "PING" {
@@ -53,7 +62,8 @@ func defaultExec(m protocol.Message) (int, []byte) {
 }
 
 func New(token string, opts ...Option) *Handler {
-	h := &Handler{auth: []byte("Bearer " + token), reset: func() error { return nil }, exec: defaultExec}
+	h := &Handler{auth: []byte("Bearer " + token), reset: func() error { return nil }, exec: defaultExec,
+		halted: func() (bool, int, []byte) { return false, 0, nil }}
 	for _, o := range opts {
 		o(h)
 	}
@@ -87,6 +97,9 @@ func (h *Handler) precedence(r *http.Request) (int, []byte) {
 		}
 		return http.StatusOK, respOK
 	case "POST /msg":
+		if halted, status, body := h.halted(); halted {
+			return status, body
+		}
 		return h.msg(r)
 	}
 	return http.StatusOK, respOK // GET /health

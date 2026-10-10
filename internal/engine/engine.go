@@ -6,6 +6,7 @@ package engine
 import (
 	"fmt"
 	"strconv"
+	"sync/atomic"
 
 	"github.com/game013/frontier-hackaton-10102026/internal/protocol"
 	"github.com/game013/frontier-hackaton-10102026/internal/state"
@@ -33,6 +34,9 @@ var (
 	respE506   = []byte(`{"error":"E506","mensaje":"límite excedido"}`)
 	respE507   = []byte(`{"error":"E507","mensaje":"saldo insuficiente"}`)
 	respE520   = []byte(`{"error":"E520","mensaje":"operación destructiva: detiene el servicio; reenvía con confirmación"}`)
+	// RespHalted lo comparten el motor (respuesta a HALT;1) y el adaptador
+	// (todo POST /msg autenticado mientras dura la detención, ERR-599).
+	RespHalted = []byte(`{"error":"E599","mensaje":"service halted"}`)
 	// Supuesto: el original nunca mostró un fallo interno. Solo sale si el
 	// Store falla o un saldo desbordaría int64 (state.ErrOverflow, inalcanzable
 	// en la práctica); 500 para no confundirlo con lo observado (MEM-07).
@@ -50,11 +54,16 @@ const (
 	statusUnprocessable = 422
 	statusLocked        = 423
 	statusInternalError = 500
+	// StatusHalted acompaña a RespHalted.
+	StatusHalted = 503
 )
 
 type Engine struct {
 	store Store
 	rules rules
+	// halted vive en memoria, fuera del Store: un reinicio del proceso también
+	// lo libera (supuesto; el original nunca se reinició bajo observación).
+	halted atomic.Bool
 }
 
 // New recibe una versión explícita e inmutable. Solo la composición resuelve
@@ -67,7 +76,17 @@ func New(store Store, version string) (*Engine, error) {
 	return &Engine{store: store, rules: r}, nil
 }
 
-func (e *Engine) Reset() error { return e.store.Reset() }
+// Reset vacía el estado y libera la detención (r1 log 4383–4385).
+func (e *Engine) Reset() error {
+	if err := e.store.Reset(); err != nil {
+		return err
+	}
+	e.halted.Store(false)
+	return nil
+}
+
+// Halted indica si un HALT;1 detuvo el servicio desde el último reset.
+func (e *Engine) Halted() bool { return e.halted.Load() }
 
 // Exec responde un mensaje válido. Los comandos sin estado no tocan el Store.
 func (e *Engine) Exec(m protocol.Message) (int, []byte) {
@@ -77,7 +96,13 @@ func (e *Engine) Exec(m protocol.Message) (int, []byte) {
 	case "NOTAS":
 		return statusOK, respNotas // fija, no depende del estado (CMD-NOTAS)
 	case "HALT":
-		// Nunca detiene el proceso ni cambia el estado (CMD-HALT-ARG, RIE-08).
+		// Solo el argumento exacto "1" confirma: detiene el servicio sin parar
+		// el proceso ni tocar el estado (r1 log 4368, 4376, 4403). 0, 01, 2,
+		// true, SI y x dan E520 (4313, 4387–4396; A5 1952).
+		if m.Args[0] == "1" {
+			e.halted.Store(true)
+			return StatusHalted, RespHalted
+		}
 		return statusConflict, respE520
 	}
 	var status int

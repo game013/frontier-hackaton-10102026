@@ -213,3 +213,37 @@ func TestResetFailureDoesNotReportSuccess(t *testing.T) {
 		t.Fatalf("got %d %q", rec.Code, rec.Body.String())
 	}
 }
+
+// ERR-599: la detención intercepta solo POST /msg autenticado, antes del
+// tamaño y del JSON; no llama a exec. E599 frente a E101 es supuesto.
+func TestHaltedInterceptsOnlyAuthenticatedMsg(t *testing.T) {
+	execs := 0
+	h := New(testToken,
+		WithExec(func(protocol.Message) (int, []byte) { execs++; return 200, nil }),
+		WithHalted(func() bool { return true }, 503, []byte("detenido")))
+	for _, c := range []struct {
+		method, target, auth, body string
+		status                     int
+	}{
+		{"POST", "/msg", authValid, `{"m":"PING;64"}`, 503},
+		{"POST", "/msg", authValid, "{", 503},
+		{"POST", "/msg", authValid, strings.Repeat("x", maxBody+1), 503},
+		{"POST", "/msg", "", `{"m":"PING;64"}`, 401},
+		{"GET", "/health", authValid, "", 200},
+		{"POST", "/__reset", authValid, "", 200},
+		{"GET", "/no-existe", authValid, "", 404},
+	} {
+		req := httptest.NewRequest(c.method, c.target, strings.NewReader(c.body))
+		if c.auth != "" {
+			req.Header.Set("Authorization", c.auth)
+		}
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, req)
+		if rec.Code != c.status {
+			t.Fatalf("%s %s %.20q: status %d, want %d", c.method, c.target, c.body, rec.Code, c.status)
+		}
+	}
+	if execs != 0 {
+		t.Fatalf("exec llamado %d veces durante la detención", execs)
+	}
+}
