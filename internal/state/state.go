@@ -118,3 +118,20 @@ func (s *State) check(deltas []Delta, sign int64) error {
 func FormatID(prefix string, n int64) string {
 	return fmt.Sprintf("%s-%04d", prefix, n)
 }
+
+// Clone devuelve un estado sin punteros ni slices compartidos: cada callback
+// trabaja sobre una copia que puede descartarse si falla.
+func (s *State) Clone() *State {
+	out := New()
+	out.NextAccount, out.NextOperation = s.NextAccount, s.NextOperation
+	for id, acc := range s.Accounts {
+		copy := *acc
+		out.Accounts[id] = &copy
+	}
+	for id, op := range s.Operations {
+		copy := *op
+		copy.Deltas = append([]Delta(nil), op.Deltas...)
+		out.Operations[id] = &copy
+	}
+	return out
+}

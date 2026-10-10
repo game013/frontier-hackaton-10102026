@@ -11,7 +11,8 @@ import (
 )
 
 // Store es el contrato de almacenamiento del motor: Update ejecuta fn sobre el
-// estado de forma indivisible y serializada (lecturas incluidas); Reset lo
+// estado de forma indivisible y serializada (lecturas incluidas). Si fn falla,
+// descarta todos sus cambios; el estado no debe escapar del callback. Reset lo
 // vacía y reinicia los contadores en una sola operación (MEM-02).
 type Store interface {
 	Update(fn func(*state.State) error) error

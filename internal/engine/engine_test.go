@@ -1,7 +1,10 @@
-package engine
+package engine_test
 
 import (
+	"github.com/game013/frontier-hackaton-10102026/internal/engine"
+	"github.com/game013/frontier-hackaton-10102026/internal/storage/sqlite"
 	"math"
+	"path/filepath"
 	"testing"
 
 	"github.com/game013/frontier-hackaton-10102026/internal/protocol"
@@ -32,7 +35,7 @@ func a(s ...string) []string { return s }
 
 func run(t *testing.T, steps []step) {
 	t.Helper()
-	e := New(NewMemoryStore())
+	e := engine.New(testStore(t))
 	for i, s := range steps {
 		if s.reset {
 			if err := e.Reset(); err != nil {
@@ -171,7 +174,7 @@ func TestNotasAndHalt(t *testing.T) {
 // El Store serializa: 50 ALTA concurrentes dan 50 cuentas distintas y
 // consecutivas (diseño: una vista consistente por request).
 func TestConcurrentExecIsSerialized(t *testing.T) {
-	e := New(NewMemoryStore())
+	e := engine.New(testStore(t))
 	done := make(chan string)
 	for range 50 {
 		go func() {
@@ -192,8 +195,8 @@ func TestConcurrentExecIsSerialized(t *testing.T) {
 // práctica): fallo del Store → 500 E500 (MEM-07, supuesto), sin consumir OP
 // ni mover saldos.
 func TestOverflowIsStoreFailure(t *testing.T) {
-	store := NewMemoryStore()
-	e := New(store)
+	store := testStore(t)
+	e := engine.New(store)
 	e.Exec(protocol.Message{Cmd: "ALTA", Args: []string{"A"}})
 	store.Update(func(s *state.State) error {
 		s.Accounts["AC-0001"].Balance = math.MaxInt64 - 5
@@ -209,4 +212,18 @@ func TestOverflowIsStoreFailure(t *testing.T) {
 	run("DEPOSITO", a("AC-0001", "6"), 500, `{"error":"E500","mensaje":"error interno"}`)
 	run("CONSULTA", a("AC-0001"), 200, `{"cuenta_id":"AC-0001","saldo":9223372036854775802}`)
 	run("DEPOSITO", a("AC-0001", "5"), 200, `{"status":"recieved","operacionId":"OP-0001"}`)
+}
+
+func testStore(t *testing.T) *sqlite.Store {
+	t.Helper()
+	s, err := sqlite.Open(filepath.Join(t.TempDir(), "state.db"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := s.Close(); err != nil {
+			t.Error(err)
+		}
+	})
+	return s
 }
