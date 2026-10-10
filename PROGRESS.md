@@ -28,7 +28,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 
 | Paso | Qué | Presupuesto | Depende de | Responsable | Estado | IDs del log |
 | --- | --- | --- | --- | --- | --- | --- |
-| A0 | Completar `bb.py`: request/response en base64, `--no-cache`, runner de secuencias (reset + lock por token mientras dura la secuencia, entre procesos de esta máquina). | 0 | — | — | Pendiente | — |
+| A0 | Completar `bb.py`: request/response en base64, `--no-cache`, runner de secuencias (reset + lock por token mientras dura la secuencia, entre procesos de esta máquina). | 0 | — | Codex (orquestación), Luna (revisión/pruebas) | En curso | — |
 | A1 | **Fórmula del control:** pares mínimos sobre ALTA/CONSULTA que cambien una sola propiedad (longitud, caja, acento, separador, ceros) y búsqueda 0–99; validar candidatos con mensajes reservados. | ≤100 por tanda | A0 | — | Pendiente | — |
 | A2 | **Línea base `v1`:** corpus de ejemplos, secuencias 1–50 y lo de A1 en `tests/corpus/`; repetir sin caché. | ~150 | A0 | — | Pendiente | — |
 | A3 | **Estado:** consumo de IDs ante errores, anulación de transferencias, ANULA sobre operación inexistente, alcance del reset, naturaleza del límite E506. | ~500 | A0 (mejor con A1) | — | Pendiente | — |
@@ -100,3 +100,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 
 - [claude] 2026-10-10 12:48: archivada la bitácora de diseño; tablero reorganizado con el plan A0–A7 / B1–B8.
 - [claude] 2026-10-10 12:50: usuario confirma el diferido P2.
+
+- [codex] 2026-10-10 13:46: A0 reclamado; base64, no-cache, runner con lock por token y entrada make run documentada; pruebas sin requests al original.
