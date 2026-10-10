@@ -45,7 +45,7 @@ commit aparte de `experimentos.jsonl` (`git add experimentos.jsonl` explícito, 
 | Paso | Qué | Depende de | Responsable | Estado | Commit |
 | --- | --- | --- | --- | --- | --- |
 | B1 | `go.mod`, `cmd/replacement`, handler propio: auth, `/health`, `/__reset`, 404 E404, E100/E102 (casos del log 34–50). Captura íntegra de toda request recibida (seed para replay local). | — | claude | Completado | 4a2d32d…fc09d12 |
-| B2 | **Arnés diferencial:** test Go que lee secuencias de `tests/corpus/` y compara status y bytes. | B1 | — | Pendiente | — |
+| B2 | **Arnés diferencial:** test Go que lee secuencias de `tests/corpus/` y compara status y bytes. | B1 | claude | En curso | — |
 | B3 | `internal/protocol`: parser de `m`, E201 y control tras una sola función (primero plan B; luego la fórmula de A1). | B1; A1 | — | Pendiente | — |
 | B4 | `internal/engine` + `state`: seis comandos, orden E201→E202→E301/E302/E401, E506/E507, sin corregir `recieved` ni espacios. | B3; A3 | — | Pendiente | — |
 | B5 | `internal/storage/sqlite` (`modernc.org/sqlite`): contrato Store, reset atómico, prueba de reinicio. | B4 | — | Pendiente | — |
@@ -128,3 +128,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [codex] 2026-10-10 15:05: usuario autoriza mezcla; feat/a2-baseline integrado en master con git merge --ff-only hasta d3abf21, sin conflictos ni commit de merge. Corpus, spec y log auditados por Luna; checkout limpio tras el fast-forward. Sin nuevas llamadas al original durante la integración.
 
 - [claude] 2026-10-10 15:20: A3 completado en feat/a3-state, antes del cambio: 25 secuencias en tests/corpus/a3 (IDs 451–670) y repetición sin caché 671–886, 216/216 iguales. Errores, ANULA, PING y CONSULTA no consumen IDs; ANULA revierte sin comprobar saldo (saldos negativos); E506 = TRANSFER > 100000 por operación; reset solo POST autenticado; nuevos E104 y E304 con orden medido. TEAM_TOKEN da 401 en el original (618): aislamiento queda supuesto. Spec §1–5/§7 e informe docs/research/state-a3.md. B4 desbloqueado; A6 debe repetir tests/corpus/a3 con BB_EPOCH=v2. Rama sin mezclar.
+
+- [claude] 2026-10-10 15:20: B2 reclamado en feat/b2-differential: arnés Go sobre los registros de evidencia (replay A2 y repetición A3), igualdad status + bytes exactos, lista de pendientes por versión. Sin exportador (A2 ya fijó el formato). 0 requests al original.
