@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/game013/frontier-hackaton-10102026/internal/app"
 	"github.com/game013/frontier-hackaton-10102026/internal/capture"
 	"github.com/game013/frontier-hackaton-10102026/internal/config"
-	"github.com/game013/frontier-hackaton-10102026/internal/httpadapter"
 )
 
 func main() {
@@ -30,7 +30,7 @@ func main() {
 	}
 	defer file.Close()
 
-	handler := capture.Middleware(httpadapter.New(cfg.Token), capture.Options{
+	handler := capture.Middleware(app.New(cfg), capture.Options{
 		Token: cfg.Token, Version: cfg.Version, Sinks: []io.Writer{file, os.Stdout},
 	})
 	srv := &http.Server{
