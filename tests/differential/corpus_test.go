@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"testing"
 
@@ -40,13 +41,12 @@ func serve(t *testing.T, version string) (*httptest.Server, *http.Client) {
 // todos sus pasos, falla para que se quite de la lista.
 func TestCorpus(t *testing.T) {
 	version := behaviorVersion()
-	suiteFile := filepath.Join(".", version+".json")
-	if _, err := os.Stat(suiteFile); os.IsNotExist(err) {
-		t.Skipf("sin suite para %s (%s)", version, suiteFile)
+	if !slices.Contains(config.Versions, version) {
+		t.Fatalf("BEHAVIOR_VERSION desconocida: %q (conocidas %v)", version, config.Versions)
 	}
-	seqs, err := LoadSuite(repoRoot, suiteFile)
+	seqs, err := LoadSuite(repoRoot, version+".json")
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("la versión %s necesita su suite: %v", version, err)
 	}
 	pending, err := LoadPending(filepath.Join(".", "pending-"+version+".txt"))
 	if err != nil {
