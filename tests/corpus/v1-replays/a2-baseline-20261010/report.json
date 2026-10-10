@@ -1,0 +1,21 @@
+{
+  "epoch": "v1",
+  "prefix": "a2-baseline-20261010",
+  "request_count": 0,
+  "sequences": {
+    "s001-corpus": {
+      "replay_seq": "a2-baseline-20261010-s001-corpus",
+      "count": 0,
+      "source_ids": []
+    }
+  },
+  "raw_compared": 0,
+  "raw_deltas": 0,
+  "contract_compared": 0,
+  "contract_deltas": 0,
+  "missing_historical_bytes": 0,
+  "new_evidence_ids": [],
+  "incomplete": true,
+  "error_type": "URLError",
+  "incomplete_reason": "falló el envío, la comparación o el registro de conclusión"
+}

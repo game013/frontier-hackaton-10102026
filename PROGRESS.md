@@ -6,16 +6,16 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 
 ## Estado ahora
 
-- **Fase:** A0, A1 y B1 completados; fórmula del control confirmada. A1 integrado en master mediante fast-forward autorizado (310a1be).
-- **Versión observada:** `v1`. Último ID del log: 225 (174 respuestas nuevas; intento 51 sin respuesta).
-- **Próximo paso:** A2 (línea base completa) y B3 (integridad con fórmula A1); B2 también está desbloqueado por B1.
+- **Fase:** A0, A1, A2 y B1 completados; fórmula del control confirmada y línea base completa revalidada. A2 queda en feat/a2-baseline; A1 está integrado en master (310a1be).
+- **Versión observada:** `v1`, revalidada a las 15:00 de Bogotá. Último ID del log: 450 (448 respuestas; intentos 51 y 226 sin respuesta).
+- **Próximo paso:** A6 (replay tras el cambio anunciado) y B3 (integridad con fórmula A1); B2 tiene el corpus completo de A2 disponible.
 - **Bloqueos:** ninguno.
 
 ## Hitos de hoy (Bogotá, UTC−5)
 
 - [x] 13:15 · A0 listo (completado a las 13:59): cliente con base64, `--no-cache`, runner de secuencias con lock.
 - [x] 15:00 · Fórmula del control con candidato validado (A1 completado a las 14:42; objetivo, no corte).
-- [ ] 15:20 · **Línea base `v1` completa** en `tests/corpus/` (A2).
+- [x] 15:20 · **Línea base `v1` completa** en `tests/corpus/` (A2; revalidada a las 15:00).
 - [ ] 15:35 · Primer replay tras el cambio anunciado (A6).
 - [ ] 16:35 · Segundo replay (por si la hora del cambio es de CDMX).
 - [ ] 18:00 · Corte de la fórmula: si no está confirmada, activar plan B (INT-04).
@@ -30,7 +30,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 | --- | --- | --- | --- | --- | --- | --- |
 | A0 | Completar `bb.py`: request/response en base64, `--no-cache`, runner de secuencias (reset + lock por token mientras dura la secuencia, entre procesos de esta máquina). | 0 | — | Codex (orquestación), Luna (revisión/pruebas) | Completado | — (0 requests) |
 | A1 | **Fórmula del control:** pares mínimos sobre ALTA/CONSULTA que cambien una sola propiedad (longitud, caja, acento, separador, ceros) y búsqueda de candidatos 0–99 con parada al primer control compatible; validar candidatos con mensajes reservados. | ≤100 por tanda | A0 | Codex (orquestación), Luna (análisis/revisión) | Completado | 52–225 (51: fallo DNS sin evidencia) |
-| A2 | **Línea base `v1`:** corpus de ejemplos, secuencias 1–50 y lo de A1 en `tests/corpus/`; repetir sin caché. | ≤250 (224 previstas) | A0 | Codex (orquestación), Luna (herramientas/revisión) | En curso | — |
+| A2 | **Línea base `v1`:** corpus de ejemplos, secuencias 1–50 y lo de A1 en `tests/corpus/`; repetir sin caché. | ≤250 (225 consumidas) | A0 | Codex (orquestación), Luna (herramientas/revisión) | Completado | 227–450 (226: fallo sin respuesta) |
 | A3 | **Estado:** consumo de IDs ante errores, anulación de transferencias, ANULA sobre operación inexistente, alcance del reset, naturaleza del límite E506. | ~500 | A0 (mejor con A1) | — | Pendiente | — |
 | A4 | **Sobre HTTP y números:** matriz de cierre del diseño (precedencia auth/ruta/JSON, cuerpos, HEAD/OPTIONS, escapes) y bordes (`0`, `-1`, `+1`, `01`, `1.0`, int64). | ~300 | A0 | — | Pendiente | — |
 | A5 | **Descubrir comandos** por diccionario (RETIRO, MOVIMIENTOS, CIERRE…). | ~500 | A1 | — | Pendiente | — |
@@ -125,3 +125,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [codex] 2026-10-10 14:51: usuario autoriza mezcla; feat/a1-control integrado en master con git merge --ff-only hasta 310a1be, sin commit de merge. Checkout verificado limpio tras el fast-forward; sin nuevas llamadas al original.
 
 - [codex] 2026-10-10 14:55: A2 reclamado en feat/a2-baseline; usuario aprueba techo de 250 requests (224 previstos: IDs 1–50 y 52–225, resets incluidos). Los ejemplos ya están en s001; ID51 sin respuesta excluido. Luna prepara herramientas y revisión offline; ejecución centralizada mediante bb.py.
+
+- [codex] 2026-10-10 15:03: A2 completado en feat/a2-baseline: diez secuencias y 224 respuestas revalidadas sin caché entre 15:00:19 y 15:00:56 de Bogotá, antes del cambio anunciado. IDs 227–450, cero deltas de contrato y cero deltas en 174 comparaciones de bytes; 50 casos históricos ahora tienen bytes nuevos sin fabricar los anteriores. Intento 226 de transporte excluido de evidencia; consumo A2 225/250, cuota 450/7800. Herramientas y corpus histórico 37d0a30, log aparte edc882c; auditoría Luna independiente, 57 pruebas Python y go test ./... en verde. Spec e informe A2 documentan el alcance; B2/A6 tienen corpus. Rama sin mezclar.
