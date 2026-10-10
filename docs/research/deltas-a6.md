@@ -104,7 +104,9 @@ comportamiento nuevo frente a los 725 pasos, y el ticket fija tres cambios.
 
 Sin medir (B7 decide y lo anota como supuesto): si `intentos` vuelve a 1 tras desbloquear y
 volver a bloquear; si E401 o E304 en TRANSFER cuentan como fallo; si la regla es «≥ 3» o
-«= 3» tras desbloquear; y el orden de E510 frente a E303, E304, E401 y E507.
+«= 3» tras desbloquear; y el orden de E510 frente a E303, E304, E401 y E507. **A7 los midió**
+(IDs 2979–3128): ver el [informe A7](replay-a7.md#sondas-nuevas-de-cam-v2-3). Frente a E507
+el orden ya se veía en 2801.
 
 ## Cuándo cambió y qué pasa con A5
 
