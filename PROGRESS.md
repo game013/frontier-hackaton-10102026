@@ -134,3 +134,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [claude] 2026-10-10 15:22: B2 completado en feat/b2-differential (c5fe3f7…cc0be67): `tests/differential` reproduce la suite `v1.json` (replay A2 227–450 y repetición A3 671–886: 35 secuencias, 440 pasos) contra `internal/app` sobre httptest, status + bytes exactos con pista de equivalencia JSON. `pending-v1.txt` lista 34 secuencias que B3/B4 deben sacar (hoy solo coincide s003-sobre); el test falla si una pendiente ya pasa o no existe. `make differential [BEHAVIOR_VERSION=…]`; formato en `tests/differential/README.md`. 0 requests al original. Rama sin mezclar.
 
 - [claude] 2026-10-10 15:28: revisión adversaria de B2 corregida (a99e09c…7c2df2e): pendientes por paso como trinquete (falla ante regresión o paso ya resuelto; `-update-pending` regenera), versión desconocida o sin suite falla en vez de skip, timeout de 5 s por paso con cuerpo incluido. 0 requests al original.
+
+- [claude] 2026-10-10 15:31: segunda revisión de B2 corregida: `-update-pending` falla sin escribir si se filtró con `-run` o hubo errores (antes reducía la lista a lo ejecutado).
