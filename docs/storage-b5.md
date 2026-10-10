@@ -40,7 +40,8 @@ antes de cerrar la base. Un fallo de almacenamiento durante un comando o reset d
 
 - `internal/storage/sqlite`: reapertura con nombres Unicode, espacios y NUL,
   valores exactos hasta int64, deltas ordenados, saldos negativos, anulaciones y
-  siguientes IDs. Rollback tras callback que muta y falla y fallo SQL inyectado;
+  siguientes IDs, incluida la frontera AC/OP-9999 → AC/OP-10000 tras
+  reapertura. Rollback tras callback que muta y falla y fallo SQL inyectado;
   reset fallido sin borrado parcial y reset exitoso persistente.
 - `internal/engine`: reglas existentes sobre SQLite temporal, incluida concurrencia
   de 50 altas, orden de errores y overflow sin consumir OP ni mover saldo.

@@ -199,7 +199,7 @@ no demuestra cobertura del transporte completo.
 
 ### Versionado, captura del evaluador y monitoreo
 
-`BEHAVIOR_VERSION` se lee solo al arrancar, junto con `TEAM_TOKEN` y `STATE_PATH`.
+`BEHAVIOR_VERSION` se lee solo al arrancar, junto con `TEAM_TOKEN`, `STORAGE` y `STATE_PATH`.
 Cada versión conserva un conjunto de reglas; `v2` reutiliza `v1` y sobrescribe su delta,
 con esquema SQLite común. Rollback: configurar `v1` y reiniciar el mismo artefacto sin
 recompilar; verificar corpus y compatibilidad del estado antes de usarlo. La versión no

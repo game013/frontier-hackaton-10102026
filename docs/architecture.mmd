@@ -23,7 +23,7 @@ flowchart TB
     state["Modelo de estado<br/>cuentas · operaciones · contadores"]
     store["Adaptador SQLite<br/>transacciones y recuperación"]
     db[("Volumen persistente<br/>SQLite /data/state.db")]
-    config["Configuración al arrancar<br/>BEHAVIOR_VERSION · TEAM_TOKEN · STATE_PATH"]
+    config["Configuración al arrancar<br/>BEHAVIOR_VERSION · TEAM_TOKEN<br/>STORAGE · STATE_PATH"]
     telemetry["Captura y monitoreo<br/>auth redactada · defaults · latencia"]
     requestlog[("Volumen y stdout<br/>requests.jsonl · cuerpos en base64")]
     http --> engine
