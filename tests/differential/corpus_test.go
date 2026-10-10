@@ -2,6 +2,7 @@ package differential
 
 import (
 	"flag"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -27,11 +28,20 @@ var updatePending = flag.Bool("update-pending", false, "reescribe pending-<versi
 // stepTimeout es el tiempo que el evaluador da a cada paso, cuerpo incluido.
 const stepTimeout = 5 * time.Second
 
-func behaviorVersion() string {
-	if v := os.Getenv("BEHAVIOR_VERSION"); v != "" {
-		return v
+// El runtime sigue teniendo un default único (v2), pero la regresión local
+// sin filtro valida todas las versiones implementadas. Regenerar pendientes
+// exige elegir una versión explícita: nunca escribir dos listas por accidente.
+func corpusVersions(version string, updating bool) ([]string, error) {
+	if version == "" {
+		if updating {
+			return nil, fmt.Errorf("-update-pending exige BEHAVIOR_VERSION explícita")
+		}
+		return slices.Clone(config.Versions), nil
 	}
-	return config.Versions[len(config.Versions)-1]
+	if !slices.Contains(config.Versions, version) {
+		return nil, fmt.Errorf("BEHAVIOR_VERSION desconocida: %q (conocidas %v)", version, config.Versions)
+	}
+	return []string{version}, nil
 }
 
 // serve levanta una instancia nueva del reemplazo sobre TCP real, para que el
@@ -55,14 +65,21 @@ func serve(t *testing.T, version string) (*httptest.Server, *http.Client) {
 	return srv, client
 }
 
-// TestCorpus reproduce la suite de BEHAVIOR_VERSION. Los pasos listados en
-// pending-<version>.txt pueden diferir; falla si difiere cualquier otro paso
-// (regresión) o si uno listado ya coincide (hay que sacarlo de la lista).
+// TestCorpus valida todas las versiones si no hay BEHAVIOR_VERSION explícita.
+// Los pasos listados en pending-<version>.txt pueden diferir; falla ante regresión
+// o si uno listado ya coincide (hay que sacarlo de la lista).
 func TestCorpus(t *testing.T) {
-	version := behaviorVersion()
-	if !slices.Contains(config.Versions, version) {
-		t.Fatalf("BEHAVIOR_VERSION desconocida: %q (conocidas %v)", version, config.Versions)
+	versions, err := corpusVersions(os.Getenv("BEHAVIOR_VERSION"), *updatePending)
+	if err != nil {
+		t.Fatal(err)
 	}
+	for _, version := range versions {
+		t.Run(version, func(t *testing.T) { testCorpusVersion(t, version) })
+	}
+}
+
+func testCorpusVersion(t *testing.T, version string) {
+	t.Helper()
 	seqs, err := LoadSuite(repoRoot, version+".json")
 	if err != nil {
 		t.Fatalf("la versión %s necesita su suite: %v", version, err)

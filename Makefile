@@ -41,5 +41,5 @@ help:
 	@echo 'make test-explorer (servidor simulado; sin requests al original)'
 	@echo 'make serve (reemplazo en :9900, captura en var/capture.jsonl)'
 	@echo 'make test-go'
-	@echo 'make differential [BEHAVIOR_VERSION=v1|v2] (v2 por defecto)'
+	@echo 'make differential [BEHAVIOR_VERSION=v1|v2] (ambas por defecto)'
 	@echo 'make seeds ARGS="var/capture.jsonl railway.log -o tests/seeds/eval.jsonl"'

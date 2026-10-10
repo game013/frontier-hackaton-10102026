@@ -10,17 +10,20 @@ es equivalente según el criterio del evaluador (orden de claves libre, arrays e
 orden, números por su texto). Así se ve si la diferencia es solo de serialización.
 
 ```sh
-make differential                          # BEHAVIOR_VERSION=v2 por defecto
+make differential                          # ambas versiones: v1 y v2
 make differential BEHAVIOR_VERSION=v1      # contrato histórico
 make differential BEHAVIOR_VERSION=v2      # objetivo de conformidad
-go test ./tests/differential -run 'TestCorpus/a3-v1r-17' -v
-go test ./tests/differential -run TestCorpus -update-pending   # regenera pending-<version>.txt
+go test ./tests/differential -run 'TestCorpus/v1/a3-v1r-17' -v
+BEHAVIOR_VERSION=v2 go test ./tests/differential -run TestCorpus -update-pending
 ```
 
 Cada paso tiene 5 segundos, cuerpo incluido, igual que en la evaluación. Si se
 pasa, es un fallo de la secuencia.
 
-`go test ./...` (y `make test-go`) lo incluye.
+`go test ./...` (y `make test-go`) incluye ambas versiones si `BEHAVIOR_VERSION`
+no está definida o está vacía. Una variable explícita filtra una sola versión;
+esto no cambia el default v2 del runtime. `-update-pending` exige una versión
+explícita y una corrida completa sin errores de esa suite antes de escribir.
 
 ## Archivos
 
@@ -33,8 +36,9 @@ pasa, es un fallo de la secuencia.
   fuera de la lista (regresión), si un paso listado ya coincide o si la lista
   nombra una secuencia que no está en la suite. Tras avanzar en B3/B4, regenerar
   con `-update-pending` y revisar el diff: solo deben desaparecer pasos.
-  `-update-pending` no escribe si se combinó con un filtro `-run` o si alguna
-  secuencia falló, para no borrar pendientes de lo que no se comparó.
+  `-update-pending` no escribe sin versión explícita, si un filtro `-run` deja
+  secuencias fuera o si alguna secuencia falló, para no borrar pendientes de lo
+  que no se comparó.
 - `testdata/`: evidencia sintética para las pruebas del propio arnés.
 
 ## Reglas sobre la evidencia
@@ -81,8 +85,8 @@ comparar toda la suite: no quedan pasos pendientes, como en `pending-v1.txt`.
 Solo se retiraron pendientes; no se modificaron fuentes de evidencia ni criterios
 de comparación. La suite v2 tiene 65 secuencias/842 requests (resets incluidos):
 58/725 del replay y 7/117 de las sondas repetidas; no añade el canario independiente.
-La suite v1 conserva 55 secuencias/694 requests. Ejecutar explícitamente ambas
-versiones al validar cambios al motor o al almacenamiento.
+La suite v1 conserva 55 secuencias/694 requests. Sin variable de entorno se
+validan ambas versiones al ejecutar el arnés.
 
 Las pruebas sintéticas de B7 sobre supuestos no son evidencia del original;
 ver [reglas, fronteras y persistencia](../../docs/behavior-b7.md).
