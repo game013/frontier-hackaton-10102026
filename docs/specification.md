@@ -98,8 +98,11 @@ Cuerpos exactos observados; los espacios dentro de strings son significativos. O
 
 | ID | Comportamiento | Evidencia | Confianza |
 | --- | --- | --- | --- |
-| CAM-01 | Se anuncia un cambio a las 15:30; la evaluación usa la versión vigente a las 20:00. No hay delta observado aún. | AGENTS.md y contrato; replay posterior al cambio pendiente en A6 | supuesto |
+| CAM-01 | Incidente FR-0153, abierto a las 15:30: el original responde como versión 2. Cambiaron exactamente 3 comportamientos y el resto es igual que en v1. Los tests de conformidad corren contra v2. Los deltas se registran en el log y se explican en el debrief. | [Ticket FR-0153](old-system/incidente-FR-0153.md) (enunciado, no observación) | confirmado |
 | CAM-02 | Anotar versión/corpus, primer timestamp observado y IDs antes/después; sin sondeo continuo no afirmar el instante exacto del cambio. | Decisión Q6/Q10; [informe A2](research/baseline-a2.md); detección posterior pendiente en A6 | supuesto |
+| CAM-V2-1 | Delta 1 de 3: pendiente de A6. | — | pendiente |
+| CAM-V2-2 | Delta 2 de 3: pendiente de A6. | — | pendiente |
+| CAM-V2-3 | Delta 3 de 3: pendiente de A6. | — | pendiente |
 | CAM-03 | A2 repite íntegramente la línea base antes de las 15:30 anunciadas: ningún delta de contrato en 224 respuestas ni de bytes en las 174 comparables. Solo confirma los casos sondeados durante 15:00:19–15:00:56 de Bogotá; no descarta cambios posteriores ni fija su instante. | log 227–450; [informe A2](research/baseline-a2.md) | confirmado |
 
 ### 7. Riesgos

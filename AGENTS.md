@@ -45,5 +45,10 @@ Cada vez que completes un paso, haz un commit **atómico, transaccional y conven
 - `experimentos.jsonl` es un entregable: va versionado en la raíz, nunca en `.gitignore`. Tras cada
   bloque de experimentos (sin `bb.py` en ejecución) commitéalo aparte con `git add experimentos.jsonl`
   explícito. Detalle en `tools/explorer/README.md`.
-- A las 15:30 el servicio cambia. Detecta el cambio repitiendo el corpus contra el original y
-  documéntalo en la especificación (sección 6).
+- **Incidente FR-0153 (activo desde las 15:30):** el original responde como **versión 2**. Cambiaron
+  exactamente **3 comportamientos**; el resto es igual que en v1. Los tests de conformidad corren
+  contra v2, así que el reemplazo debe comportarse como v2 (`BEHAVIOR_VERSION=v2`, nunca por reloj).
+  Detecta los deltas repitiendo el corpus `v1` contra el original. Si salen más o menos de 3, revisa
+  la evidencia antes de concluir. Cada delta va en `experimentos.jsonl` (con `hipotesis` e IDs
+  v1/v2), en la especificación (sección 6) y en el debrief. Ticket transcrito:
+  `docs/old-system/incidente-FR-0153.md`.

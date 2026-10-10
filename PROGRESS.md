@@ -34,7 +34,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 | A3 | **Estado:** consumo de IDs ante errores, anulación de transferencias, ANULA sobre operación inexistente, alcance del reset, naturaleza del límite E506. | ~500 (800 aprobados; 436 consumidas) | A0 (mejor con A1) | claude (orquestación), Haiku (minería/auditoría) | Completado | 451–886 (618: TEAM_TOKEN rechazado) |
 | A4 | **Sobre HTTP y números:** matriz de cierre del diseño (precedencia auth/ruta/JSON, cuerpos, HEAD/OPTIONS, escapes) y bordes (`0`, `-1`, `+1`, `01`, `1.0`, int64). | ~300 (500 aprobados; 495 consumidas) | A0 | claude (orquestación), Haiku (auditoría) | Completado | 887–1381 |
 | A5 | **Descubrir comandos** por diccionario (RETIRO, MOVIMIENTOS, CIERRE…). | ~500 | A1 | — | Pendiente | — |
-| A6 | **Detección del cambio:** replay contra la base a las 15:35 y 16:35, sondas mínimas por delta, sección 6 de la spec con IDs nuevos. | ~300 | A2 | — | Pendiente | — |
+| A6 | **Detección del cambio (incidente [FR-0153](docs/old-system/incidente-FR-0153.md)):** replay de la base `v1` contra v2 y sondas mínimas hasta aislar **exactamente 3 deltas**. Cada delta va al log con `hipotesis`, a la spec §6 (CAM-V2-1…3) con IDs v1/v2 y al debrief. | ~300 | A2 | — | Pendiente | — |
 | A7 | Replay final sin caché de la versión vigente. | ~300 | A6 | — | Pendiente | — |
 
 Al cerrar cada tanda: `conclude` en el log, actualizar la fila de la spec con sus IDs y
@@ -51,7 +51,7 @@ commit aparte de `experimentos.jsonl` (`git add experimentos.jsonl` explícito, 
 | B4 | `internal/engine` + `state`: seis comandos, orden E201→E202→E301/E302/E401, E506/E507, sin corregir `recieved` ni espacios. | B3; A3 | — | Pendiente | — |
 | B5 | `internal/storage/sqlite` (`modernc.org/sqlite`): contrato Store, reset atómico, prueba de reinicio. | B4 | — | Pendiente | — |
 | B6 | **Exposición:** primero local + ngrok con smoke test público; luego desplegar en Railway (volumen, una réplica, Serverless apagado) y mantenerlo si funciona. | B1 (temprano), B5 (final) | — | Pendiente | — |
-| B7 | `BEHAVIOR_VERSION=v2` con el delta de A6 y sus regresiones. | A6 | — | Pendiente | — |
+| B7 | `BEHAVIOR_VERSION=v2` con los 3 deltas de A6 y sus regresiones; v2 es el objetivo de conformidad. | A6 | — | Pendiente | — |
 | B8 | Congelar: replay local del corpus vigente, smoke test público, entrega. | todo | — | Pendiente | — |
 
 Cada paso termina con `go test ./...` en verde y commit atómico convencional.
@@ -142,3 +142,4 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [claude] 2026-10-10 15:47: usuario avisa que el incidente (cambio de versión) ya está activo. Todo A4 es previo (`v1`); A6 debe repetir también `tests/corpus/a4/*.jsonl` con `BB_EPOCH=v2` y nombres nuevos (≈254 requests) para detectar deltas del sobre.
 
 - [claude] 2026-10-10 15:55: usuario autoriza mezcla; feat/a4-envelope integrado en master con git merge --ff-only hasta 1598e36, sin commit de merge. Sin nuevas llamadas al original.
+- [pi] 2026-10-10 15:44 (reloj local): registrado el ticket FR-0153 en docs/old-system/incidente-FR-0153.md. v2 desde las 15:30, exactamente 3 deltas, tests de conformidad contra v2 y deltas en el log, la spec §6 y el debrief. AGENTS.md, CONTEXT.md, spec CAM-01 y filas A6/B7 actualizados. Sin llamadas al original.
