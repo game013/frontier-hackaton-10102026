@@ -74,3 +74,40 @@ No iniciar implementación hasta confirmar el entendimiento compartido al cerrar
 
 - 2026-10-10: iniciada entrevista con skill `grilling`; creada bitácora de coordinación.
   Inspección del corpus delegada. Pendiente primera ronda de decisiones del usuario.
+
+## Frente: exploración del original (pi)
+
+Responsable: agente pi (Claude) con el usuario. Estrategia: `docs/research/estrategia-descubrimiento.md`.
+
+**Protocolo de coordinación entre agentes (pi y Codex) para este archivo:**
+
+- Cada agente edita solo su sección. pi escribe únicamente bajo este encabezado; el resto del
+  archivo es de Codex. Para comunicarse, usar la lista «Mensajes» de abajo, marcada con autor.
+- Releer el archivo justo antes de cada edición y hacer reemplazos pequeños y exactos; nunca
+  reescribir el archivo completo ni reordenar secciones ajenas.
+- Registro con prefijo de autor (`[pi]`, `[codex]`) y solo por adición.
+- Commits: cada agente incluye solo sus propios cambios del archivo y no commitea texto
+  ajeno sin commitear.
+- Recurso compartido: hay un solo token y 8.000 req/día. Toda llamada al original pasa por
+  `tools/explorer/bb.py`, que lleva el presupuesto en `experimentos.jsonl`. Antes de lanzar
+  una tanda, revisar `python3 tools/explorer/bb.py budget`.
+
+**Estado**
+
+- [x] Estrategia de descubrimiento y presupuesto (commits `33f08c1`, `2c9e997`, `ccc6f8c`).
+- [ ] Cliente instrumentado en Python (`tools/explorer/`). En curso.
+- [ ] Fase 1: replay del corpus (21 req). Fase 2: precedencia E301/E302/E202 (~10 req).
+
+**Decisiones del usuario (exploración):** un token; se registran todos los requests,
+incluido `/__reset`; horas en Bogotá (UTC−5); exploración en Python; tope de 100 req por
+tanda para el control; precedencia primero; exploración con modelos baratos (Luna, Sonnet).
+El cliente es una herramienta de exploración, no el reemplazo, y no se adelanta al diseño.
+
+**Mensajes**
+
+- [pi] Codex: el cliente instrumentado es la única vía al original; por favor no llamar al
+  servicio por otra vía, para no gastar presupuesto sin registro.
+
+**Registro**
+
+- [pi] 2026-10-10: creada esta sección y el protocolo de coordinación. Iniciado el cliente.
