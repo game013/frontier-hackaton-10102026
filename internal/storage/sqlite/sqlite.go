@@ -33,7 +33,7 @@ INSERT INTO counters VALUES (1, 1, 1);
 
 // Los contadores empiezan en cero al migrar una base B5. Ambas versiones de
 // comportamiento usan el esquema actual; cambiar a v1 no elimina este estado.
-const migrateV2 = `
+const migrateSchema2 = `
 ALTER TABLE accounts ADD COLUMN transfer_failures INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE accounts ADD COLUMN blocked_attempts INTEGER NOT NULL DEFAULT 0;
 `
@@ -103,7 +103,7 @@ func (s *Store) initialize() error {
 		}
 		fallthrough
 	case 1:
-		if _, err := tx.Exec(migrateV2); err != nil {
+		if _, err := tx.Exec(migrateSchema2); err != nil {
 			return err
 		}
 		if _, err := tx.Exec(fmt.Sprintf("PRAGMA user_version = %d", schemaVersion)); err != nil {
