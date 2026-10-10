@@ -179,3 +179,55 @@ func TestOpenRefusesInvalidState(t *testing.T) {
 		})
 	}
 }
+
+// Semilla sintética: no hace falta generar 10.000 entidades para verificar
+// que SQLite conserva IDs sin truncar y ambos contadores al cruzar 9999.
+func TestReopenPreservesIDsBeyondFourDigits(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "state.db")
+	s := openTest(t, path)
+	if err := s.Update(func(st *state.State) error {
+		st.NextAccount, st.NextOperation = 9999, 9999
+		if id := st.OpenAccount("A"); id != "AC-9999" {
+			t.Fatalf("cuenta: %s", id)
+		}
+		id, err := st.Apply(state.Delta{Account: "AC-9999", Amount: 1})
+		if id != "OP-9999" {
+			t.Fatalf("operación: %s", id)
+		}
+		return err
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.Close(); err != nil {
+		t.Fatal(err)
+	}
+	s = openTest(t, path)
+	if err := s.Update(func(st *state.State) error {
+		if id := st.OpenAccount("B"); id != "AC-10000" {
+			t.Fatalf("cuenta: %s", id)
+		}
+		id, err := st.Apply(state.Delta{Account: "AC-10000", Amount: 2})
+		if id != "OP-10000" {
+			t.Fatalf("operación: %s", id)
+		}
+		return err
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.Close(); err != nil {
+		t.Fatal(err)
+	}
+	s = openTest(t, path)
+	st := snapshot(t, s)
+	if st.NextAccount != 10001 || st.NextOperation != 10001 {
+		t.Fatalf("contadores: %d/%d", st.NextAccount, st.NextOperation)
+	}
+	acc := st.Accounts["AC-10000"]
+	if acc == nil || acc.ID != "AC-10000" || acc.Name != "B" || acc.Balance != 2 {
+		t.Fatalf("cuenta releída: %+v", acc)
+	}
+	op := st.Operations["OP-10000"]
+	if op == nil || op.ID != "OP-10000" || !reflect.DeepEqual(op.Deltas, []state.Delta{{Account: "AC-10000", Amount: 2}}) {
+		t.Fatalf("operación releída: %+v", op)
+	}
+}
