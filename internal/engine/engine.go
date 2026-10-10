@@ -54,18 +54,17 @@ const (
 
 type Engine struct {
 	store Store
-	v2    bool
+	rules rules
 }
 
 // New recibe una versión explícita e inmutable. Solo la composición resuelve
 // el default de arranque; el motor no lee entorno ni reloj.
 func New(store Store, version string) (*Engine, error) {
-	switch version {
-	case "v1", "v2":
-		return &Engine{store: store, v2: version == "v2"}, nil
-	default:
-		return nil, fmt.Errorf("engine: versión desconocida: %q", version)
+	r, err := rulesFor(version)
+	if err != nil {
+		return nil, err
 	}
+	return &Engine{store: store, rules: r}, nil
 }
 
 func (e *Engine) Reset() error { return e.store.Reset() }
@@ -106,10 +105,7 @@ func (e *Engine) apply(s *state.State, m protocol.Message) (int, []byte, error) 
 		if !ok {
 			return statusNotFound, respE401, nil
 		}
-		saldo := strconv.FormatInt(acc.Balance, 10)
-		if e.v2 {
-			saldo = `"` + formatBalance(acc.Balance) + `"`
-		}
+		saldo := e.rules.saldoJSON(acc.Balance)
 		return statusOK, []byte(`{"cuenta_id":"` + acc.ID + `","saldo":` + saldo + `}`), nil
 	case "DEPOSITO":
 		// E303 → E401 (ERR-ORD).
@@ -122,8 +118,8 @@ func (e *Engine) apply(s *state.State, m protocol.Message) (int, []byte, error) 
 			return statusNotFound, respE401, nil
 		}
 		id, err := s.Apply(state.Delta{Account: acc.ID, Amount: amount})
-		if err == nil && e.v2 {
-			acc.TransferFailures, acc.BlockedAttempts = 0, 0
+		if err == nil {
+			e.rules.depositSuccess(acc)
 		}
 		return operation(id, err)
 	case "TRANSFER":
@@ -140,32 +136,23 @@ func (e *Engine) apply(s *state.State, m protocol.Message) (int, []byte, error) 
 			return statusNotFound, respE401, nil
 		}
 		acc := s.Accounts[from]
-		limit := int64(100000)
-		if e.v2 {
-			limit = 50000
-			if acc.TransferFailures >= 3 {
-				acc.BlockedAttempts++
-				return statusLocked, []byte(`{"error":"E510","mensaje":"cuenta bloqueada","intentos":` + strconv.FormatInt(acc.BlockedAttempts, 10) + `}`), nil
-			}
+		if attempts, blocked := e.rules.blockedAttempt(acc); blocked {
+			return statusLocked, []byte(`{"error":"E510","mensaje":"cuenta bloqueada","intentos":` + strconv.FormatInt(attempts, 10) + `}`), nil
 		}
 		switch {
-		case amount > limit:
-			if e.v2 {
-				acc.TransferFailures++
-			}
+		case amount > e.rules.transferLimit:
+			e.rules.transferFailure(acc)
 			return statusUnprocessable, respE506, nil
 		case acc.Balance < amount:
-			if e.v2 {
-				acc.TransferFailures++
-			}
+			e.rules.transferFailure(acc)
 			return statusUnprocessable, respE507, nil
 		}
 		id, err := s.Apply(
 			state.Delta{Account: from, Amount: -amount},
 			state.Delta{Account: to, Amount: amount},
 		)
-		if err == nil && e.v2 {
-			acc.TransferFailures = 0
+		if err == nil {
+			e.rules.transferSuccess(acc)
 		}
 		return operation(id, err)
 	case "ANULA":

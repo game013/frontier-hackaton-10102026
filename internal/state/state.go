@@ -19,6 +19,25 @@ type Account struct {
 	BlockedAttempts  int64
 }
 
+// RecordTransferFailure registra un fallo como origen. El motor decide qué
+// errores cuentan y en qué versiones; esta transición no valida ni toca IDs.
+func (a *Account) RecordTransferFailure() { a.TransferFailures++ }
+
+// RecordBlockedAttempt registra un TRANSFER bloqueado y devuelve su correlativo.
+func (a *Account) RecordBlockedAttempt() int64 {
+	a.BlockedAttempts++
+	return a.BlockedAttempts
+}
+
+// ClearTransferFailures reinicia la racha tras un TRANSFER exitoso como origen.
+func (a *Account) ClearTransferFailures() { a.TransferFailures = 0 }
+
+// ClearBlock reinicia ambos contadores tras un DEPOSITO exitoso a la cuenta.
+func (a *Account) ClearBlock() {
+	a.ClearTransferFailures()
+	a.BlockedAttempts = 0
+}
+
 // Delta es el efecto de una operación sobre una cuenta. Guardarlo permite
 // anular sin recalcular las reglas que la aceptaron.
 type Delta struct {
