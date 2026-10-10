@@ -8,7 +8,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 
 - **Fase:** A0, A1, A2, A3, A4 y B1 completados (A4 integrado en master mediante fast-forward autorizado, 1598e36); fórmula del control confirmada y línea base completa revalidada. A2 integrado en master mediante fast-forward autorizado (d3abf21); A1 integrado en 310a1be.
 - **Versión observada:** `v1`, revalidada a las 15:00 de Bogotá. Último ID del log: 1381 (A4 cerró a las 15:28:23, antes del cambio; intentos 51 y 226 sin respuesta).
-- **Próximo paso:** A6 (replay tras el cambio anunciado) y B3 (integridad con fórmula A1); B2 tiene el corpus completo de A2 disponible.
+- **Próximo paso:** A6 (replay tras el cambio anunciado, para los 3 deltas de FR-0153) y B5 (SQLite tras el contrato Store de B4); B7 depende de A6.
 - **Bloqueos:** ninguno.
 
 ## Hitos de hoy (Bogotá, UTC−5)
@@ -157,3 +157,4 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [claude] 2026-10-10 16:21: B4 reclamado en feat/b4-engine (worktree ../10102026-b4), con B1a en commits aparte. Decisiones del usuario: store en memoria transitorio tras el contrato Store (B5 lo cambia por SQLite); NOTAS y HALT en la tabla de comandos para todas las versiones (A6/B7 los condicionan si resultan ser delta). 0 requests al original.
 - [claude] 2026-10-10 16:29: B4 y B1a completados en feat/b4-engine. B1a: ruta → auth (d22dc21) y tope 8192/E101 en /msg (4acc907). B4: `internal/state`, `internal/engine` con contrato Store y store en memoria transitorio, ERR-ORD de DEPOSITO/TRANSFER, montos CMD-MONTO, ANULA sin chequeo de saldo, NOTAS/HALT en la tabla de comandos (fixture `log-cases-v2.json`, 545 casos A5) y motor conectado en app (a6f553b…3174b1a). Suite diferencial v1: 55/55 secuencias, `pending-v1.txt` vacío. Auditoría Haiku: réplica de las 1996 respuestas del log (v1 y v2) contra app.New, 1986 iguales; las 10 restantes son ID 618 (ENT-08) y HEAD vía recorder (cuerpo vacío en servidor real). Supuestos en spec ENT-12, CMD-VERSION, MEM-07. 0 requests al original. Rama sin mezclar.
 - [claude] 2026-10-10 16:36: revisión adversaria de B4 (Spec sin hallazgos; Standards 3 P2) corregida: contadores int64 (a2527b6), desbordamiento de saldos comprobado antes de escribir con state.ErrOverflow → 500 E500 de MEM-07 (83fb82f) y motor sin net/http (5103b3b). go test -race ./... y diferencial v1 sin pendientes en verde. 0 requests al original.
+- [claude] 2026-10-10 16:38: usuario autoriza mezcla; feat/b4-engine integrado en master con git merge --ff-only hasta 39325fd, sin commit de merge. go test ./... en verde. Worktree (sin ignorados) y rama eliminados. Sin llamadas al original.
