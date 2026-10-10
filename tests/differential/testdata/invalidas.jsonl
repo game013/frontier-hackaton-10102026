@@ -1,0 +1,4 @@
+{"id": 101, "seq": "sin-bytes", "method": "POST", "path": "/__reset", "auth": "valid", "content_type": null, "status": 200, "outcome": "completed"}
+{"id": 102, "seq": "incompleta", "method": "POST", "path": "/__reset", "auth": "valid", "content_type": null, "request_b64": "", "status": 200, "response_b64": "eyJvayI6dHJ1ZX0=", "outcome": "completed"}
+{"id": 103, "seq": "incompleta", "method": "POST", "path": "/msg", "auth": "valid", "content_type": null, "request_b64": "eyJtIjogIlBJTkc7MSJ9", "status": 0, "response_b64": null, "outcome": "transport_error"}
+{"id": 104, "seq": "sin-reset", "method": "POST", "path": "/msg", "auth": "valid", "content_type": null, "request_b64": "eyJtIjogIlBJTkc7MSJ9", "status": 200, "response_b64": "eyJwb25nIjp0cnVlfQ==", "outcome": "completed"}

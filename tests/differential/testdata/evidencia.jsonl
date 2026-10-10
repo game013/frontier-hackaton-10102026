@@ -1,0 +1,7 @@
+{"id": 1, "seq": "ok", "method": "POST", "path": "/__reset", "auth": "valid", "content_type": null, "request_b64": "", "status": 200, "response_b64": "eyJvayI6dHJ1ZX0=", "outcome": "completed"}
+{"id": 2, "seq": "ok", "method": "POST", "path": "/msg", "auth": "valid", "content_type": null, "request_b64": "eyJtIjogIlBJTkc7NjQifQ==", "status": 200, "response_b64": "eyJwb25nIjp0cnVlfQ==", "outcome": "completed"}
+{"id": 3, "seq": "ok", "method": "POST", "path": "/msg", "auth": "valid", "content_type": null, "request_b64": "eyJtIjogIlBJTkc7NjQifQ==", "status": 429, "response_b64": "bGltaXQ=", "outcome": "infrastructure", "infrastructure": "rate-limit"}
+{"id": 4, "seq": "ok", "method": "GET", "path": "/health", "auth": "none", "content_type": null, "request_b64": null, "status": 401, "response_b64": "eyJlcnJvciI6IkUwMDEiLCJtZW5zYWplIjoibm8gYXV0b3JpemFkbyJ9", "outcome": "completed"}
+{"id": 5, "seq": "reordenado", "method": "POST", "path": "/__reset", "auth": "valid", "content_type": null, "request_b64": "", "status": 200, "response_b64": "eyJvayI6dHJ1ZX0=", "outcome": "completed"}
+{"id": 6, "seq": "reordenado", "method": "GET", "path": "/health", "auth": "none", "content_type": null, "request_b64": null, "status": 401, "response_b64": "eyJtZW5zYWplIjoibm8gYXV0b3JpemFkbyIsImVycm9yIjoiRTAwMSJ9", "outcome": "completed"}
+{"id": 7, "seq": "ok", "method": "POST", "path": "/no-existe", "auth": "valid", "content_type": null, "request_b64": "e30=", "status": 404, "response_b64": "eyJlcnJvciI6IkU0MDQiLCJtZW5zYWplIjoicnV0YSBkZXNjb25vY2lkYSJ9", "outcome": "completed"}
