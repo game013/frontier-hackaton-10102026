@@ -95,7 +95,8 @@ Responsable: agente pi (Claude) con el usuario. Estrategia: `docs/research/estra
 **Estado**
 
 - [x] Estrategia de descubrimiento y presupuesto (commits `33f08c1`, `2c9e997`, `ccc6f8c`).
-- [ ] Cliente instrumentado en Python (`tools/explorer/`). En curso.
+- [x] Cliente instrumentado en Python: `tools/explorer/bb.py` con 10 pruebas contra un
+  servidor falso (commit `40a9552`). Uso en `tools/explorer/README.md`. Aún sin llamadas reales.
 - [ ] Fase 1: replay del corpus (21 req). Fase 2: precedencia E301/E302/E202 (~10 req).
 
 **Decisiones del usuario (exploración):** un token; se registran todos los requests,
@@ -111,3 +112,6 @@ El cliente es una herramienta de exploración, no el reemplazo, y no se adelanta
 **Registro**
 
 - [pi] 2026-10-10: creada esta sección y el protocolo de coordinación. Iniciado el cliente.
+- [pi] 2026-10-10: cliente listo: log con hipótesis, rate limit, tope diario, caché por
+  prefijo y epoch, y descarte de rate-limit de infraestructura. Pendiente: confirmar el token
+  de exploración antes de la fase 1.
