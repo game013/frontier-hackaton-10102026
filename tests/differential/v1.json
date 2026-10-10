@@ -1,0 +1,6 @@
+{
+  "sources": [
+    {"file": "tests/corpus/v1-replays/a2-baseline-20261010-retry/corpus.jsonl", "seqs": ["*"]},
+    {"file": "experimentos.jsonl", "seqs": ["a3-v1r-*"]}
+  ]
+}
