@@ -5,6 +5,7 @@ La fuente única es docs/architecture.mmd. Este exportador admite los nodos,
 subgraphs, clases y aristas usados aquí; falla ante sintaxis nueva desconocida.
 No reemplaza un renderer general de Mermaid.
 """
+import argparse
 import json
 from pathlib import Path
 import re
@@ -20,6 +21,11 @@ def quote(value):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--format", choices=("svg", "png"), default="svg")
+    options = parser.parse_args()
+    output = OUTPUT if options.format == "svg" else ROOT / "output/png/architecture.png"
+    output.parent.mkdir(parents=True, exist_ok=True)
     nodes, groups, edges, classes = {}, {}, [], {}
     active = None
     for raw in SOURCE.read_text().splitlines():
@@ -83,9 +89,13 @@ def main():
             raise ValueError(f"Arista con nodo inexistente: {start} -> {end}")
         style = 'style=dashed, constraint=false' if dotted else 'style=solid, weight=10'
         lines.append(f'{start} -> {end} [label={quote(label)}, {style}];')
+    if "config" in nodes:
+        lines.append('review -> config [style=invis, weight=100];')
     lines.extend(['review -> evaluator [style=invis];', 'db -> backup [style=invis];', '}'])
-    subprocess.run(["dot", "-Tsvg", "-o", str(OUTPUT)], input="\n".join(lines), text=True, check=True)
-    print(f"SVG generado: {len(nodes)} nodos, {len(edges)} aristas; {OUTPUT.relative_to(ROOT)}")
+    dpi_options = ["-Gdpi=160"] if options.format == "png" else []
+    subprocess.run(["dot", f"-T{options.format}", *dpi_options, "-o", str(output)],
+                   input="\n".join(lines), text=True, check=True)
+    print(f"{options.format.upper()} generado: {len(nodes)} nodos, {len(edges)} aristas; {output.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

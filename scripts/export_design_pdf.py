@@ -8,22 +8,26 @@ import subprocess
 
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
 from PyQt6.QtCore import QMarginsF, QUrl
-from PyQt6.QtGui import QFont, QGuiApplication, QPageLayout, QPageSize, QPdfWriter, QTextDocument, QTextBlockFormat, QTextCursor
+from PyQt6.QtGui import QFont, QGuiApplication, QImage, QPageLayout, QPageSize, QPdfWriter, QTextDocument, QTextBlockFormat, QTextCursor
 import re
 
 root = Path(__file__).resolve().parents[1]
 (root / "tmp/pdfs").mkdir(parents=True, exist_ok=True)
 (root / "output/pdf").mkdir(parents=True, exist_ok=True)
 subprocess.run([sys.executable, str(root / "scripts/render_architecture.py")], check=True)
+subprocess.run([sys.executable, str(root / "scripts/render_architecture.py"), "--format", "png"], check=True)
 diagram = root / "tmp/pdfs/diagram.png"
 subprocess.run(["rsvg-convert", str(root / "docs/architecture.svg"), "-o", str(diagram)], check=True)
-subprocess.run(["pandoc", "docs/system-design.md", "--standalone", "--embed-resources",
+subprocess.run(["pandoc", "docs/system-design.md", "docs/specification.md", "--standalone", "--embed-resources",
                 "--resource-path=docs:.", "--css=docs/design.css", "--metadata",
                 "pagetitle=Caja negra: diseño del reemplazo HTTP", "-o", "docs/system-design.html"], cwd=root, check=True)
 app = QGuiApplication(sys.argv)
 output = root / "output/pdf/system-design.pdf"
 html = (root / "docs/system-design.html").read_text()
-html = re.sub(r'<img[^>]+>', f'<img src="{diagram.as_uri()}" width="670" />', html)
+diagram_image = QImage(str(diagram))
+diagram_width = 600
+diagram_height = round(diagram_width * diagram_image.height() / diagram_image.width())
+html = re.sub(r'<img[^>]+>', f'<img src="{diagram.as_uri()}" width="{diagram_width}" height="{diagram_height}" />', html)
 html = re.sub(r'<style.*?</style>', '', html, flags=re.S)
 html = html.replace('<head>', '''<head><style>
 body { color: #172b40; font-size: 10pt; }
@@ -43,7 +47,7 @@ doc.setDocumentMargin(0)
 doc.setHtml(html)
 # Separar bloques extensos y evitar encabezados huérfanos.
 block = doc.begin()
-break_before = {"Capas y dependencias", "Árbol de directorios propuesto", "Especificación incremental", "4. Memoria entre requests", "7. Riesgos"}
+break_before = {"Capas y dependencias", "Árbol de directorios propuesto", "Caja negra: especificación incremental", "3. Comandos"}
 while block.isValid():
     cursor = QTextCursor(block)
     fmt = block.blockFormat()

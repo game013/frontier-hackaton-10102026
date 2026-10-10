@@ -2,10 +2,11 @@
 
 Diseño inicial del reemplazo autónomo HTTP en Go, con SQLite y despliegue en Railway.
 
-- [Documento de diseño y especificación incremental](docs/system-design.md): capas,
+- [Documento de diseño](docs/system-design.md): capas,
   dependencias, árbol de directorios, investigación y criterios de entrega.
 - [PDF entregable](output/pdf/system-design.pdf) y [página HTML autónoma](docs/system-design.html).
-- [Diagrama SVG](docs/architecture.svg) y [fuente Mermaid](docs/architecture.mmd).
+- [Especificación incremental](docs/specification.md): observaciones, IDs del log y confianza.
+- [Diagrama PNG](output/png/architecture.png), [SVG](docs/architecture.svg) y [fuente Mermaid](docs/architecture.mmd).
 - [Progreso y coordinación](PROGRESS.md).
 - [Estrategia de descubrimiento](docs/research/estrategia-descubrimiento.md).
 - [Cliente instrumentado existente](tools/explorer/README.md): única vía al original.
@@ -18,6 +19,8 @@ Para regenerar los entregables después de editar el Markdown o Mermaid:
 ```sh
 python3 scripts/export_design_pdf.py
 ```
+
+Para exportar solo el PNG: `python3 scripts/render_architecture.py --format png`.
 
 Requiere Python con PyQt6, Pandoc, Graphviz (`dot`) y librsvg (`rsvg-convert`).
 La exportación SVG usa un subconjunto de Mermaid convertido a Graphviz sin red;

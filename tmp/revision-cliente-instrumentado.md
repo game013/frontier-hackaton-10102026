@@ -73,3 +73,7 @@ Validación: **16 pruebas pasan**, contra servidor falso local; `git diff --chec
 Límite de esta validación: la coordinación exige compartir la misma ruta de log y directorio `.explore`; las pruebas no certifican carga multiproceso, separación entre tokens ni recuperación frente a interrupción en cada punto de escritura. La reproducción del corpus a las 15:30 y el registro de cambios del servicio siguen pendientes de su horario y no fueron parte de esta sesión.
 
 Entrega: PDF actualizado en `output/pdf/revision-cliente-instrumentado.pdf`.
+
+## Continuación: diseño y arquitectura
+
+Los hallazgos funcionales de esta revisión ya están atendidos. La siguiente tanda se registra por ID en [hallazgos del diseño](hallazgos-diseno.md), sección 7. Se corrigieron decisiones de arquitectura y entrega, se separó la especificación con IDs reales y se añadió exportación PNG; implementación Go y evidencia posterior al cambio siguen pendientes.

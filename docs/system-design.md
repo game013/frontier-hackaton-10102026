@@ -1,15 +1,17 @@
 # Caja negra: diseño del reemplazo HTTP
 
-**Estado:** diseño inicial acordado, 10 de octubre de 2026. Implementación pendiente.
+**Estado:** diseño corregido con evidencia `v1`, 10 de octubre de 2026. Implementación pendiente.
 **Objetivo:** reproducir el servicio vigente a la entrega, incluidos errores y memoria entre
 requests. El reemplazo es autónomo, responde en menos de 5 segundos por paso y conserva
-su estado tras reinicios. Este documento reúne arquitectura y especificación incremental.
+su estado tras reinicios. La [especificación incremental](specification.md) queda separada
+de las decisiones de arquitectura; las observaciones de `v1` deben revalidarse tras el cambio.
 
 ## Arquitectura y decisiones
 
 ![Arquitectura del reemplazo y de la investigación](architecture.svg)
 
-Fuente editable: [architecture.mmd](architecture.mmd). Coordinación: [PROGRESS.md](../PROGRESS.md).
+Fuente editable: [architecture.mmd](architecture.mmd). [PNG](../output/png/architecture.png).
+Coordinación: [PROGRESS.md](../PROGRESS.md).
 Contrato: [enunciado](old-system/README.md). Plan experimental:
 [estrategia de descubrimiento](research/estrategia-descubrimiento.md).
 
@@ -21,6 +23,8 @@ Contrato: [enunciado](old-system/README.md). Plan experimental:
 | Railway; local + ngrok como respaldo | Una réplica, Serverless desactivado y volumen montado. Comprobar cuenta, créditos y continuidad; el respaldo requiere equipo y red disponibles. |
 | Actualizaciones mediante código y redespliegue | Detectar cambios con replay manual; no autoadaptación ni consultas al original durante requests del evaluador. |
 | Fidelidad antes que mejoras de negocio | Mantener typos, espacios y comportamientos observados. Documentar riesgos sin corregirlos en el reemplazo compatible. |
+| Handler propio, sin `http.ServeMux` | Comparar método y ruta sin limpiar ni redirigir: `GET /msg` y `POST //msg` dan 404 E404 (log 41, 44). |
+| Reglas versionadas por configuración de arranque | `BEHAVIOR_VERSION=v1/v2`; sin valor, última versión implementada. Versión desconocida impide arrancar. Nunca elegir por reloj. |
 
 El único camino al original es **operador → herramienta de exploración → cliente
 instrumentado → original**. El evaluador solo llega al **reemplazo → SQLite**.
@@ -77,6 +81,7 @@ como única vía al original, verificando sus garantías antes de ampliar el run
 │   └── differential/               # pruebas con evidencia grabada
 ├── docs/
 │   ├── system-design.md
+│   ├── specification.md           # siete secciones, IDs reales y confianza
 │   ├── architecture.mmd
 │   ├── architecture.svg
 │   ├── old-system/                 # enunciado y ejemplos recibidos
@@ -84,7 +89,7 @@ como única vía al original, verificando sus garantías antes de ampliar el run
 ├── deploy/
 │   └── Dockerfile                  # solo Go; configuración Railway documentada
 ├── scripts/                        # verificación y generación de entregables
-├── experimentos.jsonl             # evidencia incremental; todavía no generado
+├── experimentos.jsonl             # evidencia registrada; IDs 1-50 en v1
 ├── artifacts/                     # diferencias y ejecuciones de replay
 └── .env                           # local, ignorado; jamás incluido en imágenes
 ```
@@ -100,7 +105,9 @@ de Git y del contexto de construcción.
 Modelo inicial: cuentas (ID, datos de alta, saldo), operaciones (ID, tipo, datos necesarios
 para reproducir su efecto y anulación) y contadores de IDs. Su estructura definitiva,
 unidades monetarias, alcance por token y consumo de contadores se determinan con sondas.
-Evitar conversiones por coma flotante; representación y rango deben reflejar el original.
+Saldos, montos y contadores se representan con enteros `int64`, nunca `float64`.
+Rechazo de decimales, exponentes, overflow y rango son supuestos pendientes de sondas;
+no convertir ni truncar valores fuera del rango. Serializar enteros sin sufijo `.0`.
 
 Una única conexión escritora SQLite y serialización de requests con estado, incluidos
 consultas y reset, proporcionan una vista consistente. Cada comando que modifica estado
@@ -113,11 +120,56 @@ confirmado antes de perder la respuesta. No añadir deduplicación o reintentos 
 que alteren la semántica observada. Readiness exige almacenamiento abierto y esquema listo;
 la respuesta externa de `/health` debe mantenerse compatible con el contrato observado.
 
+### Contrato HTTP observado y límites de transporte
+
+Usar un `http.Handler` propio como `Server.Handler`, sin mux, redirects ni páginas de error
+predeterminadas. Las rutas observadas son exactamente `POST /msg`, `POST /__reset` y
+`GET /health`. Otros métodos y rutas probados devuelven 404 y
+`{"error":"E404","mensaje":"ruta desconocida"}` (log 41-44).
+No limpiar `//msg` ni resolver segmentos `..`. La normalización de escapes, HEAD, OPTIONS
+y requests rechazados por `net/http` antes del handler requiere sondas: no afirmar cobertura.
+
+Health y reset autenticados devuelven 200 `{"ok":true}` (log 34-35);
+sin token dan 401 `{"error":"E001","mensaje":"no autorizado"}` (log 36, 50).
+El chequeo de disponibilidad debe enviar `TEAM_TOKEN`; confirmar que el hosting permite
+ese header antes de configurar un health check. No añadir una ruta pública de readiness.
+El supuesto para otros tokens es 401 E001, con estado únicamente para `TEAM_TOKEN`.
+Auth frente a ruta inexistente o JSON inválido sigue sin precedencia demostrada.
+
+### Versionado, captura del evaluador y monitoreo
+
+`BEHAVIOR_VERSION` se lee solo al arrancar, junto con `TEAM_TOKEN` y `STATE_PATH`.
+Cada versión conserva un conjunto de reglas; `v2` reutiliza `v1` y sobrescribe su delta,
+con esquema SQLite común. Rollback: configurar `v1` y reiniciar el mismo artefacto sin
+recompilar; verificar corpus y compatibilidad del estado antes de usarlo. La versión no
+aparece en rutas ni respuestas. Cada prueba y cada regla cita una `epoch` del explorador.
+
+Capturar cada request del evaluador en `/data/requests.jsonl` y stdout: timestamp UTC,
+ID local de secuencia, método, ruta y query sin normalización, cuerpo exacto en base64,
+status, respuesta exacta en base64, duración, versión y regla por defecto utilizada.
+Un reset autenticado exitoso delimita una secuencia; conservar también los resets fallidos.
+Omitir `Authorization`, cookies y headers secretos, sin importar sus mayúsculas; registrar
+solo etiqueta de auth (equipo/otro/ausente) y headers permitidos explícitamente.
+Si un cuerpo contiene un token configurado, redactarlo antes de cualquier salida y marcar
+que sus bytes no son reproducibles. Probar ausencia de secretos en JSONL y stdout.
+
+No crear `/logs` ni `/metrics`: acceder por herramientas del hosting. Rotar el archivo a
+10 MiB y conservar archivos rotados hasta extraerlos; nunca perder evidencia silenciosamente.
+El fallo de escritura no cambia status/cuerpo: avisar por stderr y conservar stdout si está
+disponible. Antes del corte de tokens, extraer secuencias y repetirlas con hipótesis y reset
+mediante `bb.py`, sin caché, bajo cuota y coordinación exclusiva del token.
+
+Contadores internos: total, status, código de error, defaults, duración máxima y p95 en una
+ventana de 1.000 requests. Emitir resumen cada 100 requests o minuto y alerta sobre 1 s.
+Registrar arranque con versión, almacenamiento y esquema listos; nunca secretos.
+Estas capacidades están diseñadas y siguen pendientes de implementación y verificación.
+
 ## Investigación y validación
 
-Primero reproducir los 20 ejemplos tras reset, capturar una referencia actual y comprobar
-precedencia de errores. Si se puede descubrir comandos sin calcular control, aprovecharlo;
-en caso contrario investigar control en tandas de hasta 100 solicitudes con hipótesis nuevas.
+El log 1-50 ya reproduce el corpus y mide precedencia y sobre HTTP en `v1`.
+Orden observado: E201 antes de E202, y E202 antes de E301/E302/E401 (log 23-32).
+Priorizar la fórmula del control: descubrir comandos con controles arbitrarios queda bloqueado
+por E202. Investigar en tandas de hasta 100 solicitudes con hipótesis nuevas.
 Después cubrir estado, anulaciones, límites, sobre HTTP y secuencias nuevas de 2-12 pasos.
 La numeración de errores y los nombres bancarios orientan sondas; no prueban reglas ni
 comandos adicionales.
@@ -161,89 +213,52 @@ diferencias, 2 ejecución incompleta/error; una ejecución incompleta nunca cuen
 Tras un delta: repetir para descartar ruido, diseñar sondas mínimas, citar IDs nuevos,
 añadir regresiones, cambiar Go y redesplegar conservando el volumen. Validar el corpus
 anterior y el nuevo; marcar qué reglas fueron reemplazadas. No seleccionar una versión
-por hora en runtime: el código final implementa la versión vigente a la entrega.
+por hora en runtime: configurar la versión vigente a la entrega. Cada fila de la especificación
+se revalida con IDs nuevos de la `epoch` vigente o se marca histórica/reemplazada; no elevar
+observaciones de una sola corrida a `confirmado`. El replay incluye auth, rutas y sobre JSON.
 
-Hitos manuales: referencia antes del cambio, replay después de las 15:30 y replay final
-antes de entregar. El [plan coordinado](research/estrategia-descubrimiento.md) registra Bogotá
-(UTC-5): cambio 20:30 UTC / 14:30 CDMX; entrega 01:00 UTC del día siguiente / 19:00 CDMX.
-Esta zona proviene del plan coordinado, no de una hora explícitamente zonificada en el README.
+### Horarios de corte y plan B
 
-## Especificación incremental
+El usuario decidió Bogotá UTC-5 en el plan coordinado; falta confirmar con los organizadores
+la zona oficial. Hasta entonces usar el plazo de entrega más temprano y dos replays tras
+los posibles cambios. Todos son hitos manuales, sin tarea automática creada.
 
-**Convención:** `E1…E20` son líneas del [corpus recibido](old-system/pruebas/ejemplos.jsonl),
-no IDs de `experimentos.jsonl`. No hay experimentos propios registrados en este diseño.
-`probable` identifica una observación aún no repetida; `supuesto` identifica una decisión
-sin prueba. Ninguna fila se declara `confirmado` hasta repetirla y citar IDs del log.
-Las obligaciones del enunciado se distinguen de comportamiento observado.
-
-### 1. Entrada
-
-| ID | Comportamiento | Evidencia | Confianza |
+| Hito del 10 de octubre | Bogotá (UTC-5) | CDMX (UTC-6) | UTC |
 | --- | --- | --- | --- |
-| ENT-01 | Mensajes por `POST /msg`, cuerpo JSON con `m` string. Otros tipos y campos extra pendientes. | Contrato; E1-E20; log pendiente | probable |
-| ENT-02 | El reemplazo debe exigir el token del equipo y reproducir la respuesta del original sin token o con otro token. Status y cuerpo aún desconocidos. | Contrato; sonda de auth pendiente | supuesto |
-| ENT-03 | Debe exponer reset y health, y reproducir otras rutas y métodos. No asumir 404/405 del framework. | Contrato; sondas pendientes | supuesto |
+| Replay tras posible cambio en Bogotá | 15:35 | 14:35 | 20:35 |
+| Replay tras posible cambio en CDMX | 16:35 | 15:35 | 21:35 |
+| Corte de búsqueda de fórmula; activar plan B si no hay fórmula confirmada | 18:00 | 17:00 | 23:00 |
+| Replay final completo y casos capturados del evaluador | 18:30 | 17:30 | 23:30 |
+| Último despliegue previsto | 19:15 | 18:15 | 00:15 del 11 de octubre |
+| Congelar código/configuración y validar endpoint | 19:30 | 18:30 | 00:30 del 11 de octubre |
+| Entrega conservadora | 20:00 | 19:00 | 01:00 del 11 de octubre |
 
-### 2. Integridad
+Plan B del control, **supuesto**, no regla del original: usar valores conocidos para mensajes
+ya registrados; para mensajes nuevos aceptar un campo final de 1-2 dígitos ASCII, 0-99;
+el resto da E201. No inventar E202 para mensajes nuevos sin fórmula. Mantener separado el
+comportamiento observado de PING. Este fallback pierde casos de control inválido y puede
+alterar estado en secuencias: activar solo si falla la investigación y registrar sus usos.
+Incluir sondas de UTF-8 (bytes frente a caracteres), caja, separadores y ceros iniciales.
 
-| ID | Comportamiento | Evidencia | Confianza |
-| --- | --- | --- | --- |
-| INT-01 | `ALTA;Lucia;83` da E202 y `ALTA;Lucia;82` crea cuenta. Fórmula y cobertura del control desconocidas. | E2-E3; log pendiente | probable |
-| INT-02 | Control `5X` en el depósito observado da E201. Rango, espacios y representación pendientes. | E17; log pendiente | probable |
-| INT-03 | `ALTA;Lucia;Gomez;11` da E302. No determina precedencia frente a control o comando. | E20; log pendiente | probable |
+Antes de congelar: comprobar créditos, volumen, una réplica y Serverless desactivado, guardar
+el entrypoint y resultado de la validación; confirmar si el evaluador limita validaciones.
+Mantener el mismo servicio disponible al menos hasta el día siguiente y hasta conocer el
+resultado final. La hora exacta de evaluación posterior y los créditos siguen sin confirmar.
+No redesplegar durante una validación; después del congelado, solo intervenir ante una
+avería comprobada, registrar motivo y repetir smoke test y validación pública.
 
-### 3. Comandos
+## Especificación y entrega de evidencia
 
-Cada fila es el bloque inicial del comando; ampliarlo con argumentos, límites, efectos y
-errores una vez medidos. No limitar la exploración a estos seis comandos.
+La [especificación](specification.md) contiene las siete secciones del contrato, con IDs
+reales del log y confianza por comportamiento. El diseño no es evidencia de implementación.
 
-| ID | Comportamiento | Evidencia | Confianza |
-| --- | --- | --- | --- |
-| CMD-PING | `PING;64` → 200, `{"pong":true}`. | E1; log pendiente | probable |
-| CMD-ALTA | Alta de Lucia/Mateo → 201, `{"cuentaId":"AC-0001"}` / `AC-0002`; las cuentas observadas arrancan con saldo 0. | E3-E5; log pendiente | probable |
-| CMD-CONSULTA | Consulta devuelve 200 y claves `cuenta_id`, `saldo`; `CONSULTa` funciona en ese caso. Normalización general pendiente. | E5, E8, E11, E19; log pendiente | probable |
-| CMD-DEPOSITO | Depósitos observados afectan saldo y devuelven 200, `{"status":"recieved","operacionId":"OP-NNNN"}`. | E6, E18-E19; log pendiente | probable |
-| CMD-TRANSFER | Transferencias observadas mueven saldo y devuelven la misma forma de operación; límites no generalizados. | E7-E11; log pendiente | probable |
-| CMD-ANULA | Primera anulación: 200, `{"ok":true,"anulada":"OP-0003"}`. Repetición: 200, `{"ok":false,"motivo":"ya anulada"}`. Reversión y otros tipos pendientes. | E13-E14, E16, E19; log pendiente | probable |
-
-### 4. Memoria entre requests
-
-| ID | Comportamiento | Evidencia | Confianza |
-| --- | --- | --- | --- |
-| MEM-01 | Saldos, cuentas y operaciones afectan requests posteriores; IDs observados consecutivos. Consumo de IDs ante errores pendiente. | E3-E19; log pendiente | probable |
-| MEM-02 | Reset antecede cada secuencia; deben medirse alcance, contadores y aislamiento por token. | Contrato y contexto del corpus; log pendiente | supuesto |
-| MEM-03 | Persistir estado tras reinicio es una decisión del reemplazo, no una observación del ciclo de vida del original. | Decisión Q5/Q8; prueba de recuperación pendiente | supuesto |
-
-### 5. Errores
-
-Cuerpos exactos observados; los espacios dentro de strings son significativos. El orden de
-evaluación queda pendiente: probar pares de fallos simultáneos y observar efectos en estado.
-
-| ID | Comportamiento | Evidencia | Confianza |
-| --- | --- | --- | --- |
-| ERR-201 | 400, `{"error":"E201","mensaje":"control mal formado"}`. | E17; log pendiente | probable |
-| ERR-202 | 400, `{"error":"E202","mensaje":"control inválido"}`. | E2; log pendiente | probable |
-| ERR-301 | 400, `{"error":"E301","mensaje":"comando desconocido "}`; espacio final. | E12; log pendiente | probable |
-| ERR-302 | 400, `{"error":"E302","mensaje":"aridad inválida"}`. | E20; log pendiente | probable |
-| ERR-401 | 404, `{"error":"E401","mensaje":"cuenta inexistente"}`. | E15; log pendiente | probable |
-| ERR-506 | 422, `{"error":"E506","mensaje":"límite excedido"}` al transferir 120000 en esa secuencia. | E9; log pendiente | probable |
-| ERR-507 | 422, `{"error":"E507","mensaje":"saldo insuficiente"}` al transferir 50000 tras anulación. | E16; log pendiente | probable |
-
-### 6. Cambios durante el día
-
-| ID | Comportamiento | Evidencia | Confianza |
-| --- | --- | --- | --- |
-| CAM-01 | Se anuncia un cambio a las 15:30; la evaluación usa la versión vigente a las 20:00. No hay delta observado aún. | AGENTS.md y contrato; replay pendiente | supuesto |
-| CAM-02 | Anotar versión/corpus, primer timestamp observado y IDs antes/después; sin sondeo continuo no afirmar el instante exacto del cambio. | Decisión Q6/Q10; informe pendiente | supuesto |
-
-### 7. Riesgos
-
-| ID | Comportamiento | Evidencia | Confianza |
-| --- | --- | --- | --- |
-| RIE-01 | La anulación observada no equivale a un diseño bancario seguro; investigar negativos, duplicados y operaciones inexistentes antes de describirlos. Un sistema nuevo requeriría reglas explícitas y auditoría. | E13-E16; sondas pendientes | probable |
-| RIE-02 | No cambiar mensajes inconsistentes (`recieved`, claves heterogéneas, espacios) durante el reto. Un cliente nuevo usaría un contrato versionado. | E3, E5-E7, E12; log pendiente | probable |
-| RIE-03 | Reinicios, volumen mal montado, cuota agotada o pérdida de red pueden hacer fallar evaluación. Verificar recuperación, persistencia y endpoint público antes de entregar. | Decisiones Q5/Q9; pruebas pendientes | supuesto |
-| RIE-04 | Un fallback desconocido puede reducir puntaje. No inventar comportamiento silenciosamente: medirlo o documentar explícitamente status/cuerpo y confianza antes de implementar. | Regla del contrato; fallback aún pendiente | supuesto |
+El log de auditoría conserva todos los intentos y sus IDs originales. Para entregar evidencia,
+exportar solo entradas `completed`, con status/respuesta y sin marca de infraestructura,
+conservando esos IDs sin renumerar. Adjuntar aparte los intentos inciertos e infraestructura
+con su explicación; nunca presentarlos como comportamientos del servicio. Validar que toda
+cita existe y que ninguna secuencia quedó incompleta. Confirmar con los organizadores si
+exigen un archivo único de auditoría completo además de la exportación filtrada. El exportador
+y su validación siguen pendientes; los campos extra no sustituyen los obligatorios.
 
 ## Plan de implementación y aceptación
 

@@ -117,7 +117,7 @@ desglose siguiente y coordinarse con pi antes de cualquier consulta al original.
 
 - Diseño y especificación incremental: `docs/system-design.md`.
 - Diagrama: `docs/architecture.mmd` y `docs/architecture.svg`.
-- Entregable PDF: `output/pdf/system-design.pdf` (7 páginas A4).
+- Entregable PDF: `output/pdf/system-design.pdf` (9 páginas A4 tras correcciones).
 - Página HTML local autónoma: `docs/system-design.html` (no publicada).
 - Regenerar todos: `python3 scripts/export_design_pdf.py`.
 - Dependencias de exportación: Python/PyQt6, Pandoc, Graphviz y librsvg. SVG generado
@@ -162,6 +162,12 @@ desglose siguiente y coordinarse con pi antes de cualquier consulta al original.
   incluidos en diseño y entregables. Frente pi incorporado como fuente de coordinación.
 - [codex] 2026-10-10: creados Markdown, Mermaid/SVG y HTML autónomo; PDF de 7 páginas
   generado y revisado visualmente. Desglosada implementación; servicio Go aún pendiente.
+
+## Correcciones de diseño y exportación PNG
+
+- [codex] 2026-10-10: atendidos los hallazgos documentales prioritarios H-01/H-02/H-04/H-05, G-04 y O-01..O-03; estado detallado y pendientes en `tmp/hallazgos-diseno.md`, sección 7.
+- [codex] Especificación separada en `docs/specification.md` con IDs 1-50 de la evidencia v1. Esto actualiza la decisión previa de documento único: PDF/HTML reúnen diseño y especificación; fuentes Markdown separadas para revisión.
+- [codex] Diagrama PNG reproducible en `output/png/architecture.png`; fuente única Mermaid y SVG actualizados. Runtime Go, hosting y replay posterior al cambio siguen pendientes.
 
 ## Frente: exploración del original (pi)
 

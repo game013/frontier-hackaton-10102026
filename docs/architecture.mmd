@@ -17,27 +17,34 @@ flowchart TB
     diff --> review
   end
   subgraph RUN["Railway · una réplica · Serverless desactivado"]
-    http["Adaptador HTTP Go<br/>auth · rutas · status y bytes"]
-    engine["Motor de compatibilidad<br/>orden observado · comandos · reset"]
+    http["Handler HTTP Go propio<br/>auth · rutas sin limpiar · status y bytes"]
+    engine["Motor de compatibilidad<br/>reglas v1/v2 · comandos · reset"]
     protocol["Protocolo<br/>gramática · control · errores · serialización"]
     state["Modelo de estado<br/>cuentas · operaciones · contadores"]
     store["Adaptador SQLite<br/>transacciones y recuperación"]
     db[("Volumen persistente<br/>SQLite /data/state.db")]
+    config["Configuración al arrancar<br/>BEHAVIOR_VERSION · TEAM_TOKEN · STATE_PATH"]
+    telemetry["Captura y monitoreo<br/>auth redactada · defaults · latencia"]
+    requestlog[("Volumen y stdout<br/>requests.jsonl · cuerpos en base64")]
     http --> engine
     engine --> protocol
     engine --> state
     engine --> store
     store --> db
+    config --> engine
+    http --> telemetry
+    telemetry --> requestlog
   end
   evaluator["Evaluador / cliente<br/>HTTPS · máximo 5 s por paso"]
   evaluator --> http
   runner -. "validación contra reemplazo" .-> http
+  requestlog -. "extraer y repetir antes del corte" .-> runner
   review -. "despliegue estático" .-> http
   backup["Respaldo: Go local + ngrok<br/>SQLite local · equipo y red disponibles"]
   review -. "alternativa de hosting" .-> backup
   classDef runtime fill:#e9f3ff,stroke:#245c91,color:#102e49;
   classDef research fill:#eef8f1,stroke:#3e7650,color:#193d25;
   classDef artifact fill:#fff6df,stroke:#a07621,color:#503b10;
-  class http,engine,protocol,state,store,db runtime;
+  class http,engine,protocol,state,store,db,config,telemetry,requestlog runtime;
   class operator,runner,client,original research;
   class evidence,diff,review,backup artifact;
