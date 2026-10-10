@@ -14,7 +14,7 @@ completo y los 8 del canario. Los otros 647 de 725 pasos del replay responden ig
 | --- | --- | --- | --- | --- |
 | CAM-V2-1 | Formato de `saldo` en CONSULTA | entero: `"saldo":40000` | string con dos decimales, el entero entre 100: `"saldo":"400.00"` | 235 → 2028; 232 → 2025 (`0` → `"0.00"`) |
 | CAM-V2-2 | Umbral de E506 en TRANSFER | monto > 100000 | monto > 50000 | 237 → 2030 (100000: 200 → 422 E506) |
-| CAM-V2-3 | Bloqueo de cuenta tras fallos | no existe (E510 nunca aparece) | tras 3 TRANSFER fallidos seguidos del mismo origen, sus TRANSFER dan 423 E510 | 544 → 2337 (200 → 423 E510) |
+| CAM-V2-3 (pendiente de confirmar) | Bloqueo de cuenta tras fallos | no existe (E510 nunca aparece) | tras 3 TRANSFER fallidos seguidos del mismo origen, sus TRANSFER dan 423 E510 | 544 → 2337 (200 → 423 E510) |
 
 ## Método
 
@@ -94,8 +94,9 @@ Regla medida:
 - E510 no consume OP: el depósito siguiente recibe el número correlativo (2826 → OP-0005).
   `POST /__reset` borra el bloqueo, porque cada secuencia empieza desbloqueada.
 
-**Confianza:** la regla v2 está confirmada y repetida. Que no existiera en v1 es
-**inferido**: E510 no aparece en ninguna de las 1.381 respuestas v1, ni en el enunciado ni en
+**Confianza:** la regla v2 está confirmada y repetida. Como delta queda **pendiente de
+confirmar** (decisión del usuario tras la revisión adversaria): las pruebas de conformidad
+contra v2 lo dirán. Que no existiera en v1 es **inferido**: E510 no aparece en ninguna de las 1.381 respuestas v1, ni en el enunciado ni en
 los ejemplos. La base v1 nunca envió un cuarto TRANSFER tras tres fallidos seguidos del mismo
 origen, así que v1 no lo descarta directamente. El único caso del replay (544 → 2337) aparece
 porque CAM-V2-2 convirtió en fallos tres transferencias que en v1 pasaban. Es el único

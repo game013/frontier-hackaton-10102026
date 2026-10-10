@@ -26,7 +26,7 @@ hipótesis, y cada delta, una conclusión con su causa y los IDs v1/v2.
 2. **El límite por transferencia baja a la mitad.** E506 salta con montos > 50000; antes era
    con montos > 100000. 50000 pasa y 50001 falla. v1 ID 237 (100000 → 200) → v2 ID 2030
    (→ 422 E506).
-3. **Bloqueo de cuenta tras tres transferencias fallidas.** Tres TRANSFER fallidos seguidos
+3. **Bloqueo de cuenta tras tres transferencias fallidas** (pendiente de confirmar como delta). Tres TRANSFER fallidos seguidos
    desde una cuenta (por límite o por saldo) la bloquean como origen. Sus siguientes TRANSFER
    responden 423 `E510 cuenta bloqueada` con un contador `intentos` que sube. Solo un depósito
    a esa cuenta la libera. CONSULTA y recibir transferencias siguen funcionando. v1 ID 544 →
