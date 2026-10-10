@@ -1,0 +1,12 @@
+{"request": {"m": "NOTAS;11"}, "hipotesis": "NOTAS sin argumentos con estado vacío: lista de notas"}
+{"request": {"m": "notas;11"}, "hipotesis": "NOTAS sin distinguir caja (minúsculas)"}
+{"request": {"m": "Notas;11"}, "hipotesis": "NOTAS sin distinguir caja (mixta)"}
+{"request": {"m": "NOTAS;12"}, "hipotesis": "NOTAS con control vecino: E202"}
+{"request": {"m": "NOTAS;x;56"}, "hipotesis": "NOTAS con un argumento: ¿E302 o lo ignora?"}
+{"request": {"m": "NOTAS;AC-0001;14"}, "hipotesis": "NOTAS con un ID de cuenta inexistente: ¿filtra, E302 o E401?"}
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "cuenta AC-0001 para ver si NOTAS cambia con estado"}
+{"request": {"m": "DEPOSITO;AC-0001;500;46"}, "hipotesis": "operación OP-0001 para ver si NOTAS cambia con estado"}
+{"request": {"m": "NOTAS;11"}, "hipotesis": "NOTAS tras ALTA y DEPOSITO: ¿mismo contenido?"}
+{"request": {"m": "NOTAS;AC-0001;14"}, "hipotesis": "NOTAS con cuenta existente como argumento: ¿filtra o E302?"}
+{"request": {"m": "NOTAS;x;y;91"}, "hipotesis": "NOTAS con dos argumentos: aridad"}
+{"request": {"m": "NOTA;88"}, "hipotesis": "vecino de NOTAS: E301 con sugerencia NOTAS"}

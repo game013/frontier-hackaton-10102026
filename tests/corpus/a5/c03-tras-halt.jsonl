@@ -1,0 +1,4 @@
+{"request": {"m": "PING;64"}, "hipotesis": "tras HALT y reset: PING"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "tras HALT y reset: AC-0001 ya no existe (E401) si el reset repara"}
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "tras HALT y reset: la numeración vuelve a AC-0001"}
+{"request": {"m": "halt;71"}, "hipotesis": "HALT sin distinguir caja"}

@@ -62,8 +62,49 @@ PREVIA = [
 ]
 
 
+A = "AC-0001"
+
+# Hallazgos del barrido: NOTAS (200 sin argumentos) y HALT (solo vía sugerencia).
+CARACTERIZACION = {
+    "c01-notas": [
+        m("NOTAS", "NOTAS sin argumentos con estado vacío: lista de notas"),
+        m("notas", "NOTAS sin distinguir caja (minúsculas)"),
+        m("Notas", "NOTAS sin distinguir caja (mixta)"),
+        {"request": {"m": f"NOTAS;{control('NOTAS') % 97 + 1}"}, "hipotesis": "NOTAS con control vecino: E202"},
+        m("NOTAS;x", "NOTAS con un argumento: ¿E302 o lo ignora?"),
+        m(f"NOTAS;{A}", "NOTAS con un ID de cuenta inexistente: ¿filtra, E302 o E401?"),
+        m("ALTA;Lucia", "cuenta AC-0001 para ver si NOTAS cambia con estado"),
+        m(f"DEPOSITO;{A};500", "operación OP-0001 para ver si NOTAS cambia con estado"),
+        m("NOTAS", "NOTAS tras ALTA y DEPOSITO: ¿mismo contenido?"),
+        m(f"NOTAS;{A}", "NOTAS con cuenta existente como argumento: ¿filtra o E302?"),
+        m("NOTAS;x;y", "NOTAS con dos argumentos: aridad"),
+        m("NOTA", "vecino de NOTAS: E301 con sugerencia NOTAS"),
+    ],
+    "c02-halt": [
+        m("ALTA;Lucia", "cuenta AC-0001 antes de HALT"),
+        m(f"DEPOSITO;{A};500", "saldo 500 y OP-0001 antes de HALT"),
+        {"request": {"m": f"HALT;{control('HALT') % 97 + 1}"}, "hipotesis": "HALT con control vecino: E202 (integridad antes que el comando)"},
+        m("HALT;x", "HALT con un argumento: ¿E302 o se ejecuta?"),
+        m("HALT;x;y", "HALT con dos argumentos: aridad"),
+        m("HALT", "HALT sin argumentos: usuario autoriza ejecutarlo; ¿qué responde?"),
+        m("PING", "PING tras HALT: ¿el servicio sigue respondiendo?"),
+        m(f"CONSULTA;{A}", "CONSULTA tras HALT: ¿se conserva el saldo 500?"),
+        m("ALTA;Mateo", "ALTA tras HALT: ¿se aceptan escrituras y sigue la numeración (AC-0002)?"),
+        m(f"DEPOSITO;{A};1", "DEPOSITO tras HALT: ¿se aceptan operaciones (OP-0002)?"),
+        m("HALT", "HALT repetido: ¿misma respuesta?"),
+        m("NOTAS", "NOTAS tras HALT"),
+    ],
+    "c03-tras-halt": [
+        m("PING", "tras HALT y reset: PING"),
+        m(f"CONSULTA;{A}", "tras HALT y reset: AC-0001 ya no existe (E401) si el reset repara"),
+        m("ALTA;Lucia", "tras HALT y reset: la numeración vuelve a AC-0001"),
+        m("halt", "HALT sin distinguir caja"),
+    ],
+}
+
+
 def sequences() -> dict[str, list[dict]]:
-    return {"00-previa": PREVIA, **sweep(dictionary())}
+    return {"00-previa": PREVIA, **sweep(dictionary()), **CARACTERIZACION}
 
 
 SEQUENCES = sequences() if DICT.exists() else {"00-previa": PREVIA}

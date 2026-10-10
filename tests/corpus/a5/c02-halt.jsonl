@@ -1,0 +1,12 @@
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "cuenta AC-0001 antes de HALT"}
+{"request": {"m": "DEPOSITO;AC-0001;500;46"}, "hipotesis": "saldo 500 y OP-0001 antes de HALT"}
+{"request": {"m": "HALT;72"}, "hipotesis": "HALT con control vecino: E202 (integridad antes que el comando)"}
+{"request": {"m": "HALT;x;42"}, "hipotesis": "HALT con un argumento: ¿E302 o se ejecuta?"}
+{"request": {"m": "HALT;x;y;49"}, "hipotesis": "HALT con dos argumentos: aridad"}
+{"request": {"m": "HALT;71"}, "hipotesis": "HALT sin argumentos: usuario autoriza ejecutarlo; ¿qué responde?"}
+{"request": {"m": "PING;64"}, "hipotesis": "PING tras HALT: ¿el servicio sigue respondiendo?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "CONSULTA tras HALT: ¿se conserva el saldo 500?"}
+{"request": {"m": "ALTA;Mateo;3"}, "hipotesis": "ALTA tras HALT: ¿se aceptan escrituras y sigue la numeración (AC-0002)?"}
+{"request": {"m": "DEPOSITO;AC-0001;1;28"}, "hipotesis": "DEPOSITO tras HALT: ¿se aceptan operaciones (OP-0002)?"}
+{"request": {"m": "HALT;71"}, "hipotesis": "HALT repetido: ¿misma respuesta?"}
+{"request": {"m": "NOTAS;11"}, "hipotesis": "NOTAS tras HALT"}
