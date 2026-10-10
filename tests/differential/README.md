@@ -9,9 +9,13 @@ orden, números por su texto). Así se ve si la diferencia es solo de serializac
 
 ```sh
 make differential                          # BEHAVIOR_VERSION=v1 por defecto
-make differential BEHAVIOR_VERSION=v2      # skip si no existe v2.json
+make differential BEHAVIOR_VERSION=v2      # falla si v2 no está en config.Versions o no tiene v2.json
 go test ./tests/differential -run 'TestCorpus/a3-v1r-17' -v
+go test ./tests/differential -run TestCorpus -update-pending   # regenera pending-<version>.txt
 ```
+
+Cada paso tiene 5 segundos, cuerpo incluido, igual que en la evaluación. Si se
+pasa, es un fallo de la secuencia.
 
 `go test ./...` (y `make test-go`) lo incluye.
 
@@ -20,10 +24,12 @@ go test ./tests/differential -run 'TestCorpus/a3-v1r-17' -v
 - `<version>.json`: suite de la versión. Cada fuente es un JSONL de registros de
   evidencia de `bb.py` (`experimentos.jsonl` o el `corpus.jsonl` de un replay) y
   una lista de patrones `path.Match` sobre `seq`. Rutas relativas a la raíz.
-- `pending-<version>.txt`: secuencias que el reemplazo todavía no reproduce, una
-  por línea (`#` comenta). Se ejecutan y su primer desacuerdo sale con `-v`, sin
-  fallar. Si una ya coincide en todos sus pasos, o si la lista nombra una que no
-  está en la suite, el test falla: hay que quitarla de la lista.
+- `pending-<version>.txt`: por secuencia, los pasos que el reemplazo todavía no
+  reproduce: `<seq> <pasos>`, con pasos como `1-6,8` (posición en la secuencia;
+  0 es el reset; `#` comenta). Funciona como trinquete. Falla si difiere un paso
+  fuera de la lista (regresión), si un paso listado ya coincide o si la lista
+  nombra una secuencia que no está en la suite. Tras avanzar en B3/B4, regenerar
+  con `-update-pending` y revisar el diff: solo deben desaparecer pasos.
 - `testdata/`: evidencia sintética para las pruebas del propio arnés.
 
 ## Reglas sobre la evidencia
@@ -48,4 +54,4 @@ go test ./tests/differential -run 'TestCorpus/a3-v1r-17' -v
   usa dos tokens y queda fuera.
 
 Para añadir corpus nuevo (A4, A5, `v2` de A6), agregar una fuente o un patrón a
-la suite y las secuencias que aún no pasen a `pending-<version>.txt`.
+la suite y regenerar `pending-<version>.txt` con `-update-pending`.
