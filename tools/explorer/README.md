@@ -196,3 +196,17 @@ done
 Tras el cambio de versión, repetir con `BB_EPOCH=v2` y nombres nuevos para detectar deltas de
 estado. `a3_isolation.py` intentó medir el aislamiento con `TEAM_TOKEN`, pero el original lo
 rechaza con 401 E001 (log 618): no se vuelve a ejecutar.
+
+## A4: batería del sobre HTTP y números
+
+`a4_battery.py` genera offline `tests/corpus/a4/*.jsonl`: precedencia auth/ruta/JSON, rutas
+crudas, métodos, cuerpos, escapes JSON, formas del header de auth, formas léxicas del control,
+montos de DEPOSITO/TRANSFER, IDs de cuenta, PING, caja del comando y nombres largos. `ctl()` fija
+un campo de control arbitrario; el resto de los controles sale de `control.py`.
+
+```sh
+python3 tools/explorer/a4_battery.py          # regenera; cero requests
+for f in tests/corpus/a4/*.jsonl; do
+  python3 tools/explorer/bb.py run "a4-<epoch>-$(basename $f .jsonl)" "$f" --no-cache
+done
+```

@@ -1,0 +1,25 @@
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "origen AC-0001"}
+{"request": {"m": "ALTA;Mateo;3"}, "hipotesis": "destino AC-0002"}
+{"request": {"m": "DEPOSITO;AC-0001;1000000;51"}, "hipotesis": "saldo inicial del origen: 1000000"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;0;44"}, "hipotesis": "TRANSFER con monto '0': E303, E506 o éxito"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo del origen tras TRANSFER '0'"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;-1;41"}, "hipotesis": "TRANSFER con monto '-1': E303, E506 o éxito"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo del origen tras TRANSFER '-1'"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;-100000;12"}, "hipotesis": "TRANSFER con monto '-100000': E303, E506 o éxito"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo del origen tras TRANSFER '-100000'"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;+1;41"}, "hipotesis": "TRANSFER con monto '+1': E303, E506 o éxito"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo del origen tras TRANSFER '+1'"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;01;40"}, "hipotesis": "TRANSFER con monto '01': E303, E506 o éxito"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo del origen tras TRANSFER '01'"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;1.0;13"}, "hipotesis": "TRANSFER con monto '1.0': E303, E506 o éxito"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo del origen tras TRANSFER '1.0'"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;100000.0;14"}, "hipotesis": "TRANSFER con monto '100000.0': E303, E506 o éxito"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo del origen tras TRANSFER '100000.0'"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;0100000;19"}, "hipotesis": "TRANSFER con monto '0100000': E303, E506 o éxito"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo del origen tras TRANSFER '0100000'"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;1e5;53"}, "hipotesis": "TRANSFER con monto '1e5': E303, E506 o éxito"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo del origen tras TRANSFER '1e5'"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;100000;12"}, "hipotesis": "TRANSFER con monto '100000': E303, E506 o éxito"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo del origen tras TRANSFER '100000'"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;9223372036854775808;2"}, "hipotesis": "TRANSFER con monto '9223372036854775808': E303, E506 o éxito"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo del origen tras TRANSFER '9223372036854775808'"}

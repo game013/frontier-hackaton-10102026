@@ -1,0 +1,10 @@
+{"method": "POST", "path": "/no-existe", "hipotesis": "sin auth a ruta inexistente: ¿401 o 404?", "auth": "none"}
+{"method": "GET", "path": "/no-existe", "hipotesis": "sin auth, GET a ruta inexistente: ¿401 o 404?", "auth": "none"}
+{"method": "POST", "path": "/msg", "hipotesis": "sin auth y cuerpo `{`: ¿401 o E100?", "auth": "none", "raw_body": "{"}
+{"method": "POST", "path": "/msg", "hipotesis": "sin auth y cuerpo `{}`: ¿401 o E102?", "auth": "none", "raw_body": "{}"}
+{"method": "GET", "path": "/msg", "hipotesis": "token inválido con GET /msg: ¿401 o 404?", "auth": "invalid"}
+{"method": "POST", "path": "/no-existe", "hipotesis": "auth válida y cuerpo `{` a ruta inexistente: ¿404 o E100?", "raw_body": "{"}
+{"method": "POST", "path": "/health", "hipotesis": "POST /health autenticado: ¿404 o 200?", "raw_body": "{\"m\":\"PING;64\"}"}
+{"method": "GET", "path": "/health", "hipotesis": "GET /health con token inválido: 401", "auth": "invalid"}
+{"method": "POST", "path": "/msg", "hipotesis": "auth vacía y cuerpo `{`: ¿401 o E100?", "auth": "empty", "raw_body": "{"}
+{"method": "POST", "path": "/msg", "hipotesis": "esquema Basic y m válida: 401", "auth": "scheme", "raw_body": "{\"m\":\"PING;64\"}"}

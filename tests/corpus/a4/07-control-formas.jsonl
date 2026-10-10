@@ -1,0 +1,18 @@
+{"request": {"m": "ALTA;Lucia; 82"}, "hipotesis": "espacio antes del control (82 canónico)"}
+{"request": {"m": "ALTA;Lucia;82 "}, "hipotesis": "espacio tras el control"}
+{"request": {"m": "ALTA;Lucia;+82"}, "hipotesis": "signo + en el control"}
+{"request": {"m": "ALTA;Lucia;-82"}, "hipotesis": "signo - en el control"}
+{"request": {"m": "ALTA;Lucia;82.0"}, "hipotesis": "control decimal 82.0"}
+{"request": {"m": "ALTA;Lucia;8.2e1"}, "hipotesis": "control en notación científica"}
+{"request": {"m": "ALTA;Lucia;0x52"}, "hipotesis": "control hexadecimal"}
+{"request": {"m": "ALTA;Lucia;٨٢"}, "hipotesis": "dígitos arábigo-índicos"}
+{"request": {"m": "ALTA;Lucia;８２"}, "hipotesis": "dígitos de ancho completo"}
+{"request": {"m": "ALTA;Lucia;0"}, "hipotesis": "control 0 (fuera del rango 2–98)"}
+{"request": {"m": "ALTA;Lucia;00"}, "hipotesis": "control 00"}
+{"request": {"m": "ALTA;Lucia;1"}, "hipotesis": "control 1"}
+{"request": {"m": "ALTA;Lucia;99"}, "hipotesis": "control 99"}
+{"request": {"m": "ALTA;Lucia;100"}, "hipotesis": "control de tres dígitos sin cero inicial"}
+{"request": {"m": "ALTA;Lucia;9223372036854775808"}, "hipotesis": "control mayor que int64"}
+{"request": {"m": "ALTA;Lucia;082"}, "hipotesis": "padding de tres dígitos (062 dio E201)"}
+{"request": {"m": "ALTA;Lucia;82;"}, "hipotesis": "control seguido de segmento vacío"}
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "control canónico: ninguna variante anterior consumió AC (esperado AC-0001)"}

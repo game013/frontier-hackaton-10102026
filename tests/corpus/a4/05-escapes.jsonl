@@ -1,0 +1,10 @@
+{"raw_body": "{\"m\":\"PING\\u003b64\"}", "hipotesis": "separador escapado \\u003b equivale a ;"}
+{"raw_body": "{\"m\":\"\\u0050ING;64\"}", "hipotesis": "comando con letra escapada"}
+{"raw_body": "{\"m\":\"PING;6\\u0034\"}", "hipotesis": "control con dígito escapado"}
+{"raw_body": "{\"m\":\"PING;64\\n\"}", "hipotesis": "salto de línea tras el control"}
+{"raw_body": "{\"m\":\"PING;64\\u0000\"}", "hipotesis": "NUL tras el control"}
+{"raw_body": "{\"m\":\"ALTA;\\ud800;85\"}", "hipotesis": "surrogate suelto como nombre"}
+{"request": {"m": "ALTA;Ana\tMaria;44"}, "hipotesis": "tabulador dentro del nombre (no cuenta en el control)"}
+{"request": {"m": " ALTA;Lucia;82"}, "hipotesis": "espacio antes del comando"}
+{"request": {"m": "ALTA ;Lucia;82"}, "hipotesis": "espacio tras el comando"}
+{"request": {"m": "ALTA; Lucia;82"}, "hipotesis": "espacio antes del nombre"}

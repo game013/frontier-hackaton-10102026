@@ -1,0 +1,31 @@
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "cuenta AC-0001 para depósitos"}
+{"request": {"m": "DEPOSITO;AC-0001;0;31"}, "hipotesis": "DEPOSITO con monto '0': ¿E303 o se acepta y cómo se interpreta?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras DEPOSITO '0': valor numérico efectivo"}
+{"request": {"m": "DEPOSITO;AC-0001;-1;28"}, "hipotesis": "DEPOSITO con monto '-1': ¿E303 o se acepta y cómo se interpreta?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras DEPOSITO '-1': valor numérico efectivo"}
+{"request": {"m": "DEPOSITO;AC-0001;+1;28"}, "hipotesis": "DEPOSITO con monto '+1': ¿E303 o se acepta y cómo se interpreta?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras DEPOSITO '+1': valor numérico efectivo"}
+{"request": {"m": "DEPOSITO;AC-0001;01;7"}, "hipotesis": "DEPOSITO con monto '01': ¿E303 o se acepta y cómo se interpreta?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras DEPOSITO '01': valor numérico efectivo"}
+{"request": {"m": "DEPOSITO;AC-0001;1.0;77"}, "hipotesis": "DEPOSITO con monto '1.0': ¿E303 o se acepta y cómo se interpreta?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras DEPOSITO '1.0': valor numérico efectivo"}
+{"request": {"m": "DEPOSITO;AC-0001;1e3;20"}, "hipotesis": "DEPOSITO con monto '1e3': ¿E303 o se acepta y cómo se interpreta?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras DEPOSITO '1e3': valor numérico efectivo"}
+{"request": {"m": "DEPOSITO;AC-0001;-0;31"}, "hipotesis": "DEPOSITO con monto '-0': ¿E303 o se acepta y cómo se interpreta?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras DEPOSITO '-0': valor numérico efectivo"}
+{"request": {"m": "DEPOSITO;AC-0001;00;10"}, "hipotesis": "DEPOSITO con monto '00': ¿E303 o se acepta y cómo se interpreta?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras DEPOSITO '00': valor numérico efectivo"}
+{"request": {"m": "DEPOSITO;AC-0001;0x10;25"}, "hipotesis": "DEPOSITO con monto '0x10': ¿E303 o se acepta y cómo se interpreta?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras DEPOSITO '0x10': valor numérico efectivo"}
+{"request": {"m": "DEPOSITO;AC-0001;١;4"}, "hipotesis": "DEPOSITO con monto '١': ¿E303 o se acepta y cómo se interpreta?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras DEPOSITO '١': valor numérico efectivo"}
+{"request": {"m": "DEPOSITO;AC-0001;1 ;28"}, "hipotesis": "DEPOSITO con monto '1 ': ¿E303 o se acepta y cómo se interpreta?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras DEPOSITO '1 ': valor numérico efectivo"}
+{"request": {"m": "DEPOSITO;AC-0001;9223372036854775807;12"}, "hipotesis": "DEPOSITO con monto '9223372036854775807': ¿E303 o se acepta y cómo se interpreta?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras DEPOSITO '9223372036854775807': valor numérico efectivo"}
+{"request": {"m": "DEPOSITO;AC-0001;1;28"}, "hipotesis": "DEPOSITO con monto '1': ¿E303 o se acepta y cómo se interpreta?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras DEPOSITO '1': valor numérico efectivo"}
+{"request": {"m": "DEPOSITO;AC-0001;9223372036854775808;9"}, "hipotesis": "DEPOSITO con monto '9223372036854775808': ¿E303 o se acepta y cómo se interpreta?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras DEPOSITO '9223372036854775808': valor numérico efectivo"}
+{"request": {"m": "DEPOSITO;AC-0001;99999999999999999999;4"}, "hipotesis": "DEPOSITO con monto '99999999999999999999': ¿E303 o se acepta y cómo se interpreta?"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras DEPOSITO '99999999999999999999': valor numérico efectivo"}

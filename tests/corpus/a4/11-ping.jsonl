@@ -1,0 +1,11 @@
+{"request": {"m": "PING;XX"}, "hipotesis": "PING con control no numérico"}
+{"raw_body": "{\"m\":\"PING\"}", "hipotesis": "PING sin control"}
+{"raw_body": "{\"m\":\"PING;\"}", "hipotesis": "PING con control vacío: ¿E104?"}
+{"request": {"m": "PING;0"}, "hipotesis": "PING control 0"}
+{"request": {"m": "PING;100"}, "hipotesis": "PING control 100"}
+{"request": {"m": "PING;-1"}, "hipotesis": "PING control -1"}
+{"request": {"m": "PING;062"}, "hipotesis": "PING control con padding"}
+{"request": {"m": "PING;1;2"}, "hipotesis": "PING con argumento extra"}
+{"request": {"m": "ping;64"}, "hipotesis": "ping en minúscula"}
+{"request": {"m": "Ping;64"}, "hipotesis": "Ping mezclado"}
+{"request": {"m": "PING;64"}, "hipotesis": "PING con el control de la fórmula"}

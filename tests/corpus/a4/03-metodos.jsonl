@@ -1,0 +1,16 @@
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "estado previo: AC-0001 para ver si algún método resetea"}
+{"method": "HEAD", "path": "/msg", "hipotesis": "HEAD /msg"}
+{"method": "OPTIONS", "path": "/msg", "hipotesis": "OPTIONS /msg"}
+{"method": "PUT", "path": "/msg", "hipotesis": "PUT /msg con m válida", "raw_body": "{\"m\":\"PING;64\"}"}
+{"method": "DELETE", "path": "/msg", "hipotesis": "DELETE /msg"}
+{"method": "PATCH", "path": "/msg", "hipotesis": "PATCH /msg con m válida", "raw_body": "{\"m\":\"PING;64\"}"}
+{"method": "HEAD", "path": "/health", "hipotesis": "HEAD /health"}
+{"method": "OPTIONS", "path": "/health", "hipotesis": "OPTIONS /health"}
+{"method": "HEAD", "path": "/nada", "hipotesis": "HEAD a ruta inexistente"}
+{"method": "OPTIONS", "path": "/nada", "hipotesis": "OPTIONS a ruta inexistente"}
+{"method": "OPTIONS", "path": "/msg", "hipotesis": "OPTIONS sin auth (preflight CORS)", "auth": "none"}
+{"method": "HEAD", "path": "/msg", "hipotesis": "HEAD sin auth", "auth": "none"}
+{"method": "HEAD", "path": "/__reset", "hipotesis": "HEAD /__reset no debería resetear"}
+{"method": "OPTIONS", "path": "/__reset", "hipotesis": "OPTIONS /__reset no debería resetear"}
+{"method": "DELETE", "path": "/__reset", "hipotesis": "DELETE /__reset no debería resetear"}
+{"request": {"m": "ALTA;Mateo;3"}, "hipotesis": "si nada reseteó, la siguiente cuenta es AC-0002"}

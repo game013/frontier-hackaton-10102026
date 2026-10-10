@@ -1,0 +1,10 @@
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "AC-0001"}
+{"request": {"m": "CONSULTA;ac-0001;14"}, "hipotesis": "ID de cuenta en minúscula"}
+{"request": {"m": "CONSULTA;AC-1;5"}, "hipotesis": "ID de cuenta sin ceros"}
+{"request": {"m": "CONSULTA;AC-01;68"}, "hipotesis": "ID de cuenta con dos dígitos"}
+{"request": {"m": "CONSULTA;AC-0001 ;14"}, "hipotesis": "espacio tras el ID de cuenta"}
+{"request": {"m": "CONSULTA;AC0001;14"}, "hipotesis": "ID de cuenta sin guion"}
+{"request": {"m": "CONSULTA;AC-0000;17"}, "hipotesis": "AC-0000"}
+{"request": {"m": "CONSULTA;AC-+001;19"}, "hipotesis": "signo dentro del número de cuenta"}
+{"request": {"m": "DEPOSITO;ac-0001;10;77"}, "hipotesis": "DEPOSITO a cuenta en minúscula"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo de AC-0001 tras los intentos"}

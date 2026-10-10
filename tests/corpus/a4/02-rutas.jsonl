@@ -1,0 +1,15 @@
+{"method": "POST", "path": "/%6dsg", "hipotesis": "ruta con escape %6d: ¿se decodifica a /msg?", "raw_body": "{\"m\":\"PING;64\"}"}
+{"method": "POST", "path": "/msg/", "hipotesis": "barra final en /msg/", "raw_body": "{\"m\":\"PING;64\"}"}
+{"method": "POST", "path": "/msg?x=1", "hipotesis": "query en /msg se ignora", "raw_body": "{\"m\":\"PING;64\"}"}
+{"method": "POST", "path": "/msg?", "hipotesis": "query vacía en /msg", "raw_body": "{\"m\":\"PING;64\"}"}
+{"method": "POST", "path": "/MSG", "hipotesis": "caja de la ruta: /MSG", "raw_body": "{\"m\":\"PING;64\"}"}
+{"method": "POST", "path": "/./msg", "hipotesis": "segmento punto: /./msg", "raw_body": "{\"m\":\"PING;64\"}"}
+{"method": "POST", "path": "/x/../msg", "hipotesis": "segmento punto-punto: /x/../msg", "raw_body": "{\"m\":\"PING;64\"}"}
+{"method": "POST", "path": "/msg%2F", "hipotesis": "barra escapada al final", "raw_body": "{\"m\":\"PING;64\"}"}
+{"method": "POST", "path": "/msg;x", "hipotesis": "parámetro de ruta con ;", "raw_body": "{\"m\":\"PING;64\"}"}
+{"method": "GET", "path": "/health/", "hipotesis": "barra final en /health/"}
+{"method": "GET", "path": "/health?x=1", "hipotesis": "query en /health"}
+{"method": "GET", "path": "/HEALTH", "hipotesis": "caja de la ruta: /HEALTH"}
+{"method": "GET", "path": "//health", "hipotesis": "doble barra en /health"}
+{"method": "GET", "path": "/", "hipotesis": "raíz"}
+{"method": "GET", "path": "/%68ealth", "hipotesis": "escape en /health"}

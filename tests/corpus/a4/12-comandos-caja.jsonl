@@ -1,0 +1,5 @@
+{"request": {"m": "alta;Lucia;82"}, "hipotesis": "comando en minúscula: alta"}
+{"request": {"m": "consulta;AC-0001;14"}, "hipotesis": "consulta en minúscula"}
+{"request": {"m": "deposito;AC-0001;50;54"}, "hipotesis": "deposito en minúscula"}
+{"request": {"m": "Transfer;AC-0001;AC-0002;10;13"}, "hipotesis": "Transfer mezclado (AC-0002 inexistente)"}
+{"request": {"m": "anula;OP-0001;72"}, "hipotesis": "anula en minúscula"}

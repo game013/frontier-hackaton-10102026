@@ -1,0 +1,6 @@
+{"method": "POST", "path": "/msg", "hipotesis": "esquema en minúscula: bearer", "raw_body": "{\"m\":\"PING;64\"}", "auth": "lower"}
+{"method": "POST", "path": "/msg", "hipotesis": "dos espacios tras Bearer", "raw_body": "{\"m\":\"PING;64\"}", "auth": "spaces"}
+{"method": "POST", "path": "/msg", "hipotesis": "token sin esquema", "raw_body": "{\"m\":\"PING;64\"}", "auth": "bare"}
+{"method": "GET", "path": "/health", "hipotesis": "health con bearer en minúscula", "auth": "lower"}
+{"method": "GET", "path": "/health", "hipotesis": "health con dos espacios", "auth": "spaces"}
+{"method": "GET", "path": "/health", "hipotesis": "health con token sin esquema", "auth": "bare"}
