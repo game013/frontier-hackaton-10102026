@@ -8,6 +8,8 @@ import (
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/game013/frontier-hackaton-10102026/internal/protocol"
 )
 
 // Cuerpos exactos observados (spec, sección 5). Sin newline final.
@@ -17,13 +19,16 @@ var (
 	respE001 = []byte(`{"error":"E001","mensaje":"no autorizado"}`)
 	respE100 = []byte(`{"error":"E100","mensaje":"json inválido"}`)
 	respE102 = []byte(`{"error":"E102","mensaje":"falta m"}`)
-	respE301 = []byte(`{"error":"E301","mensaje":"comando desconocido "}`)
 	respE404 = []byte(`{"error":"E404","mensaje":"ruta desconocida"}`)
+	// No es del original: marca los comandos con estado hasta que B4 conecte
+	// el motor. 501 para que nunca se confunda con una respuesta observada.
+	respNoEngine = []byte(`{"error":"B4","mensaje":"comando sin motor"}`)
 )
 
 type Handler struct {
 	auth  []byte
 	reset func()
+	exec  func(protocol.Message) (int, []byte)
 }
 
 type Option func(*Handler)
@@ -31,8 +36,22 @@ type Option func(*Handler)
 // WithReset registra la acción que vacía el estado en POST /__reset.
 func WithReset(fn func()) Option { return func(h *Handler) { h.reset = fn } }
 
+// WithExec registra quien ejecuta un mensaje que ya pasó el protocolo (forma,
+// control, comando y aridad). Por defecto solo PING tiene respuesta.
+func WithExec(fn func(protocol.Message) (int, []byte)) Option {
+	return func(h *Handler) { h.exec = fn }
+}
+
+// defaultExec responde PING (CMD-PING) y marca el resto como sin motor.
+func defaultExec(m protocol.Message) (int, []byte) {
+	if m.Cmd == "PING" {
+		return http.StatusOK, respPong
+	}
+	return http.StatusNotImplemented, respNoEngine
+}
+
 func New(token string, opts ...Option) *Handler {
-	h := &Handler{auth: []byte("Bearer " + token), reset: func() {}}
+	h := &Handler{auth: []byte("Bearer " + token), reset: func() {}, exec: defaultExec}
 	for _, o := range opts {
 		o(h)
 	}
@@ -77,11 +96,11 @@ func (h *Handler) msg(r *http.Request) (int, []byte) {
 		string(obj["m"]) == "null" {
 		return http.StatusBadRequest, respE102
 	}
-	// Stub de B1 hasta el parser de B3: solo PING;<control>.
-	if fields := strings.Split(m, ";"); len(fields) == 2 && fields[0] == "PING" {
-		return http.StatusOK, respPong
+	msg, perr := protocol.Parse(m)
+	if perr != nil {
+		return perr.Status, perr.Body
 	}
-	return http.StatusBadRequest, respE301
+	return h.exec(msg)
 }
 
 // rawPath devuelve la ruta tal como llegó, sin query, sin decodificar escapes

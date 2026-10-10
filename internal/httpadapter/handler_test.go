@@ -5,23 +5,29 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/game013/frontier-hackaton-10102026/internal/protocol"
 )
 
 const testToken = "equipo-secreto"
 
 const (
-	bodyOK      = `{"ok":true}`
-	bodyPong    = `{"pong":true}`
-	bodyE001    = `{"error":"E001","mensaje":"no autorizado"}`
-	bodyE100    = `{"error":"E100","mensaje":"json inválido"}`
-	bodyE102    = `{"error":"E102","mensaje":"falta m"}`
-	bodyE301    = `{"error":"E301","mensaje":"comando desconocido "}`
-	bodyE404    = `{"error":"E404","mensaje":"ruta desconocida"}`
-	authNone    = "\x00none"
-	authValid   = "Bearer " + testToken
-	authEmpty   = "Bearer "
-	authInvalid = "Bearer token-invalido-0000"
-	authScheme  = "Basic " + testToken
+	bodyOK       = `{"ok":true}`
+	bodyPong     = `{"pong":true}`
+	bodyE001     = `{"error":"E001","mensaje":"no autorizado"}`
+	bodyE100     = `{"error":"E100","mensaje":"json inválido"}`
+	bodyE102     = `{"error":"E102","mensaje":"falta m"}`
+	bodyE103     = `{"error":"E103","mensaje":"falta control"}`
+	bodyE202     = `{"error":"E202","mensaje":"control inválido"}`
+	bodyE301Sug  = `{"error":"E301","mensaje":"comando desconocido ","sugerencia":"ALTA"}`
+	bodyE302     = `{"error":"E302","mensaje":"aridad inválida"}`
+	bodyE404     = `{"error":"E404","mensaje":"ruta desconocida"}`
+	bodyNoEngine = `{"error":"B4","mensaje":"comando sin motor"}`
+	authNone     = "\x00none"
+	authValid    = "Bearer " + testToken
+	authEmpty    = "Bearer "
+	authInvalid  = "Bearer token-invalido-0000"
+	authScheme   = "Basic " + testToken
 )
 
 type exchange struct {
@@ -97,8 +103,7 @@ func TestPrecedenceAssumption(t *testing.T) {
 	})
 }
 
-// Supuestos de B1 sin evidencia: ruta sin decodificar, query ignorada,
-// stub de /msg hasta B3.
+// Supuestos de B1 sin evidencia: ruta sin decodificar, query ignorada.
 func TestRoutingAndStubAssumptions(t *testing.T) {
 	run(t, []exchange{
 		{"escape_no_se_decodifica", "POST", "/%6dsg", authValid, "", str(`{"m":"PING;64"}`), 404, bodyE404},
@@ -111,8 +116,40 @@ func TestRoutingAndStubAssumptions(t *testing.T) {
 		{"clave_M_mayuscula", "POST", "/msg", authValid, "", str(`{"M":"PING;1"}`), 400, bodyE102},
 		{"cuerpo_vacio", "POST", "/msg", authValid, "", str(``), 400, bodyE100},
 		{"json_con_basura", "POST", "/msg", authValid, "", str(`{"m":"PING;1"} x`), 400, bodyE100},
-		{"stub_comando_no_ping", "POST", "/msg", authValid, "", str(`{"m":"ALTA;Lucia;82"}`), 400, bodyE301},
 	})
+}
+
+// /msg delega en protocol.Parse; los errores de protocolo salen tal cual y
+// PING responde sin motor. Casos del log (A4).
+func TestMsgUsesProtocol(t *testing.T) {
+	run(t, []exchange{
+		{"log939_m_vacia", "POST", "/msg", authValid, "", str(`{"m":""}`), 400, bodyE103},
+		{"log1074_ping_minusculas", "POST", "/msg", authValid, "", str(`{"m":"ping;64"}`), 200, bodyPong},
+		{"log1066_ping_control_libre", "POST", "/msg", authValid, "", str(`{"m":"PING;XX"}`), 200, bodyPong},
+		{"log1073_ping_aridad", "POST", "/msg", authValid, "", str(`{"m":"PING;1;2"}`), 400, bodyE302},
+		{"log60_control_invalido", "POST", "/msg", authValid, "", str(`{"m":"ALTA;Lucia;83"}`), 400, bodyE202},
+		{"log1307_sugerencia", "POST", "/msg", authValid, "", str(`{"m":"ALT;Lucia;24"}`), 400, bodyE301Sug},
+		// Supuesto hasta B4: un comando con estado válido no tiene motor.
+		{"sin_motor_hasta_b4", "POST", "/msg", authValid, "", str(`{"m":"ALTA;Lucia;82"}`), 501, bodyNoEngine},
+	})
+}
+
+func TestMsgExecReceivesParsedMessage(t *testing.T) {
+	var got protocol.Message
+	h := New(testToken, WithExec(func(m protocol.Message) (int, []byte) {
+		got = m
+		return 201, []byte(`{"cuentaId":"AC-0001"}`)
+	}))
+	req := httptest.NewRequest("POST", "/msg", strings.NewReader(`{"m":"alta;Lucia;82"}`))
+	req.Header.Set("Authorization", authValid)
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+	if rec.Code != 201 || rec.Body.String() != `{"cuentaId":"AC-0001"}` {
+		t.Fatalf("got %d %q", rec.Code, rec.Body.String())
+	}
+	if got.Cmd != "ALTA" || len(got.Args) != 1 || got.Args[0] != "Lucia" {
+		t.Fatalf("exec recibió %+v", got)
+	}
 }
 
 func TestResetCallsHook(t *testing.T) {
