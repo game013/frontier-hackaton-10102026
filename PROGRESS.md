@@ -33,7 +33,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 | A2 | **Línea base `v1`:** corpus de ejemplos, secuencias 1–50 y lo de A1 en `tests/corpus/`; repetir sin caché. | ≤250 (225 consumidas) | A0 | Codex (orquestación), Luna (herramientas/revisión) | Completado | 227–450 (226: fallo sin respuesta) |
 | A3 | **Estado:** consumo de IDs ante errores, anulación de transferencias, ANULA sobre operación inexistente, alcance del reset, naturaleza del límite E506. | ~500 (800 aprobados; 436 consumidas) | A0 (mejor con A1) | claude (orquestación), Haiku (minería/auditoría) | Completado | 451–886 (618: TEAM_TOKEN rechazado) |
 | A4 | **Sobre HTTP y números:** matriz de cierre del diseño (precedencia auth/ruta/JSON, cuerpos, HEAD/OPTIONS, escapes) y bordes (`0`, `-1`, `+1`, `01`, `1.0`, int64). | ~300 (500 aprobados; 495 consumidas) | A0 | claude (orquestación), Haiku (auditoría) | Completado | 887–1381 |
-| A5 | **Descubrir comandos** por diccionario (RETIRO, MOVIMIENTOS, CIERRE…). | ~500 | A1 | — | Pendiente | — |
+| A5 | **Descubrir comandos** por diccionario (RETIRO, MOVIMIENTOS, CIERRE…). | ~500 (900 aprobados) | A1 | claude (orquestación), Haiku (diccionario/auditoría) | En curso | — |
 | A6 | **Detección del cambio (incidente [FR-0153](docs/old-system/incidente-FR-0153.md)):** replay de la base `v1` contra v2 y sondas mínimas hasta aislar **exactamente 3 deltas**. Cada delta va al log con `hipotesis`, a la spec §6 (CAM-V2-1…3) con IDs v1/v2 y al debrief. | ~300 | A2 | — | Pendiente | — |
 | A7 | Replay final sin caché de la versión vigente. | ~300 | A6 | — | Pendiente | — |
 
@@ -143,3 +143,4 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 
 - [claude] 2026-10-10 15:55: usuario autoriza mezcla; feat/a4-envelope integrado en master con git merge --ff-only hasta 1598e36, sin commit de merge. Sin nuevas llamadas al original.
 - [pi] 2026-10-10 15:44 (reloj local): registrado el ticket FR-0153 en docs/old-system/incidente-FR-0153.md. v2 desde las 15:30, exactamente 3 deltas, tests de conformidad contra v2 y deltas en el log, la spec §6 y el debrief. AGENTS.md, CONTEXT.md, spec CAM-01 y filas A6/B7 actualizados. Sin llamadas al original.
+- [claude] 2026-10-10 15:42: A5 reclamado en feat/a5-commands (worktree ../10102026-a5); usuario aprueba techo de 900 requests, alcance descubrir + caracterizar, ejecución sobre `v2` (`BB_EPOCH=v2`) tras una prueba previa de fórmula/E301/sugerencia. Nota: entradas del registro marcadas 15:45 y 15:55 se escribieron antes de esa hora real (reloj 15:38 al planear).
