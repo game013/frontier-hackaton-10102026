@@ -1,5 +1,7 @@
-"""Pruebas del cliente instrumentado contra un servidor falso local. No tocan el original."""
+"""Pruebas A0 del cliente instrumentado contra servidor falso local."""
+import base64
 import json
+import multiprocessing
 import os
 import sys
 import tempfile
@@ -16,7 +18,7 @@ TOKEN = "tok-secreto-de-prueba"
 
 
 class Fake(BaseHTTPRequestHandler):
-    calls: list = []
+    calls = []
     rate_limit_next = 0
     counter = 0
 
@@ -25,7 +27,7 @@ class Fake(BaseHTTPRequestHandler):
 
     def _reply(self, status, body, extra=None):
         Fake.counter += 1
-        data = body.encode()
+        data = body if isinstance(body, bytes) else body.encode()
         self.send_response(status)
         self.send_header("X-Req", str(Fake.counter))
         for k, v in (extra or {}).items():
@@ -36,20 +38,36 @@ class Fake(BaseHTTPRequestHandler):
 
     def do_POST(self):
         n = int(self.headers.get("Content-Length") or 0)
-        body = self.rfile.read(n).decode()
+        body = self.rfile.read(n)
         Fake.calls.append((self.path, body, self.headers.get("Authorization")))
         if Fake.rate_limit_next:
             Fake.rate_limit_next -= 1
-            return self._reply(429, "slow down", {"X-Frontier-Infra": "rate-limit"})
-        if self.headers.get("Authorization") != f"Bearer {TOKEN}":
+            return self._reply(429, b"slow down", {"X-Frontier-Infra": "rate-limit"})
+        if self.headers.get("Authorization") not in (f"Bearer {TOKEN}", "Bearer otro-token"):
             return self._reply(401, "no autorizado")
         if self.path == "/__reset":
-            return self._reply(200, '{"ok":true}')
+            return self._reply(200, b'{"ok":true}')
         if self.path == "/msg":
-            return self._reply(200, json.dumps({"eco": json.loads(body)["m"]}))
+            try:
+                value = json.loads(body)
+                return self._reply(200, json.dumps({"eco": value["m"]}))
+            except (ValueError, KeyError, TypeError):
+                return self._reply(200, body)
         self._reply(404, "Not Found")
 
     do_GET = do_POST
+
+
+def _locked_child(url, log, coord, token, entered, release, finished):
+    os.environ["BB_TEST_TOKEN"] = token
+    c = bb.Client(base_url=url, log_path=log, token_var="BB_TEST_TOKEN", coord_dir=coord,
+                  min_interval=0, sleep=lambda _: None)
+    with c.sequence("child-a") as s:
+        s.flush()
+        entered.set()
+        release.wait(5)
+        s.msg("PING;1", "child A")
+    finished.set()
 
 
 class ClientTest(unittest.TestCase):
@@ -62,6 +80,7 @@ class ClientTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.srv.shutdown()
+        cls.srv.server_close()
 
     def setUp(self):
         Fake.calls.clear()
@@ -73,284 +92,327 @@ class ClientTest(unittest.TestCase):
 
     def client(self, **kw):
         args = dict(base_url=self.url, log_path=self.log, token_var="BB_TEST_TOKEN",
-                    min_interval=0, sleep=lambda s: None)
+                    min_interval=0, sleep=lambda _: None,
+                    coord_dir=Path(self.tmp.name) / ".explore")
         args.update(kw)
         return bb.Client(**args)
 
     def tearDown(self):
         self.tmp.cleanup()
 
-    def test_sequence_starts_with_reset_and_logs_contract_fields(self):
+    def test_sequence_context_resets_lazily_and_logs_contract(self):
         s = self.c.sequence("s1", "estado limpio")
-        r = s.msg("PING;64", "PING sin estado")
-        self.assertEqual([p for p, _, _ in Fake.calls], ["/__reset", "/msg"])
-        es = self.c.entries()
-        self.assertEqual([e["id"] for e in es], [1, 2])
-        self.assertEqual(es[0]["path"], "/__reset")
-        for k in ("id", "seq", "x_req", "hipotesis", "request", "status", "response", "conclusion"):
-            self.assertIn(k, es[1])
-        self.assertEqual(es[1]["request"], {"m": "PING;64"})
-        self.assertEqual(es[1]["response"], {"eco": "PING;64"})
-        self.assertEqual(r.x_req, es[1]["x_req"])
+        self.assertEqual(Fake.calls, [])  # __enter__ no hace flush
+        with s:
+            r = s.msg("PING;64", "PING sin estado")
+            self.assertEqual([p for p, _, _ in Fake.calls], ["/__reset", "/msg"])
+            es = self.c.entries()
+            self.assertEqual([e["id"] for e in es], [1, 2])
+            self.assertEqual(es[1]["request"], {"m": "PING;64"})
+            self.assertEqual(es[1]["response"], {"eco": "PING;64"})
+            self.assertEqual(r.x_req, es[1]["x_req"])
+        with self.assertRaises(RuntimeError):
+            s.msg("PING;1", "cerrada")
 
-    def test_token_never_written(self):
-        s = self.c.sequence("s1")
-        s.msg("PING;64", "h", auth="scheme")
-        s.msg("PING;64", "h", auth="none", confirm=True)
+    def test_calls_and_execute_require_sequence_owner(self):
+        s = self.c.sequence("s")
+        with self.assertRaises(RuntimeError):
+            s.flush()
+        with self.assertRaises(RuntimeError):
+            s.msg("PING;1", "fuera")
+        with self.assertRaises(RuntimeError):
+            self.c.execute("s", "POST", "/msg", {}, "directo")
+        self.assertEqual(Fake.calls, [])
+
+    def test_hypothesis_required_and_token_never_written(self):
+        with self.c.sequence("s") as s:
+            with self.assertRaises(ValueError):
+                s.msg("PING;64", "  ")
+            s.msg("PING;64", "h", auth="scheme")
+            s.msg("PING;64", "h", auth="none", confirm=True)
         self.assertNotIn(TOKEN, self.log.read_text())
 
-    def test_hypothesis_required(self):
-        s = self.c.sequence("s1")
-        with self.assertRaises(ValueError):
-            s.msg("PING;64", "  ")
-
     def test_duplicate_sequence_name_rejected(self):
-        self.c.sequence("s1").msg("PING;1", "h")
+        with self.c.sequence("s1") as s:
+            s.msg("PING;1", "h")
         with self.assertRaises(ValueError):
-            self.c.sequence("s1")
+            with self.c.sequence("s1"):
+                pass
 
-    def test_cache_skips_network_and_replays_prefix_on_miss(self):
-        a = self.c.sequence("a")
-        a.msg("ALTA;X;1", "h1")
-        a.msg("CONSULTA;AC-0001;2", "h2")
+    def test_cache_hit_and_miss_replays_prefix(self):
+        with self.c.sequence("a") as a:
+            a.msg("ALTA;X;1", "h1")
+            a.msg("CONSULTA;AC-0001;2", "h2")
         Fake.calls.clear()
-        b = self.c.sequence("b")
-        r = b.msg("ALTA;X;1", "h1")
-        self.assertTrue(r.cached)
-        self.assertEqual(Fake.calls, [])
-        r2 = b.msg("CONSULTA;AC-0009;3", "nuevo")
-        self.assertFalse(r2.cached)
-        # Se reenvía el reset y el paso cacheado antes del nuevo, para igualar el estado.
+        with self.c.sequence("b") as b:
+            r = b.msg("ALTA;X;1", "h1")
+            self.assertTrue(r.cached)
+            self.assertEqual(Fake.calls, [])
+            r2 = b.msg("CONSULTA;AC-0009;3", "nuevo")
+            self.assertFalse(r2.cached)
         self.assertEqual([p for p, _, _ in Fake.calls], ["/__reset", "/msg", "/msg"])
-        self.assertEqual([e["seq"] for e in self.c.entries()[-3:]], ["b", "b", "b"])
+        self.assertEqual([e["seq"] for e in self.c.entries()[-3:]], ["b"] * 3)
 
-    def test_cache_survives_a_new_cli_process_and_replays_prefix(self):
-        self.c.sequence("a").msg("ALTA;X;1", "alta")
-        self.c.sequence("b").flush()
-        self.assertTrue(self.c.resume("b").msg("ALTA;X;1", "alta").cached)
+    def test_no_cache_bypasses_lookup(self):
+        with self.c.sequence("a") as a:
+            a.msg("PING;64", "h")
         Fake.calls.clear()
-        fresh = self.client()
-        fresh.resume("b").msg("CONSULTA;AC-0001;2", "consulta")
-        self.assertEqual([path for path, _, _ in Fake.calls], ["/msg", "/msg"])
+        with self.c.sequence("b", no_cache=True) as b:
+            r = b.msg("PING;64", "h")
+        self.assertFalse(r.cached)
+        self.assertEqual([p for p, _, _ in Fake.calls], ["/__reset", "/msg"])
 
     def test_cache_distinguishes_content_type(self):
-        self.c.sequence("a").call("POST", "/msg", {"m": "PING;64"}, "json")
+        with self.c.sequence("a") as a:
+            a.call("POST", "/msg", {"m": "PING;64"}, "json")
         Fake.calls.clear()
-        r = self.c.sequence("b").call("POST", "/msg", {"m": "PING;64"}, "texto",
-                                       content_type="text/plain")
+        with self.c.sequence("b") as b:
+            r = b.call("POST", "/msg", {"m": "PING;64"}, "texto", content_type="text/plain")
         self.assertFalse(r.cached)
-        self.assertEqual([path for path, _, _ in Fake.calls], ["/__reset", "/msg"])
+        self.assertEqual([p for p, _, _ in Fake.calls], ["/__reset", "/msg"])
 
-    def test_fully_cached_sequence_resumes_with_its_reset(self):
-        self.c.sequence("a").msg("ALTA;X;1", "alta")
-        self.assertTrue(self.c.sequence("b").msg("ALTA;X;1", "alta").cached)
-        Fake.calls.clear()
-        fresh = self.client()
-        with self.assertRaises(ValueError):
-            fresh.sequence("b")
-        fresh.resume("b").msg("CONSULTA;AC-0001;2", "consulta")
-        self.assertEqual([path for path, _, _ in Fake.calls], ["/__reset", "/msg", "/msg"])
-        self.assertEqual(fresh.pending_steps("b"), [])
+    def test_resume_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "no se puede retomar"):
+            self.c.resume("missing")
 
-    def test_resume_consumes_pending_already_completed_before_interruption(self):
-        self.c.sequence("a").msg("ALTA;X;1", "alta")
-        self.assertTrue(self.c.sequence("b").msg("ALTA;X;1", "alta").cached)
-        original_remove = self.c._remove_pending
-        alta_pending_id = self.c.pending_steps("b")[-1]["pending_id"]
-
-        def interrupted_remove(_seq, pending_id):
-            if pending_id == alta_pending_id:
-                raise KeyboardInterrupt("corte después de registrar la respuesta")
-            original_remove(_seq, pending_id)
-
-        self.c._remove_pending = interrupted_remove
-        with self.assertRaises(KeyboardInterrupt):
-            self.c.resume("b").flush()
-        self.c._remove_pending = original_remove
-        Fake.calls.clear()
-        self.client().resume("b").msg("CONSULTA;AC-0001;2", "consulta")
-        self.assertEqual([path for path, _, _ in Fake.calls], ["/msg"])
-        self.assertEqual(self.c.pending_steps("b"), [])
-
-    def test_resume_assigns_identity_to_legacy_pending_before_sending(self):
-        self.c.sequence("a").msg("ALTA;X;1", "alta")
-        self.assertTrue(self.c.sequence("b").msg("ALTA;X;1", "alta").cached)
-        path = self.c.side_dir / "pending.jsonl"
-        legacy = [{k: v for k, v in e.items() if k != "pending_id"} for e in self.c._side("pending.jsonl")]
-        path.write_text("".join(json.dumps(e, ensure_ascii=False) + "\n" for e in legacy))
-        original_remove = self.c._remove_pending
-        removed = []
-
-        def interrupted_remove(_seq, pending_id):
-            removed.append(pending_id)
-            if len(removed) == 2:
-                raise KeyboardInterrupt("corte después de registrar ALTA")
-            original_remove(_seq, pending_id)
-
-        self.c._remove_pending = interrupted_remove
-        with self.assertRaises(KeyboardInterrupt):
-            self.c.resume("b").flush()
-        self.c._remove_pending = original_remove
-        self.assertNotIn(None, removed)
-        Fake.calls.clear()
-        self.client().resume("b").msg("CONSULTA;AC-0001;2", "consulta")
-        self.assertEqual([path for path, _, _ in Fake.calls], ["/msg"])
-        self.assertEqual(self.c.pending_steps("b"), [])
-
-    def test_resume_rejects_unfinished_attempt(self):
-        self.c.sequence("a").flush()
-        with self.c._locked():
-            entries = self.c.entries()
-            entries[0]["outcome"] = "pending"
-            self.c._replace_entries(entries)
-        with self.assertRaises(ValueError):
-            self.client().resume("a")
-
-    def test_transport_failure_is_logged_before_propagating(self):
+    def test_transport_failure_is_logged_and_context_releases_lock(self):
         def unavailable(*_args, **_kwargs):
             raise OSError("network down")
-
         c = self.client(opener=unavailable)
         with self.assertRaises(OSError):
-            c.sequence("s1").flush()
-        entry = c.entries()[0]
-        self.assertEqual(entry["outcome"], "transport_error")
-        self.assertEqual(entry["transport_error"], "OSError")
-        self.assertNotIn("status", entry)
+            with c.sequence("s") as s:
+                s.flush()
+        self.assertEqual(c.entries()[0]["outcome"], "transport_error")
+        self.assertNotIn("status", c.entries()[0])
+        # Excepción dentro del bloque también libera la coordinación.
+        with self.assertRaisesRegex(ValueError, "boom"):
+            with self.c.sequence("next"):
+                raise ValueError("boom")
+        with self.c.sequence("after") as s:
+            s.flush()
 
-    def test_cache_respects_epoch_and_confirm(self):
-        self.c.sequence("a").msg("PING;64", "h")
+    def test_normal_exit_flushes_cached_steps_and_exception_aborts(self):
+        with self.c.sequence("source") as s:
+            s.msg("PING;64", "h")
         Fake.calls.clear()
-        self.assertTrue(self.c.sequence("b").msg("PING;64", "h").cached)
-        self.assertFalse(self.c.sequence("c").msg("PING;64", "h", confirm=True).cached)
+        with self.c.sequence("cached") as s:
+            self.assertTrue(s.msg("PING;64", "h").cached)
+            self.assertEqual(Fake.calls, [])
+        self.assertEqual([p for p, _, _ in Fake.calls], ["/__reset", "/msg"])
         Fake.calls.clear()
-        tarde = self.client(epoch="v2")
-        self.assertFalse(tarde.sequence("d").msg("PING;64", "h").cached)
+        with self.assertRaises(ValueError):
+            with self.c.sequence("aborted") as s:
+                self.assertTrue(s.msg("PING;64", "h").cached)
+                raise ValueError("abort")
+        self.assertEqual(Fake.calls, [])
+
+    def test_explicit_close_aborts_without_reentering_on_exit(self):
+        with self.c.sequence("closed") as s:
+            s.close()
+        self.assertEqual(Fake.calls, [])
+        with self.c.sequence("after-close") as s:
+            s.msg("PING;1", "lock libre")
+
+    def test_initial_reset_required_and_failed_reset_aborts(self):
+        with self.c.sequence("initial") as s:
+            with self.assertRaisesRegex(RuntimeError, "reset inicial"):
+                self.c.execute("initial", "POST", "/msg", {}, "bypass")
+            s.flush()
+        os.environ["BB_WRONG_TOKEN"] = "wrong-token"
+        c = self.client(token_var="BB_WRONG_TOKEN")
+        with c.sequence("failed-reset") as s:
+            with self.assertRaisesRegex(RuntimeError, "reset no exitoso"):
+                s.flush()
+            with self.assertRaises(RuntimeError):
+                s.msg("PING;1", "no enviar tras reset fallido")
+        self.assertEqual(c.entries()[-1]["status"], 401)
+
+    def test_runner_validates_all_steps_before_network(self):
+        fixture = Path(self.tmp.name) / "bad.jsonl"
+        fixture.write_text('{"request":{"m":"PING;1"},"hipotesis":"h"}\n{"request":{}}\n')
+        with self.assertRaisesRegex(ValueError, "falta hipótesis"):
+            bb.main(["run", "invalid", str(fixture)])
+        self.assertEqual(Fake.calls, [])
+
+    def test_raw_body_base64_round_trips_non_utf8(self):
+        raw = b"\xff\x00\x80"
+        with self.c.sequence("s") as s:
+            result = s.call("POST", "/msg", None, "bytes arbitrarios", raw_body_b64=base64.b64encode(raw).decode())
+        entry = self.c.entries()[-1]
+        self.assertEqual(Fake.calls[-1][1], raw)
+        self.assertEqual(entry["request_b64"], base64.b64encode(raw).decode())
+        self.assertEqual(entry["response_b64"], base64.b64encode(raw).decode())
+        self.assertEqual(entry["raw"], raw.decode("utf-8", errors="replace"))
+        self.assertEqual(result.response, raw.decode("utf-8", errors="replace"))
+
+    def test_base64_distinguishes_absent_and_empty_body(self):
+        with self.c.sequence("s") as s:
+            s.call("GET", "/nada", None, "sin cuerpo")
+            s.call("POST", "/nada", None, "cuerpo vacío")
+        self.assertIsNone(self.c.entries()[-2]["request_b64"])
+        self.assertEqual(self.c.entries()[-1]["request_b64"], "")
 
     def test_rate_limit_discarded_and_retried(self):
-        s = self.c.sequence("s1")
         Fake.rate_limit_next = 2
-        r = s.msg("PING;64", "h")
+        with self.c.sequence("s") as s:
+            r = s.msg("PING;64", "h")
+        es = self.c.entries()
         self.assertEqual(r.status, 200)
-        self.assertEqual(len(self.c.entries()), 4)  # reset + tres intentos de msg auditados
-        self.assertEqual(sum(e.get("infrastructure") == "rate-limit" for e in self.c.entries()), 2)
-        for entry in self.c.entries():
-            if entry.get("infrastructure"):
-                self.assertNotIn("status", entry)
-                self.assertNotIn("response", entry)
-        self.assertEqual(self.c.used_today(), 4)  # también cuentan para el presupuesto
-
-    def test_resume_retries_reset_after_infrastructure_rate_limits(self):
-        sequence = self.c.sequence("s1")
-        Fake.rate_limit_next = 4  # retries=3: los cuatro intentos se descartan
-        with self.assertRaises(bb.RateLimited):
-            sequence.flush()
-        self.assertTrue(all(e.get("infrastructure") == "rate-limit" for e in self.c.entries()))
-        Fake.rate_limit_next = 0
-        self.client().resume("s1").flush()
-        self.assertEqual([e["outcome"] for e in self.c.entries()][-1], "completed")
-        self.assertEqual(self.c.pending_steps("s1"), [])
+        self.assertEqual(len(es), 4)
+        self.assertEqual(sum(e.get("infrastructure") == "rate-limit" for e in es), 2)
+        self.assertEqual(self.c.used_today(), 4)
 
     def test_budget_cap_stops(self):
-        c = self.client(daily_cap=2)
-        s = c.sequence("s1")
-        s.msg("PING;1", "h")
-        with self.assertRaises(bb.BudgetExceeded):
-            s.msg("PING;2", "h")
+        c = self.client(daily_cap=1)
+        with c.sequence("s") as s:
+            with self.assertRaises(bb.BudgetExceeded):
+                s.msg("PING;1", "h")
+        self.assertEqual(len(Fake.calls), 1)  # reset consume el único turno
 
-    def test_budget_is_shared_by_client_instances(self):
-        first = self.client(daily_cap=2)
-        first.sequence("s1").flush()  # reserva una de las dos solicitudes
-        second = self.client(daily_cap=2)
-        second.resume("s1").msg("PING;1", "h", confirm=True)
-        with self.assertRaises(bb.BudgetExceeded):
-            first.resume("s1").msg("PING;2", "h", confirm=True)
-
-    def test_budget_is_atomic_with_distinct_log_paths(self):
-        first = self.client(log_path=Path(self.tmp.name) / "a.jsonl", daily_cap=1)
-        second = self.client(log_path=Path(self.tmp.name) / "b.jsonl", daily_cap=1)
-        start = threading.Barrier(3)
-        outcomes = []
-
-        def reserve(client):
-            start.wait()
-            try:
-                client._reserve_request()
-            except bb.BudgetExceeded:
-                outcomes.append("budget")
-            except Exception as err:  # la carrera previa podía perder quota.tmp aquí
-                outcomes.append(type(err).__name__)
-            else:
-                outcomes.append("reserved")
-
-        workers = [threading.Thread(target=reserve, args=(client,)) for client in (first, second)]
-        for worker in workers:
-            worker.start()
-        start.wait()
-        for worker in workers:
-            worker.join()
-        self.assertCountEqual(outcomes, ["reserved", "budget"])
-        self.assertEqual(first.used_today(), 1)
-
-    def test_delayed_turns_do_not_burst(self):
-        sent: list[float] = []
+    def test_delayed_turns_do_not_burst_low_level(self):
+        sent = []
         guard = threading.Lock()
-
         class Resp:
             status, headers = 200, {}
-
-            def read(self):
-                return b'{"ok":true}'
-
+            def read(self): return b'{"ok":true}'
         def opener(_req, timeout):
-            with guard:
-                sent.append(time.time())
+            with guard: sent.append(time.time())
             return Resp()
-
         interval, n = 0.125, 11
         reserved, holding = threading.Barrier(n + 1), threading.Event()
-
         class Delayed(bb.Client):
             def _reserve_request(self):
                 result = super()._reserve_request()
-                reserved.wait()  # todos reservaron cuota (y, antes del arreglo, turno)
-                holding.wait()  # el log queda bloqueado entre la reserva y el envío
+                reserved.wait()
+                holding.wait()
                 return result
-
         c = Delayed(base_url=self.url, log_path=self.log, token_var="BB_TEST_TOKEN",
-                    min_interval=interval, opener=opener)
-
+                    min_interval=interval, opener=opener, daily_cap=n,
+                    coord_dir=Path(self.tmp.name) / ".explore")
+        def send(i):
+            c._execute("low", "POST", "/msg", {"m": f"PING;{i}"}, "low level")
+        workers = [threading.Thread(target=send, args=(i,)) for i in range(n)]
         def hold_log_lock():
             reserved.wait()
             with c._locked():
                 holding.set()
-                time.sleep(1.6)  # los turnos vencen mientras el log está bloqueado
-
+                time.sleep(1.6)
         holder = threading.Thread(target=hold_log_lock)
-        workers = [threading.Thread(target=c.execute, args=("s", "POST", "/msg", {"m": f"PING;{i}"}, "h"))
-                   for i in range(n)]
-        for t in [holder, *workers]:
-            t.start()
-        for t in [holder, *workers]:
-            t.join()
+        try:
+            for t in [holder, *workers]: t.start()
+            for t in [holder, *workers]: t.join(8)
+            self.assertTrue(all(not t.is_alive() for t in [holder, *workers]))
+        finally:
+            holding.set()
         sent.sort()
         self.assertEqual(len(sent), n)
-        gaps = [b - a for a, b in zip(sent, sent[1:])]
-        self.assertGreaterEqual(min(gaps), interval * 0.9)
-        self.assertTrue(all(sum(1 for t in sent if s <= t < s + 1) <= 10 for s in sent))
-        self.assertEqual(c.used_today(), n)
+        self.assertGreaterEqual(min(b-a for a, b in zip(sent, sent[1:])), interval * 0.9)
 
-    def test_non_json_response_kept_verbatim(self):
-        s = self.c.sequence("s1")
-        r = s.call("GET", "/nada", None, "ruta inexistente")
-        self.assertEqual((r.status, r.response, r.raw), (404, "Not Found", "Not Found"))
+    def test_coordination_across_processes_and_distinct_logs(self):
+        ctx = multiprocessing.get_context("spawn")
+        entered, release, finished = ctx.Event(), ctx.Event(), ctx.Event()
+        coord = str(Path(self.tmp.name) / "shared-coord")
+        log_a = str(Path(self.tmp.name) / "a.jsonl")
+        log_b = str(Path(self.tmp.name) / "other-log-directory" / "b.jsonl")
+        proc = ctx.Process(target=_locked_child, args=(self.url, log_a, coord, TOKEN, entered, release, finished))
+        thread = None
+        try:
+            proc.start()
+            self.assertTrue(entered.wait(5))
+            os.environ["BB_TEST_TOKEN"] = TOKEN
+            other = bb.Client(base_url=self.url, log_path=log_b, token_var="BB_TEST_TOKEN", coord_dir=coord,
+                              min_interval=0, sleep=lambda _: None)
+            done = threading.Event()
+            def second():
+                with other.sequence("child-b") as s:
+                    s.msg("PING;2", "child B")
+                done.set()
+            thread = threading.Thread(target=second)
+            thread.start()
+            time.sleep(.2)
+            self.assertFalse(done.is_set())
+            release.set()
+            self.assertTrue(finished.wait(5))
+            thread.join(5)
+            proc.join(5)
+            self.assertEqual(proc.exitcode, 0)
+            self.assertTrue(done.is_set())
+        finally:
+            release.set()
+            if thread is not None: thread.join(5)
+            if proc.is_alive(): proc.terminate()
+            proc.join(5)
+        self.assertEqual([path for path, _, _ in Fake.calls], ["/__reset", "/msg", "/__reset", "/msg"])
 
-    def test_conclude_and_resume(self):
-        self.c.sequence("s1").msg("PING;1", "h")
+    def test_process_death_releases_lock_and_other_token_is_independent(self):
+        ctx = multiprocessing.get_context("spawn")
+        entered, release, finished = ctx.Event(), ctx.Event(), ctx.Event()
+        coord = str(Path(self.tmp.name) / "shared-coord")
+        proc = ctx.Process(target=_locked_child, args=(self.url, str(self.log), coord, TOKEN, entered, release, finished))
+        try:
+            proc.start()
+            self.assertTrue(entered.wait(5))
+            # Otro token puede adquirir su lock mientras el primero sigue vivo.
+            os.environ["BB_OTHER_TOKEN"] = "otro-token"
+            c = self.client(token_var="BB_OTHER_TOKEN", coord_dir=coord,
+                            log_path=Path(self.tmp.name) / "other-token.jsonl")
+            with c.sequence("independent") as s:
+                s.flush()
+            self.assertTrue(proc.is_alive())
+            proc.terminate()
+            proc.join(5)
+            self.assertIsNotNone(proc.exitcode)
+            # La muerte libera el lock del mismo token; un proceso nuevo lo adquiere.
+            recovered = self.client(coord_dir=coord, log_path=Path(self.tmp.name) / "recovered.jsonl")
+            with recovered.sequence("recovered") as s:
+                s.flush()
+        finally:
+            # No notificar el Event después de matar a su waiter: su Condition
+            # puede quedar esperando una confirmación que nunca llegará.
+            if proc.is_alive(): proc.terminate()
+            proc.join(5)
+
+    def test_epoch_confirm_budget_sharing_non_json_and_conclude(self):
+        with self.c.sequence("a") as s:
+            s.msg("PING;64", "h")
+            raw = s.call("GET", "/nada", None, "ruta inexistente")
+        self.assertEqual((raw.status, raw.response, raw.raw), (404, "Not Found", "Not Found"))
         self.c.conclude(2, "aprendido")
         self.assertEqual(self.c.entries()[1]["conclusion"], "aprendido")
-        self.c.resume("s1").msg("PING;2", "h")
-        self.assertEqual(self.c.entries()[-1]["seq"], "s1")
+        Fake.calls.clear()
+        with self.c.sequence("b") as s:
+            self.assertTrue(s.msg("PING;64", "h").cached)
+        with self.c.sequence("c") as s:
+            self.assertFalse(s.msg("PING;64", "h", confirm=True).cached)
+        old_epoch = self.client(epoch="v2")
+        with old_epoch.sequence("d") as s:
+            self.assertFalse(s.msg("PING;64", "h").cached)
+
+    def test_budget_is_shared_across_instances_and_logs(self):
+        first = self.client(daily_cap=2)
+        with first.sequence("first") as s:
+            s.flush()
+        second = self.client(daily_cap=2, log_path=Path(self.tmp.name) / "other.jsonl")
+        with second.sequence("second") as s:
+            s.flush()
+            with self.assertRaises(bb.BudgetExceeded):
+                s.msg("PING;1", "quota compartida")
+
+    def test_cli_runner_uses_local_fake_and_retires_loose_commands(self):
+        fixture = Path(self.tmp.name) / "steps.jsonl"
+        fixture.write_text(json.dumps({"request": {"m": "PING;7"}, "hipotesis": "runner"}) + "\n")
+        env = dict(os.environ, BB_TOKEN=TOKEN, BB_BASE_URL=self.url,
+                   BB_LOG=str(Path(self.tmp.name) / "cli.jsonl"),
+                   BB_COORD_DIR=str(Path(self.tmp.name) / "cli-coord"), BB_MIN_INTERVAL="0")
+        import subprocess
+        run = subprocess.run([sys.executable, str(Path(bb.__file__)), "run", "cli-seq", str(fixture)],
+                             env=env, capture_output=True, text=True, timeout=10)
+        self.assertEqual(run.returncode, 0, run.stderr)
+        cli_entries = [json.loads(line) for line in (Path(env["BB_LOG"])).read_text().splitlines()]
+        self.assertEqual([e["path"] for e in cli_entries], ["/__reset", "/msg"])
+        legacy = subprocess.run([sys.executable, str(Path(bb.__file__)), "msg", "old", "PING;1", "--hip", "h"],
+                                env=env, capture_output=True, text=True, timeout=10)
+        self.assertNotEqual(legacy.returncode, 0)
 
 
 if __name__ == "__main__":

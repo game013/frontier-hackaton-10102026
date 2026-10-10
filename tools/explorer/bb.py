@@ -8,14 +8,15 @@ Uso como librería:
 
     from bb import Client
     c = Client()
-    s = c.sequence("s-precedencia", "reset para medir precedencia")
-    r = s.msg("SALDOS;AC-0001;0", "E301 se evalúa antes que el control")
+    with c.sequence("s-precedencia", "reset para medir precedencia") as s:
+        r = s.msg("SALDOS;AC-0001;0", "E301 se evalúa antes que el control")
 
 Uso por CLI: ver `python3 tools/explorer/bb.py -h`.
 """
 from __future__ import annotations
 
 import argparse
+import base64
 import datetime as dt
 import fcntl
 import hashlib
@@ -23,6 +24,7 @@ import json
 import os
 import sys
 import time
+import threading
 import urllib.error
 import uuid
 import urllib.request
@@ -90,11 +92,14 @@ class Client:
         min_interval: float | None = None,
         opener=None,
         sleep=time.sleep,
+        coord_dir: Path | str | None = None,
     ):
         env = {**load_env(ROOT / ".env"), **os.environ}
         self.base_url = (base_url or env.get("BB_BASE_URL") or DEFAULT_BASE_URL).rstrip("/")
         self.log_path = Path(log_path or env.get("BB_LOG") or ROOT / "experimentos.jsonl")
         self.side_dir = self.log_path.parent / ".explore"
+        self.coord_dir = Path(coord_dir or env.get("BB_COORD_DIR") or ROOT / ".explore")
+        self._active_sequence = None
         var = token_var or env.get("BB_TOKEN_VAR") or "BB_TOKEN"
         self._token = env.get(var)
         if not self._token:
@@ -121,8 +126,8 @@ class Client:
     @contextmanager
     def _quota_locked(self):
         """Bloquea el recurso compartido de cuota, no un log concreto."""
-        self.side_dir.mkdir(parents=True, exist_ok=True)
-        with open(self.side_dir / "quota.lock", "w") as fh:
+        self.coord_dir.mkdir(parents=True, exist_ok=True)
+        with open(self.coord_dir / "quota.lock", "w") as fh:
             fcntl.flock(fh, fcntl.LOCK_EX)
             try:
                 yield
@@ -130,6 +135,10 @@ class Client:
                 fcntl.flock(fh, fcntl.LOCK_UN)
 
     def entries(self) -> list[dict]:
+        with self._locked():
+            return self._read_entries()
+
+    def _read_entries(self) -> list[dict]:
         if not self.log_path.exists():
             return []
         return [json.loads(l) for l in self.log_path.read_text().splitlines() if l.strip()]
@@ -153,7 +162,7 @@ class Client:
 
     @property
     def _quota_path(self) -> Path:
-        return self.side_dir / "quota.json"
+        return self.coord_dir / "quota.json"
 
     def _read_quota(self) -> dict:
         if not self._quota_path.exists():
@@ -161,7 +170,7 @@ class Client:
         return json.loads(self._quota_path.read_text())
 
     def _write_quota(self, quota: dict) -> None:
-        self.side_dir.mkdir(parents=True, exist_ok=True)
+        self.coord_dir.mkdir(parents=True, exist_ok=True)
         tmp = self._quota_path.with_suffix(".tmp")
         tmp.write_text(json.dumps(quota))
         tmp.replace(self._quota_path)
@@ -171,7 +180,7 @@ class Client:
         state = tokens.get(self._token_tag)
         if state is None or state.get("day") != today:
             # Migra el contador previo del log la primera vez que se usa esta versión.
-            entries = self.entries()
+            entries = self._read_entries()
             prior = sum(1 for e in entries if e.get("ts") and bogota_day(e["ts"]) == today)
             # Las versiones anteriores guardaban los rate limits solo en el archivo lateral.
             if not any(e.get("infrastructure") == "rate-limit" for e in entries):
@@ -225,7 +234,7 @@ class Client:
 
     def conclude(self, entry_id: int, text: str) -> None:
         with self._locked():
-            es = self.entries()
+            es = self._read_entries()
             for e in es:
                 if e["id"] == entry_id:
                     e["conclusion"] = text
@@ -239,11 +248,18 @@ class Client:
         return [e for e in self.entries() if e["seq"] == seq]
 
     def pending_steps(self, seq: str) -> list[dict]:
-        return [e for e in self._side("pending.jsonl") if e["seq"] == seq]
+        with self._locked():
+            return [e for e in self._side("pending.jsonl") if e["seq"] == seq]
 
     def _append_pending(self, seq: str, args: tuple, kw: dict, pending_id: str) -> None:
-        self._append_side("pending.jsonl", {"seq": seq, "args": args, "kw": kw,
-                                             "pending_id": pending_id})
+        with self._locked():
+            if args[1] == "/__reset" and (any(e["seq"] == seq for e in self._read_entries())
+                                           or any(e["seq"] == seq for e in self._side("pending.jsonl"))):
+                raise ValueError(f"la secuencia {seq!r} ya existe; usa otro nombre")
+            self.side_dir.mkdir(parents=True, exist_ok=True)
+            with open(self.side_dir / "pending.jsonl", "a") as fh:
+                fh.write(json.dumps({"seq": seq, "args": args, "kw": kw,
+                                     "pending_id": pending_id}, ensure_ascii=False) + "\n")
 
     def _remove_pending(self, seq: str, pending_id: str) -> None:
         with self._locked():
@@ -262,67 +278,38 @@ class Client:
         tmp.write_text("".join(json.dumps(e, ensure_ascii=False) + "\n" for e in pending))
         tmp.replace(path)
 
-    def _ensure_pending_ids(self, seq: str) -> None:
-        """Da identidad persistente a pendientes antiguos antes de reenviarlos.
-
-        Sin ella, la respuesta registrada no podría reconciliarse con su pendiente tras un corte.
-        """
-        with self._locked():
-            pending = self._side("pending.jsonl")
-            legacy = [e for e in pending if e["seq"] == seq and not e.get("pending_id")]
-            for item in legacy:
-                item["pending_id"] = str(uuid.uuid4())
-            if legacy:
-                self._write_pending(pending)
-
-    def sequence(self, seq: str, hipotesis: str = "inicio de secuencia: estado limpio") -> "Sequence":
-        """Abre una secuencia. El reset se envía de forma perezosa (ver Sequence)."""
-        if self.seq_steps(seq) or self.pending_steps(seq):
-            raise ValueError(f"la secuencia {seq!r} ya existe; usa otro nombre o Client.resume()")
-        return Sequence(self, seq, reset_hipotesis=hipotesis)
+    def sequence(self, seq: str, hipotesis: str = "inicio de secuencia: estado limpio",
+                 *, no_cache: bool = False) -> "Sequence":
+        """Crear un contexto exclusivo; usar siempre con `with`."""
+        if not seq or not hipotesis.strip():
+            raise ValueError("la secuencia y la hipótesis del reset son obligatorias")
+        return Sequence(self, seq, reset_hipotesis=hipotesis, no_cache=no_cache)
 
     def resume(self, seq: str) -> "Sequence":
-        self._ensure_pending_ids(seq)
-        steps = self.seq_steps(seq)
-        completed_pending = {e.get("pending_id") for e in steps
-                             if e.get("outcome") == "completed" and e.get("pending_id")}
-        pending_records = self.pending_steps(seq)
-        # Un corte tras registrar la respuesta deja el pendiente. La respuesta ya representa
-        # la operación lógica: se consume el pendiente al recuperar para no repetirla.
-        for item in pending_records:
-            if item.get("pending_id") in completed_pending:
-                self._remove_pending(seq, item["pending_id"])
-        pending = [(tuple(e["args"]), e["kw"], e.get("pending_id"))
-                   for e in pending_records if e.get("pending_id") not in completed_pending]
-        if not steps and not pending:
-            raise ValueError(f"la secuencia {seq!r} no existe")
-        if any(e.get("outcome") in ("transport_error", "pending") for e in steps):
-            raise ValueError(f"la secuencia {seq!r} tiene un transporte incierto; empieza otra desde reset")
-        logical_steps = [self._step_key(e) for e in steps
-                         if "status" in e and not e.get("infrastructure")]
-        logical_steps.extend(self.step_key(args[0], args[1], args[2], kw) for args, kw, _ in pending)
-        return Sequence(self, seq, steps=logical_steps, pending=pending)
+        raise ValueError("no se puede retomar una secuencia sin su lock; empieza otra desde reset con run")
 
     # ---------- caché ----------
     @staticmethod
     def _step_key(e: dict) -> list:
         body = e.get("request")
         raw_body = e.get("raw_body")
-        has_data = raw_body is not None or body is not None or e.get("method") == "POST"
+        raw_body_b64 = e.get("raw_body_b64")
+        has_data = raw_body is not None or raw_body_b64 is not None or body is not None or e.get("method") == "POST"
         content_type = e.get("content_type") or ("application/json" if has_data else None)
-        return [e["method"], e["path"], e.get("auth", "valid"), body, raw_body, content_type]
+        return [e["method"], e["path"], e.get("auth", "valid"), body, raw_body, raw_body_b64, content_type]
 
     @classmethod
     def step_key(cls, method: str, path: str, body, kw: dict) -> list:
         return cls._step_key({"method": method, "path": path, "request": body,
                               "auth": kw.get("auth", "valid"), "raw_body": kw.get("raw_body"),
-                              "content_type": kw.get("content_type")})
+                              "content_type": kw.get("content_type"), "raw_body_b64": kw.get("raw_body_b64")})
 
     def cache_lookup(self, prefix: list, step: list) -> dict | None:
         """Busca una secuencia previa (misma epoch) con el mismo prefijo desde reset."""
         by_seq: dict[str, list[dict]] = {}
         for e in self.entries():
-            if e.get("epoch") == self.epoch and "status" in e and not e.get("infrastructure"):
+            if e.get("epoch") == self.epoch and e.get("token_tag") == self._token_tag \
+                    and "response_b64" in e and "status" in e and not e.get("infrastructure"):
                 by_seq.setdefault(e["seq"], []).append(e)
         n = len(prefix)
         for steps in by_seq.values():
@@ -354,8 +341,28 @@ class Client:
             status, hdrs, body = err.code, dict(err.headers), err.read()
         return status, {k.lower(): v for k, v in hdrs.items()}, body
 
-    def execute(self, seq: str, method: str, path: str, body, hipotesis: str, *,
-                auth: str = "valid", raw_body: str | None = None, content_type: str | None = None,
+    def execute(self, seq: str, method: str, path: str, body, hipotesis: str, **kw) -> Result:
+        """Solo el propietario activo de la secuencia puede enviar."""
+        active = self._active_sequence
+        if active is None or active.seq != seq:
+            raise RuntimeError("envío fuera del contexto exclusivo de secuencia")
+        active._require_owner()
+        if not active._reset_complete and path != "/__reset":
+            raise RuntimeError("envía el reset inicial con sequence.flush() antes de ejecutar")
+        try:
+            result = self._execute(seq, method, path, body, hipotesis, **kw)
+            if not active._reset_complete and path == "/__reset":
+                if result.status != 200:
+                    raise RuntimeError("reset no exitoso; secuencia abortada")
+                active._reset_complete = True
+            return result
+        except BaseException:
+            active._failed = True
+            raise
+
+    def _execute(self, seq: str, method: str, path: str, body, hipotesis: str, *,
+                auth: str = "valid", raw_body: str | None = None, raw_body_b64: str | None = None,
+                content_type: str | None = None,
                 conclusion: str | None = None, retries: int = 3,
                 pending_id: str | None = None) -> Result:
         """Envía de verdad y registra. Usar a través de Sequence, que maneja caché y reset."""
@@ -363,7 +370,11 @@ class Client:
             raise ValueError("cada request necesita una hipótesis")
         if auth not in AUTH_VARIANTS:
             raise ValueError(f"auth debe ser uno de {AUTH_VARIANTS}")
-        if raw_body is not None:
+        if sum(x is not None for x in (body, raw_body, raw_body_b64)) > 1:
+            raise ValueError("usar solo un cuerpo: request, raw_body o raw_body_b64")
+        if raw_body_b64 is not None:
+            data = base64.b64decode(raw_body_b64, validate=True)
+        elif raw_body is not None:
             data = raw_body.encode()
         elif body is not None:
             data = json.dumps(body, ensure_ascii=False).encode()
@@ -375,12 +386,14 @@ class Client:
             ts = now_iso()
             # Escribir antes de abrir la conexión conserva evidencia incluso si se pierde la respuesta.
             with self._locked():
-                es = self.entries()
+                es = self._read_entries()
                 entry = {
                     "id": (max((e["id"] for e in es), default=0) + 1),
-                    "seq": seq, "x_req": None, "hipotesis": hipotesis, "request": body,
+                    "seq": seq, "token_tag": self._token_tag, "x_req": None, "hipotesis": hipotesis, "request": body,
                     "conclusion": conclusion, "method": method, "path": path, "auth": auth,
-                    "raw_body": raw_body, "content_type": content_type, "epoch": self.epoch, "ts": ts,
+                    "raw_body": raw_body, "raw_body_b64": raw_body_b64,
+                    "request_b64": None if data is None else base64.b64encode(data).decode("ascii"),
+                    "content_type": content_type, "epoch": self.epoch, "ts": ts,
                     "pending_id": pending_id, "outcome": "pending",
                 }
                 with open(self.log_path, "a") as fh:
@@ -391,7 +404,7 @@ class Client:
                 status, hdrs, raw = self._send(method, path, data, auth, content_type)
             except Exception as err:
                 with self._locked():
-                    es = self.entries()
+                    es = self._read_entries()
                     target = next(e for e in es if e["id"] == entry["id"])
                     target.update({"outcome": "transport_error", "transport_error": type(err).__name__})
                     self._replace_entries(es)
@@ -403,8 +416,9 @@ class Client:
             except ValueError:
                 parsed = text
             with self._locked():
-                es = self.entries()
+                es = self._read_entries()
                 target = next(e for e in es if e["id"] == entry["id"])
+                target["response_b64"] = base64.b64encode(raw).decode("ascii")
                 if hdrs.get(RATE_LIMIT_HEADER.lower()) == "rate-limit":
                     target.update({"infrastructure": "rate-limit", "outcome": "infrastructure"})
                 else:
@@ -429,13 +443,61 @@ class Sequence:
     (reset incluido) para que el estado del original coincida con el prefijo lógico.
     """
 
-    def __init__(self, client: Client, seq: str, steps: list | None = None,
-                 pending: list[tuple[tuple, dict, str | None]] | None = None, reset_hipotesis: str | None = None):
+    def __init__(self, client: Client, seq: str, *, reset_hipotesis: str, no_cache: bool = False):
         self.client, self.seq = client, seq
-        self.steps: list = list(steps or [])
-        self.pending: list[tuple[tuple, dict, str | None]] = list(pending or [])
-        if reset_hipotesis is not None:
-            self._queue(("POST", "/__reset", None, reset_hipotesis), {}, persist=True)
+        self.steps: list = []
+        self.pending: list[tuple[tuple, dict, str | None]] = []
+        self.reset_hipotesis = reset_hipotesis
+        self.no_cache = no_cache
+        self._lock = None
+        self._closed = False
+        self._failed = False
+        self._owner = None
+        self._reset_complete = False
+
+    def __enter__(self):
+        if self._closed or self._lock is not None or self.client._active_sequence is not None:
+            raise RuntimeError("contexto cerrado o secuencia anidada")
+        self.client.coord_dir.mkdir(parents=True, exist_ok=True)
+        self._lock = open(self.client.coord_dir / f"sequence-{self.client._token_tag}.lock", "a+")
+        try:
+            fcntl.flock(self._lock, fcntl.LOCK_EX)
+            if self.client.seq_steps(self.seq) or self.client.pending_steps(self.seq):
+                raise ValueError(f"la secuencia {self.seq!r} ya existe; empieza otra desde reset")
+            self._lock.seek(0)
+            self._lock.truncate()
+            self._lock.write(json.dumps({"pid": os.getpid(), "seq": self.seq, "inicio": now_iso()}))
+            self._lock.flush()
+            self._owner = (os.getpid(), threading.get_ident())
+            self.client._active_sequence = self
+            self._queue(("POST", "/__reset", None, self.reset_hipotesis), {}, persist=True)
+            return self
+        except BaseException:
+            self.close()
+            raise
+
+    def close(self):
+        if self._lock is not None:
+            try:
+                if self.client._active_sequence is self:
+                    self.client._active_sequence = None
+            finally:
+                fcntl.flock(self._lock, fcntl.LOCK_UN)
+                self._lock.close()
+                self._lock = None
+        self._closed = True
+
+    def __exit__(self, exc_type, exc, tb):
+        try:
+            if exc_type is None and not self._failed and self._lock is not None:
+                self.flush()
+        finally:
+            self.close()
+
+    def _require_owner(self):
+        if self.client._active_sequence is not self or self._lock is None \
+                or self._owner != (os.getpid(), threading.get_ident()) or self._failed:
+            raise RuntimeError("usa la secuencia dentro de with Client.sequence(...)")
 
     def _queue(self, args: tuple, kw: dict, *, persist: bool = False) -> None:
         method, path, body, _ = args
@@ -446,6 +508,7 @@ class Sequence:
             self.client._append_pending(self.seq, args, kw, pending_id)
 
     def flush(self) -> None:
+        self._require_owner()
         if self.pending and self.pending[0][0][1] == "/__reset" and any(
                 not e.get("infrastructure") for e in self.client.seq_steps(self.seq)):
             raise ValueError(f"la secuencia {self.seq!r} ya existe en el log")
@@ -459,8 +522,11 @@ class Sequence:
 
     def call(self, method: str, path: str, body, hipotesis: str, *, confirm: bool = False,
              **kw) -> Result:
+        self._require_owner()
+        if not hipotesis or not hipotesis.strip():
+            raise ValueError("cada request necesita una hipótesis")
         step = self.client.step_key(method, path, body, kw)
-        if not confirm and path != "/__reset":
+        if not self.no_cache and not confirm and path != "/__reset":
             hit = self.client.cache_lookup(self.steps, step)
             if hit is not None:
                 self._queue((method, path, body, hipotesis), kw, persist=True)
@@ -474,46 +540,74 @@ class Sequence:
         return self.call("POST", "/msg", {"m": m}, hipotesis, **kw)
 
 
+def load_steps(path: Path) -> list[dict]:
+    """Validar la tanda completa antes de adquirir token o contactar al servidor."""
+    steps = []
+    allowed = {"method", "path", "request", "hipotesis", "auth", "raw_body", "raw_body_b64",
+               "content_type", "confirm", "conclusion"}
+    for n, line in enumerate(path.read_text().splitlines(), 1):
+        if not line.strip():
+            continue
+        item = json.loads(line)
+        if not isinstance(item, dict) or set(item) - allowed:
+            raise ValueError(f"línea {n}: campos desconocidos o paso no objeto")
+        item = {"method": "POST", "path": "/msg", "auth": "valid", **item}
+        if not isinstance(item.get("hipotesis"), str) or not item["hipotesis"].strip():
+            raise ValueError(f"línea {n}: falta hipótesis")
+        if not isinstance(item["method"], str) or not item["method"].isalpha() or item["method"] != item["method"].upper():
+            raise ValueError(f"línea {n}: método inválido")
+        if not isinstance(item["path"], str) or not item["path"].startswith("/"):
+            raise ValueError(f"línea {n}: ruta inválida")
+        if item["auth"] not in AUTH_VARIANTS:
+            raise ValueError(f"línea {n}: auth inválido")
+        if sum(item.get(k) is not None for k in ("request", "raw_body", "raw_body_b64")) > 1:
+            raise ValueError(f"línea {n}: cuerpos excluyentes")
+        for key in ("raw_body", "raw_body_b64", "content_type", "conclusion"):
+            if item.get(key) is not None and not isinstance(item[key], str):
+                raise ValueError(f"línea {n}: {key} debe ser texto")
+        if "confirm" in item and not isinstance(item["confirm"], bool):
+            raise ValueError(f"línea {n}: confirm debe ser booleano")
+        if item.get("raw_body_b64") is not None:
+            base64.b64decode(item["raw_body_b64"], validate=True)
+        steps.append(item)
+    if not steps:
+        raise ValueError("la secuencia debe contener al menos un paso")
+    return steps
+
+
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description="Cliente instrumentado del servicio original")
     sub = p.add_subparsers(dest="cmd", required=True)
-    r = sub.add_parser("reset", help="abre una secuencia nueva con POST /__reset")
-    r.add_argument("seq")
-    r.add_argument("--hip", default="inicio de secuencia: estado limpio")
-    m = sub.add_parser("msg", help="POST /msg dentro de una secuencia existente")
-    m.add_argument("seq")
-    m.add_argument("m")
-    m.add_argument("--hip", required=True)
-    m.add_argument("--confirm", action="store_true", help="ignora la caché y repite")
-    m.add_argument("--auth", default="valid", choices=AUTH_VARIANTS)
-    h = sub.add_parser("http", help="request arbitrario (rutas, métodos, cuerpos raros)")
-    h.add_argument("seq")
-    h.add_argument("method")
-    h.add_argument("path")
-    h.add_argument("--json", help="cuerpo JSON")
-    h.add_argument("--raw", help="cuerpo crudo (no JSON)")
-    h.add_argument("--content-type")
-    h.add_argument("--auth", default="valid", choices=AUTH_VARIANTS)
-    h.add_argument("--hip", required=True)
-    h.add_argument("--confirm", action="store_true")
+    run = sub.add_parser("run", help="ejecuta una secuencia JSONL con reset y lock por token")
+    run.add_argument("seq", help="nombre nuevo de secuencia")
+    run.add_argument("file", type=Path, help="JSONL con hipótesis por paso")
+    run.add_argument("--hip", default="inicio de secuencia: estado limpio", help="hipótesis del reset")
+    run.add_argument("--no-cache", action="store_true", help="envía todos los pasos al servidor")
+    for cmd in ("reset", "msg", "http"):
+        legacy = sub.add_parser(cmd, help="retirado: usa run para mantener exclusión durante toda la secuencia")
+        legacy.add_argument("legacy_args", nargs=argparse.REMAINDER)
     c = sub.add_parser("conclude", help="añade la conclusión a una línea del log")
     c.add_argument("id", type=int)
     c.add_argument("text")
     sub.add_parser("budget", help="requests usados hoy (día de Bogotá)")
     a = p.parse_args(argv)
-
+    if a.cmd in ("reset", "msg", "http"):
+        p.error("los comandos sueltos no conservan el lock; usa run SEQ ARCHIVO.jsonl")
+    steps = load_steps(a.file) if a.cmd == "run" else None
     cl = Client()
     if a.cmd == "budget":
         print(f"usados hoy: {cl.used_today()} / tope {cl.daily_cap} (límite duro 8000)")
-    elif a.cmd == "reset":
-        cl.sequence(a.seq, a.hip).flush()
-        print(cl.seq_steps(a.seq)[-1]["raw"])
-    elif a.cmd == "msg":
-        print(cl.resume(a.seq).msg(a.m, a.hip, confirm=a.confirm, auth=a.auth))
-    elif a.cmd == "http":
-        body = json.loads(a.json) if a.json else None
-        print(cl.resume(a.seq).call(a.method, a.path, body, a.hip, raw_body=a.raw,
-                                    content_type=a.content_type, auth=a.auth, confirm=a.confirm))
+    elif a.cmd == "run":
+        with cl.sequence(a.seq, a.hip, no_cache=a.no_cache) as sequence:
+            sequence.flush()
+            print(Result(cl.seq_steps(a.seq)[-1], cached=False))
+            for step in steps:
+                step = dict(step)
+                method, path = step.pop("method"), step.pop("path")
+                body, hip = step.pop("request", None), step.pop("hipotesis")
+                print(sequence.call(method, path, body, hip, **step))
+            # Materializa los aciertos pendientes para terminar con evidencia propia.
+            sequence.flush()
     elif a.cmd == "conclude":
         cl.conclude(a.id, a.text)
     return 0
