@@ -69,8 +69,9 @@ Objetivo de conformidad (incidente FR-0153). Todo corrió contra `v2` en A6:
   IDs 2862–2978). La primera corrida (`a6-v2-sonda-*`) dio los mismos bytes.
 
 `pending-v2.txt` se generó con `v2` añadida a `config.Versions` solo en local:
-hoy el reemplazo responde como v1, así que lista los pasos de los tres deltas
-(CAM-V2-1…3) y sus cascadas, además de lo que v1 tampoco reproduce aún. Añadir
+hoy el reemplazo responde como v1 (B4, sin pendientes en `v1`), así que lista
+exactamente los pasos de los tres deltas (CAM-V2-1…3) y sus cascadas: en el
+replay son los mismos 78 pasos que encontró A6, más las sondas. Añadir
 `v2` a `config.Versions` le toca a B7: cambia la versión por defecto. Hasta entonces,
 `make differential BEHAVIOR_VERSION=v2` falla con «versión desconocida».
 
