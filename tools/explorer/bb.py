@@ -200,9 +200,11 @@ class Client:
     def _claim_turn(self) -> None:
         """Toma el turno de envío revalidándolo con la hora real, justo antes de conectar.
 
-        Un turno no se agenda por adelantado: si el proceso se retrasa (bloqueo, pausa),
-        vuelve a esperar al intervalo mínimo desde el último envío real, y así los
-        retrasos nunca se acumulan en una ráfaga.
+        Un turno no se agenda por adelantado: si el proceso se retrasa (bloqueo), vuelve a
+        esperar al intervalo mínimo desde el último turno reclamado, y así los retrasos no se
+        acumulan en una ráfaga. `next_at` se fija al reclamar el turno, antes de persistir la
+        cuota y abrir la conexión; no mide el envío real al socket, así que una pausa del
+        proceso entre reclamar y conectar puede acercar dos envíos (límite residual aceptado).
         """
         while True:
             with self._quota_locked():

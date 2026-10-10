@@ -9,8 +9,11 @@
   `epoch` y `ts`.
 - Lee el token de `BB_TOKEN` (en el entorno o en `.env`) y nunca lo escribe.
 - Coordina entre procesos el ritmo a 8 req/s y `BB_DAILY_CAP` (7.800 por defecto) por token y
-  día de Bogotá. La reserva atómica vive en `.explore/quota.json` y solo guarda una etiqueta
-  derivada del token, nunca su valor. Las respuestas `X-Frontier-Infra: rate-limit` se descartan,
+  día de Bogotá. La reserva atómica vive en `.explore/quota.json`, protegida por su propio
+  `.explore/quota.lock` (válido aunque cada proceso use un log distinto), y solo guarda una
+  etiqueta derivada del token, nunca su valor. El ritmo se mide entre turnos reclamados justo
+  antes de conectar, no en el envío real al socket: una pausa del proceso entre ambos momentos
+  puede acercar dos envíos. Las respuestas `X-Frontier-Infra: rate-limit` se descartan,
   se reintentan y consumen presupuesto.
 - Caché: la clave incluye el prefijo desde reset, método, ruta, autenticación, cuerpo crudo y el
   `Content-Type` efectivo, siempre dentro de la misma `BB_EPOCH`. Los aciertos pendientes se
