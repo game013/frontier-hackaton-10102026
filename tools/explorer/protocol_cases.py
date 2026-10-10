@@ -4,8 +4,10 @@
 Writes internal/protocol/testdata/log-cases.json: one entry per exact ``m``
 whose response does not depend on state (E103, E104, E201, E202, E301, E302 or
 pong), with every log ID that produced it. The exact ``m`` comes from
-``request_b64``; records without it (IDs 1-50) are skipped. Fails if the same
-``m`` produced different responses within the epoch.
+``request_b64`` and the exact body from ``response_b64`` (``raw`` may carry
+replacement characters); records without both (IDs 1-50) are skipped. Fails if
+the same ``m`` produced different responses within the epoch, or if a selected
+response is not valid UTF-8 and so cannot be written faithfully as JSON text.
 
 Usage: python3 tools/explorer/protocol_cases.py [--epoch v1] [--log experimentos.jsonl] [--out PATH]
 """
@@ -23,6 +25,10 @@ ERR_RE = re.compile(r'^\{"error":"(E10[34]|E20[12]|E30[12])"')
 PONG = '{"pong":true}'
 
 
+class ResponseBytesError(ValueError):
+    """A response's captured bytes cannot be represented as fixture text."""
+
+
 def extract(lines, epoch):
     groups: dict[str, dict] = {}
     conflicts = []
@@ -30,7 +36,7 @@ def extract(lines, epoch):
         r = json.loads(line)
         if (r.get("epoch") != epoch or r.get("method") != "POST" or r.get("path") != "/msg"
                 or r.get("auth") != "valid" or r.get("outcome") != "completed"
-                or r.get("request_b64") is None or "raw" not in r):
+                or r.get("request_b64") is None or r.get("response_b64") is None):
             continue
         try:
             body = json.loads(base64.b64decode(r["request_b64"], validate=True).decode("utf-8"))
@@ -38,7 +44,14 @@ def extract(lines, epoch):
             continue
         if not isinstance(body, dict) or not isinstance(body.get("m"), str):
             continue
-        raw = r["raw"]
+        data = base64.b64decode(r["response_b64"], validate=True)
+        try:
+            raw = data.decode("utf-8")
+        except UnicodeDecodeError as err:
+            # Solo importa si el registro sería un caso; si no, se ignora.
+            if data == PONG.encode() or ERR_RE.match(data.decode("utf-8", "replace")):
+                raise ResponseBytesError(f"log {r['id']}: response_b64 no es UTF-8") from err
+            continue
         if raw != PONG and not ERR_RE.match(raw):
             continue
         g = groups.setdefault(body["m"], {"ids": [], "m": body["m"], "status": int(r["status"]), "body": raw})
@@ -55,7 +68,11 @@ def main(argv=None) -> int:
     p.add_argument("--out", default=ROOT / "internal/protocol/testdata/log-cases.json", type=Path)
     a = p.parse_args(argv)
     with a.log.open(encoding="utf-8") as fh:
-        cases, conflicts = extract(fh, a.epoch)
+        try:
+            cases, conflicts = extract(fh, a.epoch)
+        except ResponseBytesError as err:
+            print(err, file=sys.stderr)
+            return 1
     if conflicts:
         for m, first, other in conflicts:
             print(f"conflicto: {m!r} log {first} vs {other}", file=sys.stderr)
