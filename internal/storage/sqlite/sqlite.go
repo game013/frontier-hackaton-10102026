@@ -16,8 +16,8 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-const schemaVersion = 1
-const schema = `
+const schemaVersion = 2
+const schemaV1 = `
 CREATE TABLE accounts (id TEXT PRIMARY KEY, name TEXT NOT NULL, balance INTEGER NOT NULL);
 CREATE TABLE operations (id TEXT PRIMARY KEY, annulled INTEGER NOT NULL);
 CREATE TABLE operation_deltas (
@@ -29,6 +29,13 @@ CREATE TABLE operation_deltas (
 );
 CREATE TABLE counters (id INTEGER PRIMARY KEY CHECK (id = 1), next_account INTEGER NOT NULL, next_operation INTEGER NOT NULL);
 INSERT INTO counters VALUES (1, 1, 1);
+`
+
+// Los contadores empiezan en cero al migrar una base B5. Ambas versiones de
+// comportamiento usan el esquema actual; cambiar a v1 no elimina este estado.
+const migrateV2 = `
+ALTER TABLE accounts ADD COLUMN transfer_failures INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE accounts ADD COLUMN blocked_attempts INTEGER NOT NULL DEFAULT 0;
 `
 
 type Store struct {
@@ -91,7 +98,12 @@ func (s *Store) initialize() error {
 	}
 	switch version {
 	case 0:
-		if _, err := tx.Exec(schema); err != nil {
+		if _, err := tx.Exec(schemaV1); err != nil {
+			return err
+		}
+		fallthrough
+	case 1:
+		if _, err := tx.Exec(migrateV2); err != nil {
 			return err
 		}
 		if _, err := tx.Exec(fmt.Sprintf("PRAGMA user_version = %d", schemaVersion)); err != nil {
@@ -162,13 +174,13 @@ func load(tx *sql.Tx) (*state.State, error) {
 	if err := tx.QueryRow("SELECT next_account, next_operation FROM counters WHERE id = 1").Scan(&st.NextAccount, &st.NextOperation); err != nil {
 		return nil, err
 	}
-	rows, err := tx.Query("SELECT id, name, balance FROM accounts")
+	rows, err := tx.Query("SELECT id, name, balance, transfer_failures, blocked_attempts FROM accounts")
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		var a state.Account
-		if err := rows.Scan(&a.ID, &a.Name, &a.Balance); err != nil {
+		if err := rows.Scan(&a.ID, &a.Name, &a.Balance, &a.TransferFailures, &a.BlockedAttempts); err != nil {
 			rows.Close()
 			return nil, err
 		}
@@ -249,7 +261,10 @@ func save(tx *sql.Tx, before, after *state.State) error {
 		if old != nil && *old == *acc {
 			continue
 		}
-		if _, err := tx.Exec("INSERT INTO accounts VALUES (?, ?, ?) ON CONFLICT(id) DO UPDATE SET name=excluded.name, balance=excluded.balance", id, acc.Name, acc.Balance); err != nil {
+		if _, err := tx.Exec(`INSERT INTO accounts (id, name, balance, transfer_failures, blocked_attempts) VALUES (?, ?, ?, ?, ?)
+ON CONFLICT(id) DO UPDATE SET name=excluded.name, balance=excluded.balance,
+transfer_failures=excluded.transfer_failures, blocked_attempts=excluded.blocked_attempts`,
+			id, acc.Name, acc.Balance, acc.TransferFailures, acc.BlockedAttempts); err != nil {
 			return err
 		}
 	}

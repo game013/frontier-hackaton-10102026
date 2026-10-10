@@ -13,6 +13,10 @@ type Account struct {
 	ID      string
 	Name    string // tal como llegó en ALTA (CMD-NOMBRE)
 	Balance int64
+	// Reglas v2: fallos E506/E507 consecutivos como origen y TRANSFER
+	// rechazados mientras está bloqueada. No consumen IDs de operación.
+	TransferFailures int64
+	BlockedAttempts  int64
 }
 
 // Delta es el efecto de una operación sobre una cuenta. Guardarlo permite
