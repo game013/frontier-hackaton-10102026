@@ -169,3 +169,27 @@ func TestJSONEqual(t *testing.T) {
 		}
 	}
 }
+
+// Las variantes reproducen exactamente las cabeceras de AUTH_VARIANTS en bb.py.
+func TestAuthHeaderMatchesExplorerVariants(t *testing.T) {
+	cases := map[string]string{
+		"valid":   "Bearer tok",
+		"empty":   "Bearer ",
+		"invalid": "Bearer token-invalido-0000",
+		"scheme":  "Basic tok",
+		"lower":   "bearer tok",
+		"spaces":  "Bearer  tok",
+		"bare":    "tok",
+	}
+	for label, want := range cases {
+		if !knownAuth[label] {
+			t.Errorf("%s no está en knownAuth", label)
+		}
+		if got, ok := authHeader(label, "tok"); !ok || got != want {
+			t.Errorf("authHeader(%s) = %q, %v; want %q", label, got, ok, want)
+		}
+	}
+	if _, ok := authHeader("none", "tok"); ok {
+		t.Error("none no debe enviar Authorization")
+	}
+}

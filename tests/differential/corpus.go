@@ -231,7 +231,8 @@ func decodeB64(raw json.RawMessage) ([]byte, error) {
 }
 
 // Variantes de AUTH_VARIANTS en bb.py; "valid" usa el token del reemplazo.
-var knownAuth = map[string]bool{"valid": true, "none": true, "empty": true, "invalid": true, "scheme": true}
+var knownAuth = map[string]bool{"valid": true, "none": true, "empty": true, "invalid": true, "scheme": true,
+	"lower": true, "spaces": true, "bare": true}
 
 func authHeader(label, token string) (string, bool) {
 	switch label {
@@ -243,6 +244,12 @@ func authHeader(label, token string) (string, bool) {
 		return "Bearer token-invalido-0000", true
 	case "scheme":
 		return "Basic " + token, true
+	case "lower":
+		return "bearer " + token, true
+	case "spaces":
+		return "Bearer  " + token, true
+	case "bare":
+		return token, true
 	}
 	return "", false
 }
