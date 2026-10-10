@@ -1,0 +1,10 @@
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;Mateo;3"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;1000000;51"}, "hipotesis": "depósito válido, fondos para la sonda"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;60000;32"}, "hipotesis": "E506 #1 de AC-0001"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;60000;32"}, "hipotesis": "E506 #2 de AC-0001"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "CONSULTA del origen en mitad de la racha"}
+{"request": {"m": "ALTA;Ana;50"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0002;100;89"}, "hipotesis": "DEPOSITO a otra cuenta en mitad de la racha"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;60000;32"}, "hipotesis": "E506 #3 de AC-0001; E506 si CONSULTA/ALTA/DEPOSITO ajeno no cuentan"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;1000;37"}, "hipotesis": "CAM-V2-3: E510 si CONSULTA, ALTA y DEPOSITO a otra cuenta son neutros; 200 si alguno reinició la racha"}

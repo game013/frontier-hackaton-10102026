@@ -1,0 +1,8 @@
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;Mateo;3"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;1000000;51"}, "hipotesis": "depósito válido, fondos para la sonda"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;60000;32"}, "hipotesis": "E506 #1 de AC-0001"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;60000;32"}, "hipotesis": "E506 #2 de AC-0001"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0001;1000;64"}, "hipotesis": "E304 (origen = destino) en mitad de la racha"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;60000;32"}, "hipotesis": "CAM-V2-3 racha: E510 si E304 contó como fallo; E506 si no"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;1000;37"}, "hipotesis": "CAM-V2-3 racha: E510 si E304 es neutro; 200 si reinició la racha"}

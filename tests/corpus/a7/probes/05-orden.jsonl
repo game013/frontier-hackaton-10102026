@@ -1,0 +1,10 @@
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "ALTA;Mateo;3"}, "hipotesis": "ALTA válida asigna el siguiente AC"}
+{"request": {"m": "DEPOSITO;AC-0001;1000000;51"}, "hipotesis": "depósito válido, fondos para la sonda"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;60000;32"}, "hipotesis": "E506 #1 de AC-0001"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;60000;32"}, "hipotesis": "E506 #2 de AC-0001"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;60000;32"}, "hipotesis": "E506 #3 de AC-0001; queda bloqueada (CAM-V2-3)"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0001;1000;64"}, "hipotesis": "ERR-ORD v2: cuenta bloqueada con origen = destino, ¿E304 o E510?"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0099;1000;37"}, "hipotesis": "ERR-ORD v2: cuenta bloqueada con destino inexistente, ¿E401 o E510?"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;007;12"}, "hipotesis": "ERR-ORD v2: cuenta bloqueada con monto 007, ¿E303 o E510?"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0002;1000;37"}, "hipotesis": "CAM-V2-3: E510; `intentos` = 1 + número de E510 previos de esta sonda"}
