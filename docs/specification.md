@@ -98,7 +98,7 @@ Cuerpos exactos observados; los espacios dentro de strings son significativos. O
 | ERR-104 | 400, `{"error":"E104","mensaje":"segmento vacío"}`; alcance y orden en INT-09. | A3 log 455, 635–640, 666–670; A3r 675, 851–856, 882–886 | confirmado |
 | ERR-304 | 400, `{"error":"E304","mensaje":"origen y destino iguales"}` en TRANSFER con origen = destino, aunque la cuenta no exista. | A3 log 612, 621–623, 633; A3r 832, 837–839, 849 | confirmado |
 | ERR-ORD | Orden observado: ruta → E001 → E101 → E100 → E102 → E103 → E104 → E201 → E202 → (E301 \| E302); en TRANSFER, tras integridad y aridad: E303 → E304 → E401 (origen o destino) → E506 → E507; en DEPOSITO: E303 → E401. Ejemplos: `TRANSFER;AC-0001;AC-0001;007` → E303; mismo origen/destino con 200000 o sin saldo → E304; `AC-0009` con 120000 → E401; 120000 sin saldo → E506. | log 23-32, 224–225; A3 log 555, 621–633, 635–640, 666–670; A3r 775, 837–849, 851–856, 882–886; A4 log 888–896, 1300–1304; A4r 1092–1100, 1345–1349 | confirmado |
-| ERR-520 | 409, `{"error":"E520","mensaje":"operación destructiva: detiene el servicio; reenvía con confirmación"}` en `HALT;<arg>`, sin efecto en el estado. Se evalúa tras E202 y E302. Observado en `v2`. | A5 log 1951–1954; A5r 1982–1985 | confirmado |
+| ERR-520 | 409, `{"error":"E520","mensaje":"operación destructiva: detiene el servicio; reenvía con confirmación"}` en `HALT;<arg>`, sin efecto en el estado. Se evalúa tras E202 y E302. Observado en `v2`. | A5 log 1952 (orden: 1951, 1953–1954); A5r 1983 (orden: 1982, 1984–1985) | confirmado |
 
 ### 6. Cambios durante el día
 
