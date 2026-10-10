@@ -38,7 +38,8 @@ Los valores por defecto son `method: POST`, `path: /msg` y `auth: valid`. Cada p
 `hipotesis`. Los demás campos permitidos son `request` (cuerpo JSON), `raw_body` (texto UTF-8),
 `raw_body_b64` (bytes en base64), `content_type`, `confirm` (booleano) y `conclusion`.
 Los tres campos de cuerpo son excluyentes. Las variantes de `auth` son `valid`, `none`, `empty`,
-`invalid` y `scheme`; nunca pongas el token en el archivo.
+`invalid`, `scheme` (`Basic`), `lower` (`bearer`), `spaces` (dos espacios tras `Bearer`) y `bare`
+(token sin esquema); nunca pongas el token en el archivo.
 
 `--no-cache` evita toda consulta a caché durante la secuencia: cada paso se envía realmente.
 Sin esa opción, los aciertos se indican como `(cache)` y se materializan antes del primer paso

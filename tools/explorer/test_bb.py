@@ -132,6 +132,15 @@ class ClientTest(unittest.TestCase):
             s.msg("PING;64", "h", auth="none", confirm=True)
         self.assertNotIn(TOKEN, self.log.read_text())
 
+    def test_auth_variants_send_token_forms_without_logging_it(self):
+        with self.c.sequence("s") as s:
+            for auth in ("lower", "spaces", "bare"):
+                s.msg("PING;64", "forma del header", auth=auth, confirm=True)
+        self.assertEqual([c[2] for c in Fake.calls[-3:]],
+                         [f"bearer {TOKEN}", f"Bearer  {TOKEN}", TOKEN])
+        self.assertEqual([e["auth"] for e in self.c.seq_steps("s")[-3:]], ["lower", "spaces", "bare"])
+        self.assertNotIn(TOKEN, self.log.read_text())
+
     def test_duplicate_sequence_name_rejected(self):
         with self.c.sequence("s1") as s:
             s.msg("PING;1", "h")

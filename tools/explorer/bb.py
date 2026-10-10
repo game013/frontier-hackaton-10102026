@@ -35,7 +35,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_BASE_URL = "https://caja-negra-production-c64f.up.railway.app"
 BOGOTA = dt.timezone(dt.timedelta(hours=-5))
 RATE_LIMIT_HEADER = "X-Frontier-Infra"
-AUTH_VARIANTS = ("valid", "none", "empty", "invalid", "scheme")
+AUTH_VARIANTS = ("valid", "none", "empty", "invalid", "scheme", "lower", "spaces", "bare")
 
 
 class BudgetExceeded(RuntimeError):
@@ -337,6 +337,12 @@ class Client:
             headers["Authorization"] = "Bearer token-invalido-0000"
         elif auth == "scheme":
             headers["Authorization"] = f"Basic {self._token}"
+        elif auth == "lower":
+            headers["Authorization"] = f"bearer {self._token}"
+        elif auth == "spaces":
+            headers["Authorization"] = f"Bearer  {self._token}"
+        elif auth == "bare":
+            headers["Authorization"] = self._token
         elif auth != "none":
             raise ValueError(f"auth desconocido: {auth}")
         req = urllib.request.Request(self.base_url + path, data=data, method=method, headers=headers)
