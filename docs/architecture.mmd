@@ -1,0 +1,43 @@
+flowchart TB
+  subgraph EXP["Investigación y validación · fuera del runtime"]
+    operator["Operador / agente<br/>hipótesis y replay manual"]
+    runner["Runner Python<br/>reset + secuencias + comparación"]
+    client["Cliente instrumentado<br/>cuotas · log · secretos fuera de evidencia"]
+    original["Servicio original<br/>solo investigación"]
+    evidence["experimentos.jsonl + corpus<br/>status · cuerpos · IDs · versiones"]
+    diff["Reporte de diferencias<br/>confirmación y regresiones"]
+    review["Cambio de código Go<br/>spec + pruebas + redespliegue"]
+    operator --> runner
+    runner --> client
+    client --> original
+    original --> client
+    client --> evidence
+    evidence --> diff
+    runner --> diff
+    diff --> review
+  end
+  subgraph RUN["Railway · una réplica · Serverless desactivado"]
+    http["Adaptador HTTP Go<br/>auth · rutas · status y bytes"]
+    engine["Motor de compatibilidad<br/>orden observado · comandos · reset"]
+    protocol["Protocolo<br/>gramática · control · errores · serialización"]
+    state["Modelo de estado<br/>cuentas · operaciones · contadores"]
+    store["Adaptador SQLite<br/>transacciones y recuperación"]
+    db[("Volumen persistente<br/>SQLite /data/state.db")]
+    http --> engine
+    engine --> protocol
+    engine --> state
+    engine --> store
+    store --> db
+  end
+  evaluator["Evaluador / cliente<br/>HTTPS · máximo 5 s por paso"]
+  evaluator --> http
+  runner -. "validación contra reemplazo" .-> http
+  review -. "despliegue estático" .-> http
+  backup["Respaldo: Go local + ngrok<br/>SQLite local · equipo y red disponibles"]
+  review -. "alternativa de hosting" .-> backup
+  classDef runtime fill:#e9f3ff,stroke:#245c91,color:#102e49;
+  classDef research fill:#eef8f1,stroke:#3e7650,color:#193d25;
+  classDef artifact fill:#fff6df,stroke:#a07621,color:#503b10;
+  class http,engine,protocol,state,store,db runtime;
+  class operator,runner,client,original research;
+  class evidence,diff,review,backup artifact;
