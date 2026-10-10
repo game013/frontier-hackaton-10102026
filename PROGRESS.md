@@ -2,20 +2,21 @@
 
 ## Objetivo y entregables
 
-- [ ] Acordar el alcance y las decisiones del diseño mediante entrevista.
-- [ ] Redactar el documento de diseño de una página en Markdown.
-- [ ] Construir el diagrama de arquitectura coherente con el documento.
+- [x] Acordar el alcance y las decisiones del diseño mediante entrevista.
+- [x] Redactar en Markdown el documento único de diseño y especificación, conciso y sin límite de una página impresa.
+- [x] Construir el diagrama de arquitectura coherente con el documento.
 - [ ] Revisar ambos entregables con el equipo.
-- [ ] Convertir el documento aprobado a PDF o publicar una URL, según decisión pendiente.
-- [ ] Desglosar la implementación a partir del diseño acordado.
+- [x] Convertir el diseño inicial acordado a PDF; generar también HTML autónomo local.
+- [x] Desglosar la implementación a partir del diseño acordado.
 
 ## Estado actual
 
-Fase: análisis inicial. No hay decisiones de arquitectura aprobadas ni implementación iniciada.
+Fase: diseño inicial entregado; entrevista cerrada por confirmación del usuario (Q11).
+Servicio Go pendiente de implementación. Cliente de exploración existente del frente pi.
 Se leyó `AGENTS.md` y `docs/old-system/README.md` antes de modificar archivos.
-El inventario inicial contiene instrucciones, enunciado y corpus; no se encontró código ni
-cliente instrumentado. La carpeta actual no es un repositorio Git.
-No se hicieron solicitudes al servicio original.
+En la inspección inicial solo había instrucciones, enunciado y corpus, sin repositorio Git.
+Durante el trabajo paralelo se inicializó Git y pi creó `tools/explorer/bb.py` y su estrategia.
+Codex no hizo solicitudes al servicio original; conserva todo el presupuesto para exploración.
 La inspección delegada terminó: el corpus muestra PING, ALTA, CONSULTA, DEPOSITO,
 TRANSFER y ANULA, identificadores consecutivos y cambios de saldo. Son observaciones
 de los ejemplos de la mañana, no reglas confirmadas con experimentos propios.
@@ -38,42 +39,129 @@ no sustituyen IDs de evidencia de un futuro `experimentos.jsonl`.
   cada secuencia comienza con reset. Límite: 10 req/s y 8.000 por día por token.
 - Las respuestas con `X-Frontier-Infra: rate-limit` no son evidencia del servicio.
 - AGENTS.md fija un cambio a las 15:30: repetir corpus y documentar diferencias.
-- La entrega del reto es a las 20:00 contra la versión vigente. El README no indica la
-  zona horaria de esas horas; no asumirla para automatizaciones.
-- El reto exige además especificación en siete secciones y `experimentos.jsonl`;
-  el documento de una página debe definir su relación con esa especificación.
+- La entrega del reto es a las 20:00 contra la versión vigente. El README no indica zona;
+  el frente pi registra decisión del usuario: Bogotá UTC-5. Cambio: 20:30 UTC/14:30 CDMX;
+  entrega: 01:00 UTC del día siguiente/19:00 CDMX. No hay sondeo automático programado.
+- El documento único incorporará diseño y las siete secciones de especificación del reto;
+  `experimentos.jsonl` seguirá siendo un artefacto separado. «Una página» significa una
+  página web, no una página impresa: preservar concisión sin omitir información necesaria.
 - Los tokens permanecen fuera de documentos, logs y commits.
 
 ## Árbol de decisiones
 
-1. Alcance del diseño: solo reemplazo o también exploración y validación. Pendiente.
-   - Desbloquea límites del diagrama y componentes necesarios.
-2. Prioridad del resultado y relación entre documento breve y especificación. Pendiente.
-   - Desbloquea profundidad, criterios de aceptación y estrategia de cobertura.
-3. Restricciones impuestas al stack y despliegue. Pendiente.
-   - Desbloquea opciones de runtime, estado y operación.
-4. Presupuesto de trabajo antes de implementar. Pendiente.
-   - Desbloquea nivel de detalle y alcance del análisis.
+1. Alcance: investigación, validación y reemplazo. Aceptado por usuario (Q1).
+2. Documentación: documento único de longitud flexible, preferiblemente corto; una página
+   web es una forma válida de entrega. Aceptado por usuario (Q2).
+3. Lenguaje: Go preferido por experiencia del usuario; libertad de tecnología. Aceptado
+   por usuario (Q3). Hosting resuelto en Q9.
+4. Presupuesto: hasta una hora para crear y entregar diseño inicial; terminar antes deja
+   más tiempo para implementar. Prioridad: consistencia y buen puntaje. Aceptado (Q4).
+   Referencia de reloj al registrar respuestas: 2026-10-10 15:50 UTC.
+5. Estado: memoria permitida inicialmente; persistencia obligatoria en entrega final.
+   Aceptado (Q5). Mecanismo resuelto en Q8; SQLite sí es transaccional, aunque local.
+6. Investigación: cliente/corpus, gramática/control, estado, límites/errores, repetición.
+   Aceptado (Q6). Cambios del original se investigan mediante procesos repetibles y se
+   incorporan estáticamente al código, con redespliegue; no autoadaptación en runtime.
+7. Diagrama: fuente Mermaid separada y SVG o PNG, referenciado desde Markdown.
+   Aceptado (Q7).
+8. Persistencia final: SQLite con interfaz de almacenamiento; memoria inicial permitida.
+   Aceptado (Q8). SQLite es transaccional y local; no requiere servidor de base de datos.
+9. Hosting: Railway con una réplica, Serverless desactivado y volumen para SQLite;
+   local + ngrok como respaldo. Aceptado (Q9). Elegibilidad/créditos pendientes de comprobar.
+10. Detección: un comando manual establece referencia y repite corpus después del cambio
+    de las 15:30 y antes de entrega; reset por secuencia, log y reporte de diferencias.
+    Correcciones estáticas y redespliegue. Aceptado (Q10).
+11. Arquitectura consolidada y criterio de cierre aceptados: «De acuerdo» (Q11).
+12. Capas, responsabilidades, dependencias y árbol de directorios incluidos por petición
+    posterior del usuario. Fuente: `docs/system-design.md`.
 
-Las siguientes rondas cubrirán protocolo y evidencia, modelo de estado, concurrencia/reset,
-serialización y errores, validación diferencial, detección de cambios, despliegue y supuestos.
-Su orden depende de las respuestas; no constituyen decisiones tomadas.
+## Hosting: investigación preliminar
+
+Documentación oficial consultada por `hosting_facts`:
+
+- Railway: trial de $5/30 días, una réplica, Serverless configurable y volumen hasta
+  0,5 GB en Trial/Free. Validar elegibilidad de la cuenta y presupuesto antes de desplegar.
+  Fuentes: https://docs.railway.com/pricing/free-trial,
+  https://docs.railway.com/pricing/plans,
+  https://docs.railway.com/deployments/serverless.
+- Local + ngrok Free: 20.000 requests/mes, 1 GB/mes; el endpoint no tiene timeout de
+  duración. Depende del equipo y red local; persistencia requiere almacenamiento local.
+  Fuente: https://ngrok.com/docs/pricing-limits/free-plan-limits.
+- Render Free: suspensión tras 15 minutos y arranque de alrededor de un minuto; no
+  permite disco persistente gratuito. Riesgo frente al máximo de 5 segundos por paso.
+  Fuente: https://render.com/docs/free.
+- Fly Trial: 2 VM-horas o 7 días; detención automática tras 5 minutos durante trial.
+  Fuente: https://fly.io/docs/about/free-trial/.
+
+Decisión aceptada: Railway con una réplica, Serverless desactivado y volumen;
+local + ngrok como alternativa. Un filesystem efímero no cumple persistencia final.
+
+Las preguntas de comportamiento pendientes se resuelven con experimentos, no con supuestos
+de arquitectura: control, precedencia, alcance de reset, números, límites y anulaciones.
 
 ## Coordinación
 
 | Responsable | Trabajo | Estado | Salida |
 | --- | --- | --- | --- |
-| Agente principal + usuario | Entrevista y decisiones | En curso | Este registro y diseño acordado |
+| Agente principal + usuario | Entrevista y decisiones | Completado | Diseño inicial acordado |
+| Codex | Documento, capas, árbol, diagrama y exportación | Completado | Markdown, Mermaid, SVG, HTML y PDF |
 | Agente `design_facts` | Inspección de corpus y archivos, solo lectura | Completado | Hechos y vacíos incorporados aquí |
+| Agente `hosting_facts` | Comparar hosting con fuentes oficiales actuales | Completado | Comparación incorporada aquí |
 
 Para continuar: leer este archivo y el README; distinguir hechos, recomendaciones y
 decisiones aceptadas. Registrar decisiones con su razón y actualizar tareas y bloqueos.
-No iniciar implementación hasta confirmar el entendimiento compartido al cerrar la entrevista.
+La confirmación para cerrar la entrevista ya llegó. Continuar implementación según el
+desglose siguiente y coordinarse con pi antes de cualquier consulta al original.
+
+## Entregables y reproducción
+
+- Diseño y especificación incremental: `docs/system-design.md`.
+- Diagrama: `docs/architecture.mmd` y `docs/architecture.svg`.
+- Entregable PDF: `output/pdf/system-design.pdf` (7 páginas A4).
+- Página HTML local autónoma: `docs/system-design.html` (no publicada).
+- Regenerar todos: `python3 scripts/export_design_pdf.py`.
+- Dependencias de exportación: Python/PyQt6, Pandoc, Graphviz y librsvg. SVG generado
+  sin red desde el subconjunto Mermaid utilizado; no requiere descargar Mermaid CLI.
+- Verificación: enlaces locales válidos, diagrama revisado visualmente, PDF renderizado
+  a PNG y revisado, siete secciones presentes. No se afirma compatibilidad ejecutable.
+
+## Implementación: tareas y dependencias
+
+| Tarea | Responsable propuesto | Depende de | Criterio de salida | Estado |
+| --- | --- | --- | --- | --- |
+| I1. Replay de referencia y precedencia | pi | Cliente instrumentado existente | Secuencias registradas con reset, hipótesis e IDs | Pendiente según sección pi |
+| I2. Esqueleto Go por capas y HTTP | Codex | Diseño acordado; evidencia para comportamiento HTTP | Composición y adaptadores separados, sin acceso al original | Pendiente |
+| I3. Gramática y control | pi evidencia / Codex implementación | I1 | Fórmula repetida en sondas nuevas y reglas citadas | Pendiente |
+| I4. Motor y comandos | Codex | I3 + evidencia de estado | Corpus ampliado pasa; orden de validaciones observado | Pendiente |
+| I5. SQLite y reset | Codex | I2 + alcance del estado observado | Reinicio conserva cuentas/operaciones/IDs; reset atómico | Pendiente |
+| I6. CLI único de replay/diff | Coordinar con pi | I1 + formato de corpus | Baseline/replay/diff; caché desactivada para cambio; salida no exitosa si incompleto | Pendiente |
+| I7. Detección del cambio | pi con operador | I6 + referencia anterior | Delta reproducido e IDs incorporados a sección 6 | Pendiente |
+| I8. Despliegue y entrega | Codex + usuario para cuenta si necesario | I4/I5 + cuenta/créditos Railway | Endpoint público, volumen persistente, menos de 5 s por paso | Pendiente |
+
+## Mensajes de Codex para coordinación
+
+- [codex] pi: diseño cerrado; reutilizaremos `tools/explorer/bb.py`, no crearemos otra
+  vía al original. El runtime será Go sin `BB_TOKEN` ni importaciones del explorador.
+- [codex] pi: el árbol propuesto agrega `tools/explorer/cli.py`, `sequences.py`, `probes/`
+  y `compare.py`. Coordinar esos archivos antes de implementar para evitar duplicación.
+- [codex] pi: el contrato del diseño requiere conservar también intentos de infraestructura
+  y fallos de transporte fuera de la evidencia válida; revisar garantías del cliente existente.
+  La detección del cambio debe evitar caché y reportar ejecución incompleta explícitamente.
 
 ## Registro
 
 - 2026-10-10: iniciada entrevista con skill `grilling`; creada bitácora de coordinación.
   Inspección del corpus delegada. Pendiente primera ronda de decisiones del usuario.
+- 2026-10-10: respuestas Q1–Q4 incorporadas. Go preferido; documento de longitud flexible;
+  alcance integral y una hora para diseño inicial. Investigación de hosting delegada.
+- 2026-10-10: respuestas Q5–Q7 incorporadas: persistencia final obligatoria, proceso de
+  adaptación estático y repetible, diagrama separado. Comparación de hosting completada.
+- 2026-10-10: respuestas Q8–Q10 aceptadas: SQLite, Railway con volumen/ngrok como respaldo,
+  y detección manual con un comando. Preparada revisión consolidada para cerrar entrevista.
+- [codex] 2026-10-10: Q11 confirmado. Usuario pidió capas y árbol del repositorio;
+  incluidos en diseño y entregables. Frente pi incorporado como fuente de coordinación.
+- [codex] 2026-10-10: creados Markdown, Mermaid/SVG y HTML autónomo; PDF de 7 páginas
+  generado y revisado visualmente. Desglosada implementación; servicio Go aún pendiente.
 
 ## Frente: exploración del original (pi)
 
