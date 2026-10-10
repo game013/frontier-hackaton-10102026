@@ -54,6 +54,9 @@ pasa, es un fallo de la secuencia.
 - Repetición sin caché de A3 (`a3-v1r-*`, IDs 671–886). La primera corrida
   (`a3-v1-*`) dio los mismos bytes y no se duplica. `a3-v1-20-aislamiento-*`
   usa dos tokens y queda fuera.
+- Repetición sin caché de A4 (`a4r-v1-*`, secuencias 01–18) y pasada única de
+  19–20 (`a4-v1-19-*`, `a4-v1-20-*`), que no se repitieron. La primera corrida
+  de 01–18 (`a4-v1-01`…`18`) dio los mismos bytes y no se duplica.
 
-Para añadir corpus nuevo (A4, A5, `v2` de A6), agregar una fuente o un patrón a
+Para añadir corpus nuevo (A5, `v2` de A6), agregar una fuente o un patrón a
 la suite y regenerar `pending-<version>.txt` con `-update-pending`.

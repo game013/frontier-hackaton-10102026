@@ -128,6 +128,15 @@ Recibe el mensaje anterior al último `;control`. No valida aridad, montos ni
 sintaxis del campo control; devuelve el decimal canónico que debe enviarse.
 PING no sirve como oráculo porque puede omitir integridad.
 
+`protocol_cases.py` regenera offline `internal/protocol/testdata/log-cases.json`,
+los casos sin estado (E103, E104, E201, E202, E301, E302 y pong) que prueban el
+parser Go de B3. Toma el `m` exacto de `request_b64`, filtra por `--epoch`
+(por defecto `v1`) y falla si un mismo `m` dio respuestas distintas:
+
+```sh
+python3 tools/explorer/protocol_cases.py            # v1; cero requests
+```
+
 El escáner sí contacta al original, exclusivamente mediante `bb.py`:
 
 ```sh
