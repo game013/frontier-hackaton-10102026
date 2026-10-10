@@ -21,6 +21,19 @@ Cada vez que completes un paso, haz un commit **atómico, transaccional y conven
   `refactor:`), con asunto corto en imperativo.
 - Nunca incluyas `.env`, tokens ni secretos.
 
+## Archivos temporales: exclusión obligatoria
+
+- Mantén `tmp/` (también `TMP/` y cualquier variante de mayúsculas) y todo su contenido
+  exclusivamente en disco local, fuera del índice de Git, de los commits y del remoto.
+- Esta exclusión es permanente: nunca uses `git add -f` ni retires la regla de `.gitignore`
+  para incluir archivos temporales. Añade los entregables mediante sus rutas explícitas.
+- Antes de cada commit, verifica que `git ls-files | rg -i '(^|/)tmp(/|$)'` no devuelva
+  ninguna ruta. Si devuelve rutas, quita únicamente su seguimiento con `git rm --cached`
+  (con `-r` para carpetas), conservando los archivos locales. `.gitignore` no deja de seguir
+  archivos que ya estaban versionados.
+- Revisa `git diff --cached --name-status`: las únicas entradas permitidas bajo `tmp/`
+  son eliminaciones del índice para corregir una inclusión previa; nunca altas ni modificaciones.
+
 ## Reglas duras
 
 - El reemplazo es autónomo: no puede llamar al original. Si lo hace, la evaluación vale 0.

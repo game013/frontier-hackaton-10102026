@@ -4,4 +4,5 @@
 experimentos.lock
 experimentos.tmp
 __pycache__/
-tmp/
+# Archivos temporales: excluir la carpeta completa, con cualquier capitalización.
+[tT][mM][pP]/
