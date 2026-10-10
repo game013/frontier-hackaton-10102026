@@ -4,3 +4,4 @@
 experimentos.lock
 experimentos.tmp
 __pycache__/
+tmp/
