@@ -1,8 +1,15 @@
-# A5 · Descubrimiento de comandos (`v2`)
+# A5 · Descubrimiento de comandos (respondido como `v1`)
 
-**Ventana:** 10 de octubre, 15:43:40–15:48:49 de Bogotá (más 1997–1998 a las 16:04:33–16:04:34), **después** del cambio anunciado de las 15:30.
-Todo se registró con `epoch: v2`. No se midió si `NOTAS` o `HALT` existían en `v1`: las sondas
-de sugerencia de A4 (`v1`) no estaban cerca de esos nombres.
+> **Corrección A6:** el servicio todavía respondía como **v1** durante A5. CONSULTA devolvía
+> `saldo` entero (1385 `0`, 1956 `500`); en v2 devuelve `"0.00"`/`"5.00"` (CAM-V2-1). La
+> etiqueta `epoch: v2` del log identifica la corrida, no la versión. Por tanto, `NOTAS`,
+> `HALT`/E520 y las sugerencias de E301 ya existían en v1. El replay A6 (1935–1965 → 2714–2744)
+> los revalida en v2 con los mismos bytes; solo cambia el formato de `saldo` en 1956 → 2735. Las
+> menciones a `v2` de este informe deben leerse como «A5». Ventana del cambio: CAM-04 y el
+> [informe A6](deltas-a6.md#cuándo-cambió-y-qué-pasa-con-a5).
+
+**Ventana:** 10 de octubre, 15:43:40–15:48:49 de Bogotá (más 1997–1998 a las 16:04:33–16:04:34), después del ticket de las 15:30 pero antes del cambio efectivo (CAM-04).
+Todo se registró con `epoch: v2`.
 **IDs:** 1382–1998 (617 requests, techo aprobado de 900). Cero fallos de transporte y cero rate limits.
 **Corpus:** `tests/corpus/a5/` (generador `tools/explorer/a5_battery.py`, diccionario
 `tests/corpus/a5/diccionario.txt`, sin requests).
