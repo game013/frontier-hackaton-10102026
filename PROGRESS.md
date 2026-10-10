@@ -6,7 +6,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 
 ## Estado ahora
 
-- **Fase:** A0, A1, A2 y B1 completados; fórmula del control confirmada y línea base completa revalidada. A2 queda en feat/a2-baseline; A1 está integrado en master (310a1be).
+- **Fase:** A0, A1, A2 y B1 completados; fórmula del control confirmada y línea base completa revalidada. A2 integrado en master mediante fast-forward autorizado (d3abf21); A1 integrado en 310a1be.
 - **Versión observada:** `v1`, revalidada a las 15:00 de Bogotá. Último ID del log: 450 (448 respuestas; intentos 51 y 226 sin respuesta).
 - **Próximo paso:** A6 (replay tras el cambio anunciado) y B3 (integridad con fórmula A1); B2 tiene el corpus completo de A2 disponible.
 - **Bloqueos:** ninguno.
@@ -127,3 +127,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [codex] 2026-10-10 14:55: A2 reclamado en feat/a2-baseline; usuario aprueba techo de 250 requests (224 previstos: IDs 1–50 y 52–225, resets incluidos). Los ejemplos ya están en s001; ID51 sin respuesta excluido. Luna prepara herramientas y revisión offline; ejecución centralizada mediante bb.py.
 
 - [codex] 2026-10-10 15:03: A2 completado en feat/a2-baseline: diez secuencias y 224 respuestas revalidadas sin caché entre 15:00:19 y 15:00:56 de Bogotá, antes del cambio anunciado. IDs 227–450, cero deltas de contrato y cero deltas en 174 comparaciones de bytes; 50 casos históricos ahora tienen bytes nuevos sin fabricar los anteriores. Intento 226 de transporte excluido de evidencia; consumo A2 225/250, cuota 450/7800. Herramientas y corpus histórico 37d0a30, log aparte edc882c; auditoría Luna independiente, 57 pruebas Python y go test ./... en verde. Spec e informe A2 documentan el alcance; B2/A6 tienen corpus. Rama sin mezclar.
+
+- [codex] 2026-10-10 15:05: usuario autoriza mezcla; feat/a2-baseline integrado en master con git merge --ff-only hasta d3abf21, sin conflictos ni commit de merge. Corpus, spec y log auditados por Luna; checkout limpio tras el fast-forward. Sin nuevas llamadas al original durante la integración.
