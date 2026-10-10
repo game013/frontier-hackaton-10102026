@@ -93,7 +93,9 @@ def _delta(source_seq: str, n: int, expected: dict, actual: dict) -> dict:
 
 def replay(sources: list[tuple[str, list[dict]]], *, epoch: str, prefix: str,
            max_requests: int = MAX_REQUESTS, client: Client | None = None,
-           capture_dir: Path = DEFAULT_CAPTURE) -> tuple[dict, int]:
+           capture_dir: Path = DEFAULT_CAPTURE, label: str = "A6",
+           expectation: str = "salvo delta de FR-0153") -> tuple[dict, int]:
+    """`label` y `expectation` solo cambian el texto de hipótesis y conclusiones (A7 reusa esto)."""
     if not epoch or not prefix or set(prefix) - PREFIX_CHARS or prefix in (".", "..") \
             or not 1 <= max_requests <= MAX_REQUESTS:
         raise ValueError(f"epoch y prefix son obligatorios; max-requests entre 1 y {MAX_REQUESTS}")
@@ -141,7 +143,7 @@ def replay(sources: list[tuple[str, list[dict]]], *, epoch: str, prefix: str,
         seq_name = f"{prefix}-{source_seq}"
         done: list[tuple[int, dict, bool]] = []
         try:
-            reset_hip = f"A6 {epoch}: reset; replay de {source_seq} (base ID {rows[0]['id']})"
+            reset_hip = f"{label} {epoch}: reset; replay de {source_seq} (base ID {rows[0]['id']})"
             with cl.sequence(seq_name, reset_hip, no_cache=True) as sequence:
                 sequence.flush()
                 observed = cl.seq_steps(seq_name)
@@ -152,7 +154,7 @@ def replay(sources: list[tuple[str, list[dict]]], *, epoch: str, prefix: str,
                 save()
                 for n, expected in enumerate(rows[1:], 1):
                     kwargs = _call_kwargs(expected)
-                    hip = (f"A6 {epoch}: igual que base ID {expected['id']} salvo delta de FR-0153 "
+                    hip = (f"{label} {epoch}: igual que base ID {expected['id']} {expectation} "
                            f"({source_seq} paso {n})")
                     result = sequence.call(expected.get("method", "POST"),
                                            expected.get("path", "/msg"), None, hip, **kwargs)
@@ -165,7 +167,7 @@ def replay(sources: list[tuple[str, list[dict]]], *, epoch: str, prefix: str,
             report["incomplete_reason"] = f"{seq_name}: {exc}"
         for evidence_id, expected, same in done:
             try:
-                cl.conclude(evidence_id, f"A6 replay {epoch}; base ID {expected['id']}; "
+                cl.conclude(evidence_id, f"{label} replay {epoch}; base ID {expected['id']}; "
                             f"bytes={'iguales' if same else 'delta'}")
                 report["new_evidence_ids"].append(evidence_id)
             except Exception as exc:
