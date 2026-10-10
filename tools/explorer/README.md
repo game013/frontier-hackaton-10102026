@@ -95,6 +95,10 @@ el contexto queda abortado aunque captures la excepción dentro del bloque.
 - El lock de secuencia es distinto de los locks breves de log y cuota. La cuota atómica vive en
   `quota.json`, protegida por `quota.lock` en ese mismo coordinador. Ritmo: 8 req/s;
   `BB_DAILY_CAP`: 7.800 por defecto, frente al límite remoto de 8.000 por token y día de Bogotá.
+  Al inicializar la cuota del día se cuentan únicamente entradas con el mismo `token_tag`
+  y fecha, tanto en el log principal como en el lateral de rate limits, evitando duplicados.
+  Las entradas históricas sin etiqueta quedan sin atribuir; pueden representar consumo remoto
+  adicional que el contador local no conoce. Las cuotas ya persistidas conservan sus reservas.
   El ritmo se mide al reclamar el turno antes de conectar; una pausa entre turno y socket puede
   acercar envíos. Un rate limit de infraestructura consume presupuesto aunque no sea evidencia.
 - El lock es local a esta máquina. En varios hosts usa tokens distintos o centraliza las llamadas.

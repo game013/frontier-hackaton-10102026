@@ -260,6 +260,8 @@ class ClientTest(unittest.TestCase):
         self.assertEqual(r.status, 200)
         self.assertEqual(len(es), 4)
         self.assertEqual(sum(e.get("infrastructure") == "rate-limit" for e in es), 2)
+        self.assertEqual([e["token_tag"] for e in self.c._side("rate_limited.jsonl")],
+                         [self.c._token_tag] * 2)
         self.assertEqual(self.c.used_today(), 4)
 
     def test_budget_cap_stops(self):
@@ -397,6 +399,49 @@ class ClientTest(unittest.TestCase):
             s.flush()
             with self.assertRaises(bb.BudgetExceeded):
                 s.msg("PING;1", "quota compartida")
+
+    def test_quota_migration_keeps_two_tokens_independent_in_shared_log(self):
+        first = self.client(daily_cap=1)
+        with first.sequence("first-token") as sequence:
+            sequence.flush()
+        os.environ["BB_OTHER_TOKEN"] = "otro-token"
+        second = self.client(token_var="BB_OTHER_TOKEN", daily_cap=1)
+        self.assertEqual(first.used_today(), 1)
+        self.assertEqual(second.used_today(), 0)
+        with second.sequence("second-token") as sequence:
+            sequence.flush()
+        self.assertEqual(first.used_today(), 1)
+        self.assertEqual(second.used_today(), 1)
+        self.assertEqual([e["token_tag"] for e in first.entries()],
+                         [first._token_tag, second._token_tag])
+
+    def test_quota_migration_filters_legacy_dates_and_side_rate_limits(self):
+        timestamp = bb.now_iso()
+        today = bb.bogota_day(timestamp)
+        other_tag = "other-token-tag"
+        previous = (bb.dt.datetime.fromisoformat(timestamp) - bb.dt.timedelta(days=1)).isoformat()
+        self.log.write_text("".join(json.dumps(entry) + "\n" for entry in [
+            {"ts": timestamp, "token_tag": self.c._token_tag},
+            {"ts": timestamp, "token_tag": other_tag, "infrastructure": "rate-limit"},
+            {"ts": timestamp},  # Sin etiqueta: no se atribuye a ningún token.
+            {"ts": previous, "token_tag": self.c._token_tag},
+        ]))
+        self.c.side_dir.mkdir(parents=True, exist_ok=True)
+        side = self.c.side_dir / "rate_limited.jsonl"
+        side.write_text("".join(json.dumps(entry) + "\n" for entry in [
+            {"ts": timestamp, "token_tag": self.c._token_tag},
+            {"ts": timestamp, "token_tag": other_tag},
+            {"ts": timestamp},
+            {"ts": previous, "token_tag": self.c._token_tag},
+        ]))
+        self.assertEqual(self.c._quota_state({}, today)["used"], 2)
+        # Una cuota existente conserva sus reservas; no se reconstruye en cada llamada.
+        quota = {"tokens": {self.c._token_tag: {"day": today, "used": 7, "next_at": 0}}}
+        self.assertEqual(self.c._quota_state(quota, today)["used"], 7)
+        # El rate limit que ya figura en el log principal no se cuenta por duplicado.
+        self.log.write_text(json.dumps({"ts": timestamp, "token_tag": self.c._token_tag,
+                                       "infrastructure": "rate-limit"}) + "\n")
+        self.assertEqual(self.c._quota_state({}, today)["used"], 1)
 
     def test_cli_runner_uses_local_fake_and_retires_loose_commands(self):
         fixture = Path(self.tmp.name) / "steps.jsonl"

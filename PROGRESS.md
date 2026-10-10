@@ -109,3 +109,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [claude] 2026-10-10 14:02: B1 reclamado en rama feat/b1-handler; incluye captura íntegra de requests del evaluador (método, ruta cruda, headers sin secretos, cuerpo base64, respuesta) como seed local.
 
 - [claude] 2026-10-10 14:09: B1 completado (4a2d32d…fc09d12, ff a master): handler con auth/health/reset/E404/E100/E102 y stub PING (19 casos del log 2, 33–50 en verde), captura JSONL de todo request en `CAPTURE_PATH` + stdout con token redactado, `make serve` (:9900), `make test-go`, `make seeds` para convertir capturas o logs en semillas. Límites: lo que net/http rechaza antes del handler no se captura; cuerpo sin tope de tamaño. 0 requests al original. B2 desbloqueado.
+
+- [codex] 2026-10-10 14:10: corregido P1 de revisión A0: migración de cuota filtrada por token_tag y día, sin atribuir entradas sin etiqueta; rate limits laterales etiquetados. Regresión con dos tokens y log común reproduce el fallo antes del fix; 25 pruebas en verde después. 0 requests al original.

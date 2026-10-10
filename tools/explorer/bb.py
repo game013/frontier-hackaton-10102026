@@ -179,13 +179,19 @@ class Client:
         tokens = quota.setdefault("tokens", {})
         state = tokens.get(self._token_tag)
         if state is None or state.get("day") != today:
-            # Migra el contador previo del log la primera vez que se usa esta versión.
-            entries = self._read_entries()
-            prior = sum(1 for e in entries if e.get("ts") and bogota_day(e["ts"]) == today)
-            # Las versiones anteriores guardaban los rate limits solo en el archivo lateral.
+            # Solo reconstruir consumo atribuible a este token y día. Los registros
+            # históricos sin etiqueta no permiten deducir quién consumió la cuota.
+            entries = [e for e in self.entries()
+                       if e.get("token_tag") == self._token_tag
+                       and e.get("ts") and bogota_day(e["ts"]) == today]
+            prior = len(entries)
+            # Evitar duplicar rate limits que ya se auditaron en el log principal.
             if not any(e.get("infrastructure") == "rate-limit" for e in entries):
-                prior += sum(1 for e in self._side("rate_limited.jsonl")
-                             if e.get("ts") and bogota_day(e["ts"]) == today)
+                with self._locked():
+                    side_entries = self._side("rate_limited.jsonl")
+                prior += sum(1 for e in side_entries
+                             if e.get("token_tag") == self._token_tag
+                             and e.get("ts") and bogota_day(e["ts"]) == today)
             state = {"day": today, "used": prior, "next_at": 0.0}
             tokens[self._token_tag] = state
         return state
@@ -428,7 +434,8 @@ class Client:
                 entry = target
             if hdrs.get(RATE_LIMIT_HEADER.lower()) == "rate-limit":
                 # Infraestructura: queda auditada pero nunca alimenta la caché ni la evidencia.
-                self._append_side("rate_limited.jsonl", {"ts": ts, "seq": seq, "path": path, "status": status})
+                self._append_side("rate_limited.jsonl", {"ts": ts, "seq": seq, "path": path,
+                                                        "status": status, "token_tag": self._token_tag})
                 self._sleep(min(2 ** attempt, 10))
                 continue
             return Result(entry, cached=False)
