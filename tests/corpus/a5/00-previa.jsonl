@@ -1,0 +1,6 @@
+{"request": {"m": "PING;64"}, "hipotesis": "A5 previa v2: PING con control A1 sigue dando pong"}
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "A5 previa v2: ALTA con control A1 crea AC-0001 (fórmula vigente)"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "A5 previa v2: CONSULTA de la cuenta recién creada, saldo 0"}
+{"request": {"m": "ZZZ;54"}, "hipotesis": "A5 previa v2: comando lejano da E301 sin sugerencia"}
+{"request": {"m": "ALT;97"}, "hipotesis": "A5 previa v2: comando cercano da E301 con sugerencia ALTA"}
+{"request": {"m": "RETIRX;56"}, "hipotesis": "A5 previa v2: ¿hay un comando oculto a distancia ≤2 de RETIRX (p. ej. RETIRO) que aparezca como sugerencia?"}
