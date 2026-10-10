@@ -81,9 +81,10 @@ func TestCorpus(t *testing.T) {
 	}
 
 	current := Pending{}
-	passed, pend := 0, 0
+	passed, pend, ran := 0, 0, 0
 	for _, q := range seqs {
 		t.Run(q.Name, func(t *testing.T) {
+			ran++
 			srv, client := serve(t, version)
 			diffs, err := Replay(client, srv.URL, testToken, q)
 			if err != nil {
@@ -122,6 +123,12 @@ func TestCorpus(t *testing.T) {
 		})
 	}
 	if *updatePending {
+		// Escribir con un filtro -run o tras un fallo borraría pendientes de
+		// secuencias que no se compararon.
+		if ran != len(seqs) || t.Failed() {
+			t.Fatalf("%s sin cambios: -update-pending exige ejecutar las %d secuencias sin errores (se ejecutaron %d)",
+				pendingFile, len(seqs), ran)
+		}
 		if err := WritePending(pendingFile, seqs, current); err != nil {
 			t.Fatal(err)
 		}

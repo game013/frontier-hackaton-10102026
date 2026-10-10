@@ -30,6 +30,8 @@ pasa, es un fallo de la secuencia.
   fuera de la lista (regresión), si un paso listado ya coincide o si la lista
   nombra una secuencia que no está en la suite. Tras avanzar en B3/B4, regenerar
   con `-update-pending` y revisar el diff: solo deben desaparecer pasos.
+  `-update-pending` no escribe si se combinó con un filtro `-run` o si alguna
+  secuencia falló, para no borrar pendientes de lo que no se comparó.
 - `testdata/`: evidencia sintética para las pruebas del propio arnés.
 
 ## Reglas sobre la evidencia
