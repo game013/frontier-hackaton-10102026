@@ -77,3 +77,26 @@ Las pruebas locales no son mediciones del original; la nueva evidencia es de A7.
 La conformidad pública sigue pendiente.
 
 Detalle: [informe A6](research/deltas-a6.md) y [especificación §6](specification.md#6-cambios-durante-el-día).
+
+## Corrida 1 del evaluador: 97/100
+
+La primera validación del set oculto (18:16) dio 97/100. Los 3 fallos eran tests difíciles,
+con status distinto después del primer paso. El evaluador no dice cuáles fallan, pero el
+reemplazo captura cada request recibido. Reconstruimos las 102 secuencias desde los logs de
+Railway y las repetimos sin caché contra el original (IDs 3971–4373). 99 respondieron igual;
+las 3 distintas tenían dos causas, que fijamos con 64 requests de sondas (4374–4437):
+
+1. **Mismo titular sin límite.** Una transferencia entre cuentas con el mismo nombre de titular,
+   idéntico byte a byte, no tiene límite E506. La caja, un espacio o la forma Unicode de la `ñ`
+   bastan para que vuelva el límite. E507 y el bloqueo siguen aplicando (CMD-TITULAR).
+2. **`HALT;1` detiene el servicio.** Solo el argumento `1` confirma la operación «destructiva».
+   Desde ahí, todo `/msg` autenticado responde 503 E599 hasta el siguiente reset; `/health`,
+   auth y rutas no cambian (CMD-HALT-1, ERR-599). Antes lo habíamos dejado como supuesto:
+   solo habíamos probado `x`.
+
+Ninguna es un cuarto cambio de FR-0153: nada de la evidencia v1 las contradice, y los tres
+deltas siguen siendo los mismos. Son reglas que nuestras sondas no habían cubierto. La lección
+es que el set de evaluación sirve también como fuente de casos: capturar todo lo que recibe el
+reemplazo nos permitió convertir un puntaje agregado en 3 secuencias concretas en minutos.
+Las 114 secuencias nuevas quedaron en la suite diferencial v2 como regresión.
+
