@@ -141,7 +141,7 @@ no reconocidas quedan `unexpected`. Códigos de salida: 0 control compatible,
 1 rango agotado sin coincidencia, 2 respuesta mal formada o inesperada.
 
 El rango por defecto 0–98 permite 99 sondas más el reset, antes de reintentos.
-Para completar 0–99, el último valor se puede buscar en otra secuencia con
+Si 0–98 no produce coincidencia y se necesita continuar hasta 99, usar otra secuencia con
 `--start 99 --stop 99`. Vigilar cuota antes/después y no lanzar barridos si la
 fórmula ya permite predecir la respuesta.
 

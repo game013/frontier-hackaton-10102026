@@ -52,6 +52,23 @@ usar el coordinador separado por defecto del worktree para este token.
 Los subagentes Luna analizaron candidatos, implementaron herramientas y revisaron
 sondas offline; el agente principal centralizó las solicitudes al original.
 
+## Alcance de la búsqueda 0–99
+
+`0–99` define el espacio de candidatos, con parada al primer control compatible;
+no exige probar los cien valores para cada mensaje. Esta política ya estaba
+acordada en la [estrategia inicial, sección 2, paso 3](estrategia-descubrimiento.md#2-el-cuello-de-botella-el-dígito-de-control):
+ordenar candidatos y parar en el primer acierto. El objetivo de A1 es obtener
+una fórmula que acierte mensajes reservados y rechace controles alternativos,
+con repetición independiente; ese criterio se cumplió.
+
+Para `ALTA;A`, el barrido probó 0–62: IDs 62–123 rechazados y 124 aceptado.
+Se detuvo en 62. El vecino 63 se probó después y dio E202 (ID 147); los valores
+64–99 no se probaron para ese mensaje. Esto no constituye una comprobación
+exhaustiva de que exista un único control aceptado por cada mensaje. La
+confianza se limita a las predicciones y rechazos documentados; no se presenta
+el resto del rango como evidencia observada. No se añadieron llamadas para
+resolver esta aclaración documental.
+
 ## Validación reservada
 
 Los nueve textos se congelaron en `tmp/a1_holdouts.json` antes de hallar la
