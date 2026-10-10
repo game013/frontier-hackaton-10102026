@@ -44,7 +44,7 @@ commit aparte de `experimentos.jsonl` (`git add experimentos.jsonl` explícito, 
 
 | Paso | Qué | Depende de | Responsable | Estado | Commit |
 | --- | --- | --- | --- | --- | --- |
-| B1 | `go.mod`, `cmd/replacement`, handler propio: auth, `/health`, `/__reset`, 404 E404, E100/E102 (casos del log 34–50). | — | — | Pendiente | — |
+| B1 | `go.mod`, `cmd/replacement`, handler propio: auth, `/health`, `/__reset`, 404 E404, E100/E102 (casos del log 34–50). Captura íntegra de toda request recibida (seed para replay local). | — | claude | En curso | — |
 | B2 | **Arnés diferencial:** test Go que lee secuencias de `tests/corpus/` y compara status y bytes. | B1 | — | Pendiente | — |
 | B3 | `internal/protocol`: parser de `m`, E201 y control tras una sola función (primero plan B; luego la fórmula de A1). | B1; A1 | — | Pendiente | — |
 | B4 | `internal/engine` + `state`: seis comandos, orden E201→E202→E301/E302/E401, E506/E507, sin corregir `recieved` ni espacios. | B3; A3 | — | Pendiente | — |
@@ -104,3 +104,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [codex] 2026-10-10 13:46: A0 reclamado; base64, no-cache, runner con lock por token y entrada make run documentada; pruebas sin requests al original.
 
 - [codex] 2026-10-10 13:59: A0 completado en de50612: request/response base64, --no-cache, runner con lock por token; make explore documentado (nombre solicitado por el usuario). 23 pruebas locales en verde; 0 requests al original. Luna revisó y amplió pruebas. A1 y A2 desbloqueados.
+
+- [claude] 2026-10-10 14:02: B1 reclamado en rama feat/b1-handler; incluye captura íntegra de requests del evaluador (método, ruta cruda, headers sin secretos, cuerpo base64, respuesta) como seed local.
