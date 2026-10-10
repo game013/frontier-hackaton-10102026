@@ -9,7 +9,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 - **Fase:** plan de exploración e implementación acordado; ninguna tarea iniciada.
 - **Versión observada:** `v1`. Último ID del log: 50.
 - **Próximo paso:** A0 y B1 en paralelo; después A1 (fórmula) y A2 (línea base antes de las 15:20).
-- **Bloqueos:** ninguno. Pendiente confirmar el diferido P2 (abajo).
+- **Bloqueos:** ninguno.
 
 ## Hitos de hoy (Bogotá, UTC−5)
 
@@ -55,7 +55,7 @@ commit aparte de `experimentos.jsonl` (`git add experimentos.jsonl` explícito, 
 
 Cada paso termina con `go test ./...` en verde y commit atómico convencional.
 
-### Diferido (P2, pendiente de confirmación del usuario)
+### Diferido (P2, confirmado por el usuario)
 
 Diseñado en `docs/system-design.md`, sin impacto directo en el puntaje; solo si sobra tiempo:
 métricas p95 y alertas, rotación del log de captura del evaluador, exportador de
@@ -99,3 +99,4 @@ Trabajan varios agentes en paralelo, sin reparto fijo por herramienta ni por eta
 Solo por adición, una línea por evento, con autor y hora de Bogotá.
 
 - [claude] 2026-10-10 12:48: archivada la bitácora de diseño; tablero reorganizado con el plan A0–A7 / B1–B8.
+- [claude] 2026-10-10 12:50: usuario confirma el diferido P2.
