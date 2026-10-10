@@ -29,5 +29,8 @@ Cada vez que completes un paso, haz un commit **atómico, transaccional y conven
 - Cada secuencia empieza con `POST /__reset`. Límite: 10 req/s y 8.000 por día por token. Una
   respuesta con el header `X-Frontier-Infra: rate-limit` viene de la infraestructura, no del servicio:
   descártala.
+- `experimentos.jsonl` es un entregable: va versionado en la raíz, nunca en `.gitignore`. Tras cada
+  bloque de experimentos (sin `bb.py` en ejecución) commitéalo aparte con `git add experimentos.jsonl`
+  explícito. Detalle en `tools/explorer/README.md`.
 - A las 15:30 el servicio cambia. Detecta el cambio repitiendo el corpus contra el original y
   documéntalo en la especificación (sección 6).
