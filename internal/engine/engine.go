@@ -4,7 +4,6 @@
 package engine
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/game013/frontier-hackaton-10102026/internal/protocol"
@@ -38,6 +37,18 @@ var (
 	respStoreError = []byte(`{"error":"E500","mensaje":"error interno"}`)
 )
 
+// Status de las respuestas, como enteros: el motor no depende de HTTP
+// (diseño, capas); el adaptador los escribe tal cual.
+const (
+	statusOK            = 200
+	statusCreated       = 201
+	statusBadRequest    = 400
+	statusNotFound      = 404
+	statusConflict      = 409
+	statusUnprocessable = 422
+	statusInternalError = 500
+)
+
 // transferLimit: TRANSFER con monto mayor da E506, por operación (ERR-506).
 const transferLimit = 100000
 
@@ -51,12 +62,12 @@ func (e *Engine) Reset() error { return e.store.Reset() }
 func (e *Engine) Exec(m protocol.Message) (int, []byte) {
 	switch m.Cmd {
 	case "PING":
-		return http.StatusOK, respPong
+		return statusOK, respPong
 	case "NOTAS":
-		return http.StatusOK, respNotas // fija, no depende del estado (CMD-NOTAS)
+		return statusOK, respNotas // fija, no depende del estado (CMD-NOTAS)
 	case "HALT":
 		// Nunca detiene el proceso ni cambia el estado (CMD-HALT-ARG, RIE-08).
-		return http.StatusConflict, respE520
+		return statusConflict, respE520
 	}
 	var status int
 	var body []byte
@@ -65,7 +76,7 @@ func (e *Engine) Exec(m protocol.Message) (int, []byte) {
 		return err
 	})
 	if err != nil {
-		return http.StatusInternalServerError, respStoreError
+		return statusInternalError, respStoreError
 	}
 	return status, body
 }
@@ -77,21 +88,21 @@ func apply(s *state.State, m protocol.Message) (int, []byte, error) {
 	switch m.Cmd {
 	case "ALTA":
 		id := s.OpenAccount(m.Args[0])
-		return http.StatusCreated, []byte(`{"cuentaId":"` + id + `"}`), nil
+		return statusCreated, []byte(`{"cuentaId":"` + id + `"}`), nil
 	case "CONSULTA":
 		acc, ok := s.Accounts[m.Args[0]]
 		if !ok {
-			return http.StatusNotFound, respE401, nil
+			return statusNotFound, respE401, nil
 		}
-		return http.StatusOK, []byte(`{"cuenta_id":"` + acc.ID + `","saldo":` + strconv.FormatInt(acc.Balance, 10) + `}`), nil
+		return statusOK, []byte(`{"cuenta_id":"` + acc.ID + `","saldo":` + strconv.FormatInt(acc.Balance, 10) + `}`), nil
 	case "DEPOSITO":
 		// E303 → E401 (ERR-ORD).
 		amount, ok := parseAmount(m.Args[1])
 		if !ok {
-			return http.StatusBadRequest, respE303, nil
+			return statusBadRequest, respE303, nil
 		}
 		if s.Accounts[m.Args[0]] == nil {
-			return http.StatusNotFound, respE401, nil
+			return statusNotFound, respE401, nil
 		}
 		return operation(s.Apply(state.Delta{Account: m.Args[0], Amount: amount}))
 	case "TRANSFER":
@@ -100,15 +111,15 @@ func apply(s *state.State, m protocol.Message) (int, []byte, error) {
 		amount, ok := parseAmount(m.Args[2])
 		switch {
 		case !ok:
-			return http.StatusBadRequest, respE303, nil
+			return statusBadRequest, respE303, nil
 		case from == to:
-			return http.StatusBadRequest, respE304, nil
+			return statusBadRequest, respE304, nil
 		case s.Accounts[from] == nil || s.Accounts[to] == nil:
-			return http.StatusNotFound, respE401, nil
+			return statusNotFound, respE401, nil
 		case amount > transferLimit:
-			return http.StatusUnprocessableEntity, respE506, nil
+			return statusUnprocessable, respE506, nil
 		case s.Accounts[from].Balance < amount:
-			return http.StatusUnprocessableEntity, respE507, nil
+			return statusUnprocessable, respE507, nil
 		}
 		return operation(s.Apply(
 			state.Delta{Account: from, Amount: -amount},
@@ -121,11 +132,11 @@ func apply(s *state.State, m protocol.Message) (int, []byte, error) {
 		case err != nil:
 			return 0, nil, err
 		case !found:
-			return http.StatusNotFound, respE402, nil
+			return statusNotFound, respE402, nil
 		case already:
-			return http.StatusOK, respAnulYa, nil
+			return statusOK, respAnulYa, nil
 		}
-		return http.StatusOK, []byte(`{"ok":true,"anulada":"` + id + `"}`), nil
+		return statusOK, []byte(`{"ok":true,"anulada":"` + id + `"}`), nil
 	}
 	// El protocolo solo entrega comandos de su tabla: llegar aquí es un error
 	// de programación, no una respuesta del original.
@@ -136,7 +147,7 @@ func operation(id string, err error) (int, []byte, error) {
 	if err != nil {
 		return 0, nil, err
 	}
-	return http.StatusOK, []byte(`{"status":"recieved","operacionId":"` + id + `"}`), nil
+	return statusOK, []byte(`{"status":"recieved","operacionId":"` + id + `"}`), nil
 }
 
 // parseAmount acepta un entero decimal ASCII positivo sin signo ni ceros
