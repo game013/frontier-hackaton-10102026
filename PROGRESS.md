@@ -6,7 +6,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 
 ## Estado ahora
 
-- **Fase:** A0, A1, A2 y B1 completados; fórmula del control confirmada y línea base completa revalidada. A2 integrado en master mediante fast-forward autorizado (d3abf21); A1 integrado en 310a1be.
+- **Fase:** A0, A1, A2, A3 y B1 completados (A3 en feat/a3-state, sin mezclar); fórmula del control confirmada y línea base completa revalidada. A2 integrado en master mediante fast-forward autorizado (d3abf21); A1 integrado en 310a1be.
 - **Versión observada:** `v1`, revalidada a las 15:00 de Bogotá. Último ID del log: 450 (448 respuestas; intentos 51 y 226 sin respuesta).
 - **Próximo paso:** A6 (replay tras el cambio anunciado) y B3 (integridad con fórmula A1); B2 tiene el corpus completo de A2 disponible.
 - **Bloqueos:** ninguno.
@@ -31,7 +31,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 | A0 | Completar `bb.py`: request/response en base64, `--no-cache`, runner de secuencias (reset + lock por token mientras dura la secuencia, entre procesos de esta máquina). | 0 | — | Codex (orquestación), Luna (revisión/pruebas) | Completado | — (0 requests) |
 | A1 | **Fórmula del control:** pares mínimos sobre ALTA/CONSULTA que cambien una sola propiedad (longitud, caja, acento, separador, ceros) y búsqueda de candidatos 0–99 con parada al primer control compatible; validar candidatos con mensajes reservados. | ≤100 por tanda | A0 | Codex (orquestación), Luna (análisis/revisión) | Completado | 52–225 (51: fallo DNS sin evidencia) |
 | A2 | **Línea base `v1`:** corpus de ejemplos, secuencias 1–50 y lo de A1 en `tests/corpus/`; repetir sin caché. | ≤250 (225 consumidas) | A0 | Codex (orquestación), Luna (herramientas/revisión) | Completado | 227–450 (226: fallo sin respuesta) |
-| A3 | **Estado:** consumo de IDs ante errores, anulación de transferencias, ANULA sobre operación inexistente, alcance del reset, naturaleza del límite E506. | ~500 | A0 (mejor con A1) | — | Pendiente | — |
+| A3 | **Estado:** consumo de IDs ante errores, anulación de transferencias, ANULA sobre operación inexistente, alcance del reset, naturaleza del límite E506. | ~500 (800 aprobados; 436 consumidas) | A0 (mejor con A1) | claude (orquestación), Haiku (minería/auditoría) | Completado | 451–886 (618: TEAM_TOKEN rechazado) |
 | A4 | **Sobre HTTP y números:** matriz de cierre del diseño (precedencia auth/ruta/JSON, cuerpos, HEAD/OPTIONS, escapes) y bordes (`0`, `-1`, `+1`, `01`, `1.0`, int64). | ~300 | A0 | — | Pendiente | — |
 | A5 | **Descubrir comandos** por diccionario (RETIRO, MOVIMIENTOS, CIERRE…). | ~500 | A1 | — | Pendiente | — |
 | A6 | **Detección del cambio:** replay contra la base a las 15:35 y 16:35, sondas mínimas por delta, sección 6 de la spec con IDs nuevos. | ~300 | A2 | — | Pendiente | — |
@@ -67,9 +67,6 @@ La captura de requests del evaluador sí se hace, en versión simple (JSONL a st
 Se borran cuando pasan a la spec con IDs.
 
 - PING: excepción de integridad pendiente de ampliar en A4 (log 2, 33). La fórmula general ya está confirmada en INT-01; no usar PING como oráculo.
-- E506: ¿límite por operación o acumulado? Visto con 120000 (log 10).
-- IDs: ¿un comando fallido consume `AC-`/`OP-`?
-- Reset: ¿alcance por token?, ¿reinicia contadores a 1?
 - Sobre (para A4; supuestos ENT-05..07 de B1, fijados en `internal/httpadapter/handler_test.go`): sin auth a `/no-existe`; sin auth con cuerpo `{` a `/msg`; `Bearer token-invalido` con `GET /msg`; `{` a `/no-existe` con auth; `/%6dsg`, `/msg/`, `/msg?x=1`; cuerpos vacío, `[]`, `{"m":null}`, `{"M":"PING;1"}`, `{"m":"PING;1"} x`, `m` duplicada; `Authorization` duplicado o con espacios extra; `PING;` sin control.
 
 ## Decisiones vigentes
@@ -129,3 +126,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [codex] 2026-10-10 15:03: A2 completado en feat/a2-baseline: diez secuencias y 224 respuestas revalidadas sin caché entre 15:00:19 y 15:00:56 de Bogotá, antes del cambio anunciado. IDs 227–450, cero deltas de contrato y cero deltas en 174 comparaciones de bytes; 50 casos históricos ahora tienen bytes nuevos sin fabricar los anteriores. Intento 226 de transporte excluido de evidencia; consumo A2 225/250, cuota 450/7800. Herramientas y corpus histórico 37d0a30, log aparte edc882c; auditoría Luna independiente, 57 pruebas Python y go test ./... en verde. Spec e informe A2 documentan el alcance; B2/A6 tienen corpus. Rama sin mezclar.
 
 - [codex] 2026-10-10 15:05: usuario autoriza mezcla; feat/a2-baseline integrado en master con git merge --ff-only hasta d3abf21, sin conflictos ni commit de merge. Corpus, spec y log auditados por Luna; checkout limpio tras el fast-forward. Sin nuevas llamadas al original durante la integración.
+
+- [claude] 2026-10-10 15:20: A3 completado en feat/a3-state, antes del cambio: 25 secuencias en tests/corpus/a3 (IDs 451–670) y repetición sin caché 671–886, 216/216 iguales. Errores, ANULA, PING y CONSULTA no consumen IDs; ANULA revierte sin comprobar saldo (saldos negativos); E506 = TRANSFER > 100000 por operación; reset solo POST autenticado; nuevos E104 y E304 con orden medido. TEAM_TOKEN da 401 en el original (618): aislamiento queda supuesto. Spec §1–5/§7 e informe docs/research/state-a3.md. B4 desbloqueado; A6 debe repetir tests/corpus/a3 con BB_EPOCH=v2. Rama sin mezclar.
