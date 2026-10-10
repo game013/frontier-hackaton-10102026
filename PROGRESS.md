@@ -6,7 +6,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 
 ## Estado ahora
 
-- **Fase:** A0, A1, A2, A3, A4 y B1 completados (A4 en feat/a4-envelope, sin mezclar); fórmula del control confirmada y línea base completa revalidada. A2 integrado en master mediante fast-forward autorizado (d3abf21); A1 integrado en 310a1be.
+- **Fase:** A0, A1, A2, A3, A4 y B1 completados (A4 integrado en master mediante fast-forward autorizado, 1598e36); fórmula del control confirmada y línea base completa revalidada. A2 integrado en master mediante fast-forward autorizado (d3abf21); A1 integrado en 310a1be.
 - **Versión observada:** `v1`, revalidada a las 15:00 de Bogotá. Último ID del log: 1381 (A4 cerró a las 15:28:23, antes del cambio; intentos 51 y 226 sin respuesta).
 - **Próximo paso:** A6 (replay tras el cambio anunciado) y B3 (integridad con fórmula A1); B2 tiene el corpus completo de A2 disponible.
 - **Bloqueos:** ninguno.
@@ -140,3 +140,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 
 - [claude] 2026-10-10 15:45: A4 completado en feat/a4-envelope, antes del cambio (15:25:11–15:28:23, v1): IDs 887–1381, 495/500 requests; secuencias 01–18 repetidas sin caché, 241/241 iguales; 19–20 con una pasada. Precedencia ruta → auth → tamaño (E101, 8192 bytes) → JSON; nuevos E101, E103 y `sugerencia` en E301; control bien formado = 1–2 dígitos ASCII; PING sin integridad pero con aridad cero; montos enteros positivos sin ceros iniciales y con tope de 10 dígitos; comandos sin distinguir caja. Spec §1–3, §5 y §7 e informe docs/research/envelope-a4.md. Deltas del handler en la fila nueva B1a. Rama sin mezclar.
 - [claude] 2026-10-10 15:47: usuario avisa que el incidente (cambio de versión) ya está activo. Todo A4 es previo (`v1`); A6 debe repetir también `tests/corpus/a4/*.jsonl` con `BB_EPOCH=v2` y nombres nuevos (≈254 requests) para detectar deltas del sobre.
+
+- [claude] 2026-10-10 15:55: usuario autoriza mezcla; feat/a4-envelope integrado en master con git merge --ff-only hasta 1598e36, sin commit de merge. Sin nuevas llamadas al original.
