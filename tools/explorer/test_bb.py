@@ -140,6 +140,26 @@ class ClientTest(unittest.TestCase):
         self.assertFalse(r.cached)
         self.assertEqual([path for path, _, _ in Fake.calls], ["/__reset", "/msg"])
 
+    def test_fully_cached_sequence_resumes_with_its_reset(self):
+        self.c.sequence("a").msg("ALTA;X;1", "alta")
+        self.assertTrue(self.c.sequence("b").msg("ALTA;X;1", "alta").cached)
+        Fake.calls.clear()
+        fresh = self.client()
+        with self.assertRaises(ValueError):
+            fresh.sequence("b")
+        fresh.resume("b").msg("CONSULTA;AC-0001;2", "consulta")
+        self.assertEqual([path for path, _, _ in Fake.calls], ["/__reset", "/msg", "/msg"])
+        self.assertEqual(fresh.pending_steps("b"), [])
+
+    def test_resume_rejects_unfinished_attempt(self):
+        self.c.sequence("a").flush()
+        with self.c._locked():
+            entries = self.c.entries()
+            entries[0]["outcome"] = "pending"
+            self.c._replace_entries(entries)
+        with self.assertRaises(ValueError):
+            self.client().resume("a")
+
     def test_transport_failure_is_logged_before_propagating(self):
         def unavailable(*_args, **_kwargs):
             raise OSError("network down")
@@ -168,6 +188,10 @@ class ClientTest(unittest.TestCase):
         self.assertEqual(r.status, 200)
         self.assertEqual(len(self.c.entries()), 4)  # reset + tres intentos de msg auditados
         self.assertEqual(sum(e.get("infrastructure") == "rate-limit" for e in self.c.entries()), 2)
+        for entry in self.c.entries():
+            if entry.get("infrastructure"):
+                self.assertNotIn("status", entry)
+                self.assertNotIn("response", entry)
         self.assertEqual(self.c.used_today(), 4)  # también cuentan para el presupuesto
 
     def test_budget_cap_stops(self):

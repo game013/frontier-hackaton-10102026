@@ -232,17 +232,17 @@ class Client:
 
     def sequence(self, seq: str, hipotesis: str = "inicio de secuencia: estado limpio") -> "Sequence":
         """Abre una secuencia. El reset se envía de forma perezosa (ver Sequence)."""
-        if self.seq_steps(seq):
+        if self.seq_steps(seq) or self.pending_steps(seq):
             raise ValueError(f"la secuencia {seq!r} ya existe; usa otro nombre o Client.resume()")
         return Sequence(self, seq, reset_hipotesis=hipotesis)
 
     def resume(self, seq: str) -> "Sequence":
         steps = self.seq_steps(seq)
-        if not steps:
-            raise ValueError(f"la secuencia {seq!r} no existe")
-        if any(e.get("outcome") == "transport_error" for e in steps):
-            raise ValueError(f"la secuencia {seq!r} tiene un transporte incierto; empieza otra desde reset")
         pending = [(tuple(e["args"]), e["kw"]) for e in self.pending_steps(seq)]
+        if not steps and not pending:
+            raise ValueError(f"la secuencia {seq!r} no existe")
+        if any(e.get("outcome") in ("transport_error", "pending") for e in steps):
+            raise ValueError(f"la secuencia {seq!r} tiene un transporte incierto; empieza otra desde reset")
         logical_steps = [self._step_key(e) for e in steps
                          if "status" in e and not e.get("infrastructure")]
         logical_steps.extend(self.step_key(args[0], args[1], args[2], kw) for args, kw in pending)
@@ -349,19 +349,15 @@ class Client:
             with self._locked():
                 es = self.entries()
                 target = next(e for e in es if e["id"] == entry["id"])
-                target.update({"x_req": hdrs.get("x-req"), "status": status, "response": parsed,
-                               "raw": text, "outcome": "completed"})
+                if hdrs.get(RATE_LIMIT_HEADER.lower()) == "rate-limit":
+                    target.update({"infrastructure": "rate-limit", "outcome": "infrastructure"})
+                else:
+                    target.update({"x_req": hdrs.get("x-req"), "status": status, "response": parsed,
+                                   "raw": text, "outcome": "completed"})
                 self._replace_entries(es)
                 entry = target
             if hdrs.get(RATE_LIMIT_HEADER.lower()) == "rate-limit":
                 # Infraestructura: queda auditada pero nunca alimenta la caché ni la evidencia.
-                with self._locked():
-                    es = self.entries()
-                    target = next(e for e in es if e["id"] == entry["id"])
-                    target.update({"infrastructure": "rate-limit", "outcome": "infrastructure"})
-                    for field in ("x_req", "status", "response", "raw"):
-                        target.pop(field, None)
-                    self._replace_entries(es)
                 self._append_side("rate_limited.jsonl", {"ts": ts, "seq": seq, "path": path, "status": status})
                 self._sleep(min(2 ** attempt, 10))
                 continue
@@ -383,7 +379,7 @@ class Sequence:
         self.steps: list = list(steps or [])
         self.pending: list[tuple[tuple, dict]] = list(pending or [])
         if reset_hipotesis is not None:
-            self._queue(("POST", "/__reset", None, reset_hipotesis), {})
+            self._queue(("POST", "/__reset", None, reset_hipotesis), {}, persist=True)
 
     def _queue(self, args: tuple, kw: dict, *, persist: bool = False) -> None:
         method, path, body, _ = args
