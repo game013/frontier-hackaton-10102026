@@ -242,3 +242,30 @@ func TestV2ConcurrentBlockedAttempts(t *testing.T) {
 		}
 	})
 }
+
+// Mismo titular byte a byte: sin E506 (r1 log 4252, 4341, 4436). Otro titular,
+// caja, espacio o forma Unicode distinta sí dan E506 (4247, 4418, 4423, 4437).
+// E507 y el bloqueo siguen aplicando (4411, 4413, 4430).
+func TestSameHolderSkipsTransferLimit(t *testing.T) {
+	for _, version := range []string{"v1", "v2"} {
+		t.Run(version, func(t *testing.T) {
+			h := harness{t: t, e: testEngine(t, engine.NewMemoryStore(), version)}
+			for i, name := range []string{"Ana", "Ana", "ana", "Ana ", "Irene Pen\u0303a", "Irene Peña"} {
+				h.expect("ALTA", 201, `{"cuentaId":"`+state.FormatID("AC", int64(i+1))+`"}`, name)
+			}
+			h.expect("TRANSFER", 422, bodyE507, "AC-0001", "AC-0002", "9999999999")
+			h.op(1, "DEPOSITO", "AC-0001", "9999999999")
+			h.op(2, "DEPOSITO", "AC-0001", "9999999999")
+			h.op(3, "TRANSFER", "AC-0001", "AC-0002", "9999999999")
+			// Un éxito entre pares corta la racha v2 antes del tercer fallo.
+			h.expect("TRANSFER", 422, bodyE506, "AC-0001", "AC-0003", "100001")
+			h.expect("TRANSFER", 422, bodyE506, "AC-0001", "AC-0004", "100001")
+			h.op(4, "TRANSFER", "AC-0001", "AC-0002", "1")
+			h.expect("TRANSFER", 422, bodyE506, "AC-0001", "AC-0005", "100001")
+			h.expect("TRANSFER", 422, bodyE506, "AC-0001", "AC-0006", "100001")
+			h.op(5, "DEPOSITO", "AC-0006", "200000")
+			h.op(6, "TRANSFER", "AC-0006", "AC-0005", "100") // distinto titular, bajo el límite
+			h.expect("TRANSFER", 422, bodyE506, "AC-0006", "AC-0005", "100001")
+		})
+	}
+}

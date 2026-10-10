@@ -140,7 +140,9 @@ func (e *Engine) apply(s *state.State, m protocol.Message) (int, []byte, error) 
 			return statusLocked, []byte(`{"error":"E510","mensaje":"cuenta bloqueada","intentos":` + strconv.FormatInt(attempts, 10) + `}`), nil
 		}
 		switch {
-		case amount > e.rules.transferLimit:
+		// Sin límite entre cuentas del mismo titular, byte a byte (r1 log 4252, 4341, 4436; E506 con
+		// otro titular, caja o forma Unicode distinta: 4247, 4418, 4423, 4437).
+		case amount > e.rules.transferLimit && acc.Name != s.Accounts[to].Name:
 			e.rules.transferFailure(acc)
 			return statusUnprocessable, respE506, nil
 		case acc.Balance < amount:
