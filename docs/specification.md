@@ -12,6 +12,9 @@ Cada fila observada cita IDs reales del log. Las decisiones del reemplazo llevan
 | ENT-02 | Sin auth, auth vacía, token inválido o esquema Basic: 401 `{"error":"E001","mensaje":"no autorizado"}`. Health y reset también requieren auth. | log 36-40, 50 | probable |
 | ENT-04 | Token distinto de TEAM_TOKEN: el reemplazo responderá 401 E001. No se conoce el conjunto de tokens válidos del original. | Decisión; sin prueba | supuesto |
 | ENT-03 | GET /health y POST /__reset autenticados: 200 `{"ok":true}`. GET /msg, rutas inexistentes y POST //msg: 404 E404, sin redirect. HEAD, OPTIONS y precedencia auth/ruta pendientes. | log 34-35, 41-44 | probable |
+| ENT-05 | Orden de evaluación del reemplazo: auth (E001) antes que método/ruta (E404) y que JSON (E100/E102). Sin auth válida, cualquier ruta o cuerpo da 401. | Decisión B1; sin prueba de combinaciones (sonda pendiente en A4) | supuesto |
+| ENT-06 | El reemplazo enruta por la ruta cruda del request sin query: no decodifica escapes (`/%6dsg` → 404), no limpia barras ni acepta barra final (`/msg/` → 404); la query se ignora (`/msg?x=1` = `/msg`). | Decisión B1; solo `//msg` observado (log 44) | supuesto |
+| ENT-07 | Cuerpo de `/msg`: si no es JSON válido (incluido vacío o con basura tras el valor) → E100; si es JSON válido pero no objeto, o `m` falta, es `null`, no es string o solo existe como `M` → E102. | Decisión B1; observados `{`, `{}` y `{"m":64}` (log 45-47) | supuesto |
 
 ### 2. Integridad
 

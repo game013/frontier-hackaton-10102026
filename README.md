@@ -11,7 +11,12 @@ Diseño inicial del reemplazo autónomo HTTP en Go, con SQLite y despliegue en R
 - [Estrategia de descubrimiento](docs/research/estrategia-descubrimiento.md).
 - [Cliente instrumentado existente](tools/explorer/README.md): única vía al original.
 
-El servicio Go y el comando de replay descritos en el diseño aún están por implementar.
+Reemplazo Go: `make serve` (puerto 9900; `TEAM_TOKEN` obligatorio, `BEHAVIOR_VERSION`
+por defecto `v1`) y `make test-go`. Cada request recibido, manejado o no, queda en
+`CAPTURE_PATH` (por defecto `var/capture.jsonl`) y en stdout como JSONL `"kind":"capture"`;
+`make seeds ARGS="<capturas o volcado de logs> -o <destino>"` lo agrupa por secuencia como
+semilla de replay local ([tools/capture/seeds.py](tools/capture/seeds.py)). El comando de
+replay contra el corpus aún está por implementar.
 Las observaciones del corpus no sustituyen evidencia de `experimentos.jsonl`.
 
 Para regenerar los entregables después de editar el Markdown o Mermaid:
