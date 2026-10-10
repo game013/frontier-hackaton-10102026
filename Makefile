@@ -8,7 +8,7 @@ explore:
 	$(PYTHON) tools/explorer/bb.py $(ARGS)
 
 test-explorer:
-	$(PYTHON) -m unittest tools/explorer/test_bb.py
+	$(PYTHON) -m unittest discover -s tools/explorer -p 'test_*.py'
 
 # Reemplazo Go. Solo TEAM_TOKEN sale de .env: el runtime nunca recibe BB_TOKEN.
 serve:

@@ -113,3 +113,42 @@ exclusión entre procesos. No valida reglas de negocio del original ni utiliza e
 con ningún `bb.py` en ejecución, valida el log y commitéalo aparte con
 `git add experimentos.jsonl` explícito (nunca `git add .`), en un commit `docs:`.
 Los locks, `.explore/` y archivos bajo `tmp/` siguen ignorados.
+
+## A1: calcular y buscar controles
+
+La fórmula y su alcance están en `docs/research/control-a1.md`, con evidencia
+repetida y fixtures en `tests/corpus/a1/`. El generador es completamente offline:
+
+```sh
+python3 tools/explorer/control.py 'ALTA;Lucia'  # imprime 82; cero requests
+```
+
+Recibe el mensaje anterior al último `;control`. No valida aridad, montos ni
+sintaxis del campo control; devuelve el decimal canónico que debe enviarse.
+PING no sirve como oráculo porque puede omitir integridad.
+
+El escáner sí contacta al original, exclusivamente mediante `bb.py`:
+
+```sh
+python3 tools/explorer/control_probe.py 'CONSULTA;AC-0017' \
+  --seq a1-nueva --start 0 --stop 98 --log experimentos.jsonl
+```
+
+Empieza desde reset, conserva el lock y usa `no_cache=True`. Detiene el barrido
+ante la primera respuesta compatible con pasar integridad; un error posterior
+como E401 no significa éxito del comando. E201 aborta; auth, PING y respuestas
+no reconocidas quedan `unexpected`. Códigos de salida: 0 control compatible,
+1 rango agotado sin coincidencia, 2 respuesta mal formada o inesperada.
+
+El rango por defecto 0–98 permite 99 sondas más el reset, antes de reintentos.
+Para completar 0–99, el último valor se puede buscar en otra secuencia con
+`--start 99 --stop 99`. Vigilar cuota antes/después y no lanzar barridos si la
+fórmula ya permite predecir la respuesta.
+
+**Worktrees:** pasar `--coord-dir /ruta/checkout-principal/.explore` o definir
+`BB_COORD_DIR` para compartir locks y cuota con los demás procesos del token.
+Usar explícitamente el log de la raíz de la rama de exploración y conservar todo
+su historial. No iniciar un coordinador nuevo para el mismo token.
+
+`make test-explorer` descubre todas las pruebas del cliente, fórmula, escáner y
+trazabilidad. Solo usa un servidor simulado local, nunca el original.

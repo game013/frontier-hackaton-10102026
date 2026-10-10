@@ -29,7 +29,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 | Paso | Qué | Presupuesto | Depende de | Responsable | Estado | IDs del log |
 | --- | --- | --- | --- | --- | --- | --- |
 | A0 | Completar `bb.py`: request/response en base64, `--no-cache`, runner de secuencias (reset + lock por token mientras dura la secuencia, entre procesos de esta máquina). | 0 | — | Codex (orquestación), Luna (revisión/pruebas) | Completado | — (0 requests) |
-| A1 | **Fórmula del control:** pares mínimos sobre ALTA/CONSULTA que cambien una sola propiedad (longitud, caja, acento, separador, ceros) y búsqueda 0–99; validar candidatos con mensajes reservados. | ≤100 por tanda | A0 | Codex (orquestación), Luna (análisis/revisión) | En curso | — |
+| A1 | **Fórmula del control:** pares mínimos sobre ALTA/CONSULTA que cambien una sola propiedad (longitud, caja, acento, separador, ceros) y búsqueda 0–99; validar candidatos con mensajes reservados. | ≤100 por tanda | A0 | Codex (orquestación), Luna (análisis/revisión) | Completado | 52–225 (51: fallo DNS sin evidencia) |
 | A2 | **Línea base `v1`:** corpus de ejemplos, secuencias 1–50 y lo de A1 en `tests/corpus/`; repetir sin caché. | ~150 | A0 | — | Pendiente | — |
 | A3 | **Estado:** consumo de IDs ante errores, anulación de transferencias, ANULA sobre operación inexistente, alcance del reset, naturaleza del límite E506. | ~500 | A0 (mejor con A1) | — | Pendiente | — |
 | A4 | **Sobre HTTP y números:** matriz de cierre del diseño (precedencia auth/ruta/JSON, cuerpos, HEAD/OPTIONS, escapes) y bordes (`0`, `-1`, `+1`, `01`, `1.0`, int64). | ~300 | A0 | — | Pendiente | — |
@@ -115,3 +115,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [claude] 2026-10-10 14:21: revisión de B1 corregida (d76cf00, 232337b): la captura conserva el error de lectura del cuerpo (antes un cuerpo truncado daba 200 en vez de E100) y registra solo el cuerpo que sale al cable (HEAD, 204/304 vacíos).
 
 - [codex] 2026-10-10 14:26: A1 reclamado en feat/a1-control, worktree separado; bb.py sin cambios, cuota compartida con el coordinador original y exploración centralizada.
+
+- [codex] 2026-10-10 14:42: A1 completado en feat/a1-control: fórmula A=1…Z=26, filtrado ASCII antes de caja, decimal +00 y 98−(resto módulo 97), sin reducción final. Nueve mensajes reservados/vecinos repetidos desde dos resets; bordes 97/98 y Unicode revalidados. IDs 52–225, intento 51 DNS excluido de evidencia; 175 reservas nuevas, cuota 225/7800, quedan 7575. bb.py sin cambios; fixtures tests/corpus/a1, herramienta offline y escáner instrumentado. B3 desbloqueado; A2/A6 siguen pendientes. Rama sin mezclar, a la espera de autorización del usuario.

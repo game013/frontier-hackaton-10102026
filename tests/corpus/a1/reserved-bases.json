@@ -1,0 +1,11 @@
+[
+  "ALTA;Zoë",
+  "ALTA;Á",
+  "CONSULTA;AC-0042",
+  "DEPOSITO;AC-0001;1234",
+  "TRANSFER;AC-0002;AC-0001;6789",
+  "ANULA;OP-0042",
+  "alta;Iris",
+  "CONSULTA;AC-00042",
+  "ALTA;Q;R"
+]
