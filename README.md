@@ -17,6 +17,8 @@ por defecto `v2`) y `make test-go`. Cada request recibido, manejado o no, queda 
 `make seeds ARGS="<capturas o volcado de logs> -o <destino>"` lo agrupa por secuencia como
 semilla de replay local ([tools/capture/seeds.py](tools/capture/seeds.py)). El arnés diferencial local se ejecuta con `make differential`
 y compara status y bytes del corpus grabado usando SQLite temporal por secuencia.
+Sin `BEHAVIOR_VERSION` prueba ambas versiones; una variable explícita filtra una sola.
+El runtime sigue arrancando como v2 por defecto.
 Las observaciones del corpus no sustituyen evidencia de `experimentos.jsonl`.
 
 El almacenamiento se selecciona al arrancar con **`STORAGE=sqlite|memory`**. El valor

@@ -5,6 +5,9 @@ El reemplazo implementa CAM-V2-1…3 del [informe A6](research/deltas-a6.md).
 explícita para el contrato histórico; cualquier otro valor impide arrancar antes
 de abrir el almacenamiento. El motor recibe la versión explícita y no consulta
 el entorno, el reloj ni el original. NOTAS/HALT siguen disponibles en ambas versiones.
+`rulesFor` elige el conjunto de políticas una vez en `engine.New`; v2 sobrescribe
+el formato, límite y transiciones de bloqueo de v1. Las mutaciones de contadores
+se realizan mediante métodos de `state.Account`, no asignaciones desde el motor.
 
 ## Reglas implementadas
 
@@ -49,8 +52,9 @@ SQLite migra el esquema B5 (versión 1) a versión 2 añadiendo a `accounts`
 cuentas, saldos, deltas, anulaciones ni próximos IDs. Una base nueva usa también
 el esquema 2. Esquemas desconocidos o incompletos impiden arrancar.
 
-El rollback admitido es **configurar v1 en este mismo binario** y reiniciarlo
-sobre la misma base. v1 ignora y conserva los contadores de bloqueo: volver a v2
+**Decisión de diseño del reemplazo (MEM-08), no parte de la lista de supuestos
+aprobados a las 17:10 ni una observación del original:** el rollback admitido es
+**configurar v1 en este mismo binario** y reiniciarlo sobre la misma base. v1 ignora y conserva los contadores de bloqueo: volver a v2
 retoma esos valores, sin reset implícito. Los saldos, IDs y operaciones siguen
 siendo compartidos entre versiones. Usar `/__reset` si se desea comenzar otra
 secuencia, no como requisito de migración. **El binario B5 anterior no admite el
@@ -66,6 +70,9 @@ historial completo por request con estado, sin nuevas promesas de rendimiento.
 - Diferencial v2: **65 secuencias / 842 requests**, incluidos resets: replay A6
   de 58 secuencias/725 requests y 7 sondas repetidas/117 requests. El canario
   independiente no se duplica en esta suite.
+- Sin `BEHAVIOR_VERSION`, el arnés ejecuta ambas versiones; una variable explícita
+  filtra una sola. `-update-pending` exige versión explícita y corrida completa.
+  Sus guards se prueban en un subproceso sin permitir cambios en las listas.
 - Ambas listas `pending-v1.txt` y `pending-v2.txt` sin pasos pendientes. No se
   modifican corpus, evidencia, status esperados ni comparación de bytes.
 - `internal/engine/v2_test.go`: formato y extremos int64, fronteras de límite,
@@ -91,3 +98,22 @@ BEHAVIOR_VERSION=v2 go test -count=1 ./tests/differential
 
 B7 no llama al original ni modifica `experimentos.jsonl`. El despliegue B6,
 el replay final A7 y la conformidad pública siguen siendo pasos separados.
+
+## Resolución de la revisión adversaria
+
+Correcciones sobre `feat/b7-v2`, sin cambiar respuestas ni evidencia:
+
+| Hallazgo | Decisión | Motivo / ajuste |
+| --- | --- | --- |
+| Standards 1: `if e.v2` repetidos | Acatado | `rulesFor` selecciona una vez las políticas; `apply` ejecuta reglas sin nombres de versión. |
+| Standards 2: umbrales sin nombre | Acatado | Constantes `transferLimitV1`, `transferLimitV2` y `blockingFailures`, con citas ERR-506/CAM-V2-2/CAM-V2-3. |
+| Standards 3: tipo/catálogo único de versiones | Rechazado para B7 | `Load`, `app.New` y `engine.New` admiten entradas independientes: validar sus fronteras es intencional. No hay fallo demostrado. Migrar el tipo y catálogo de configuración, motor y arnés ampliaría las APIs y dependencias del arreglo; se difiere hasta necesitar otra versión. |
+| Standards 4: motor modifica campos de contadores | Acatado | Transiciones en `state.Account` para registrar fallos/intentos, reiniciar racha y liberar bloqueo; el motor conserva las decisiones y el orden. |
+| Standards 5: nombre `migrateV2` | Acatado | Renombrado a `migrateSchema2`, independiente de la versión de comportamiento. |
+| Standards 6: helpers de pruebas repetidos | Rechazado | `run` reproduce secuencias estáticas; el harness v2 inspecciona estado y compone pruebas de concurrencia. Compartir unas pocas líneas de aserción no simplifica esos usos. El cuerpo E510 esperado se mantiene independiente del serializador de producción para detectar regresiones de bytes. |
+| Spec a: v1 no corre por defecto | Acatado | Sin variable se recorren todas las versiones; con variable se filtra una. Regenerar pendientes exige versión explícita y corrida completa, con regresiones de los guards. |
+| Spec a: ERR-ORD desactualizado | Acatado | La propia fila separa orden v1 y v2, evidencia de E510 ante E506 y las demás precedencias supuestas. |
+| Spec b: retorno v2→v1→v2 no aprobado como supuesto | Acatado | Se retira de CAM-V2-SUP y se registra como decisión de diseño del reemplazo en MEM-08 y la sección de rollback; no se atribuye al operador ni al original. |
+
+Se conservan todos los commits anteriores y las pruebas de conformidad locales;
+estas correcciones no autorizan integración ni limpieza de rama/worktree.
