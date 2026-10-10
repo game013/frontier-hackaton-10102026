@@ -6,8 +6,8 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 
 ## Estado ahora
 
-- **Fase:** A0, A1, A2, A3 y B1 completados (A3 en feat/a3-state, sin mezclar); fórmula del control confirmada y línea base completa revalidada. A2 integrado en master mediante fast-forward autorizado (d3abf21); A1 integrado en 310a1be.
-- **Versión observada:** `v1`, revalidada a las 15:00 de Bogotá. Último ID del log: 450 (448 respuestas; intentos 51 y 226 sin respuesta).
+- **Fase:** A0, A1, A2, A3, A4 y B1 completados (A4 en feat/a4-envelope, sin mezclar); fórmula del control confirmada y línea base completa revalidada. A2 integrado en master mediante fast-forward autorizado (d3abf21); A1 integrado en 310a1be.
+- **Versión observada:** `v1`, revalidada a las 15:00 de Bogotá. Último ID del log: 1381 (A4 cerró a las 15:28:23, antes del cambio; intentos 51 y 226 sin respuesta).
 - **Próximo paso:** A6 (replay tras el cambio anunciado) y B3 (integridad con fórmula A1); B2 tiene el corpus completo de A2 disponible.
 - **Bloqueos:** ninguno.
 
@@ -32,7 +32,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 | A1 | **Fórmula del control:** pares mínimos sobre ALTA/CONSULTA que cambien una sola propiedad (longitud, caja, acento, separador, ceros) y búsqueda de candidatos 0–99 con parada al primer control compatible; validar candidatos con mensajes reservados. | ≤100 por tanda | A0 | Codex (orquestación), Luna (análisis/revisión) | Completado | 52–225 (51: fallo DNS sin evidencia) |
 | A2 | **Línea base `v1`:** corpus de ejemplos, secuencias 1–50 y lo de A1 en `tests/corpus/`; repetir sin caché. | ≤250 (225 consumidas) | A0 | Codex (orquestación), Luna (herramientas/revisión) | Completado | 227–450 (226: fallo sin respuesta) |
 | A3 | **Estado:** consumo de IDs ante errores, anulación de transferencias, ANULA sobre operación inexistente, alcance del reset, naturaleza del límite E506. | ~500 (800 aprobados; 436 consumidas) | A0 (mejor con A1) | claude (orquestación), Haiku (minería/auditoría) | Completado | 451–886 (618: TEAM_TOKEN rechazado) |
-| A4 | **Sobre HTTP y números:** matriz de cierre del diseño (precedencia auth/ruta/JSON, cuerpos, HEAD/OPTIONS, escapes) y bordes (`0`, `-1`, `+1`, `01`, `1.0`, int64). | ~300 (500 aprobados) | A0 | claude (orquestación), Haiku (minería/auditoría) | En curso | — |
+| A4 | **Sobre HTTP y números:** matriz de cierre del diseño (precedencia auth/ruta/JSON, cuerpos, HEAD/OPTIONS, escapes) y bordes (`0`, `-1`, `+1`, `01`, `1.0`, int64). | ~300 (500 aprobados; 495 consumidas) | A0 | claude (orquestación), Haiku (auditoría) | Completado | 887–1381 |
 | A5 | **Descubrir comandos** por diccionario (RETIRO, MOVIMIENTOS, CIERRE…). | ~500 | A1 | — | Pendiente | — |
 | A6 | **Detección del cambio:** replay contra la base a las 15:35 y 16:35, sondas mínimas por delta, sección 6 de la spec con IDs nuevos. | ~300 | A2 | — | Pendiente | — |
 | A7 | Replay final sin caché de la versión vigente. | ~300 | A6 | — | Pendiente | — |
@@ -45,6 +45,7 @@ commit aparte de `experimentos.jsonl` (`git add experimentos.jsonl` explícito, 
 | Paso | Qué | Depende de | Responsable | Estado | Commit |
 | --- | --- | --- | --- | --- | --- |
 | B1 | `go.mod`, `cmd/replacement`, handler propio: auth, `/health`, `/__reset`, 404 E404, E100/E102 (casos del log 34–50). Captura íntegra de toda request recibida (seed para replay local). | — | claude | Completado | 4a2d32d…fc09d12 |
+| B1a | **Sobre según A4:** invertir precedencia (ruta → auth → tamaño → JSON), tope 8192 bytes con 413 E101; deltas 1–6 en [informe A4](docs/research/envelope-a4.md#deltas-para-el-handler-go-tablero-b). | B1; A4 | — (sugerido: quien tome B3) | Pendiente | — |
 | B2 | **Arnés diferencial:** test Go que lee secuencias de `tests/corpus/` y compara status y bytes. | B1 | claude | Completado | c5fe3f7…cc0be67 |
 | B3 | `internal/protocol`: parser de `m`, E201 y control tras una sola función (primero plan B; luego la fórmula de A1). | B1; A1 | — | Pendiente | — |
 | B4 | `internal/engine` + `state`: seis comandos, orden E201→E202→E301/E302/E401, E506/E507, sin corregir `recieved` ni espacios. | B3; A3 | — | Pendiente | — |
@@ -66,8 +67,6 @@ La captura de requests del evaluador sí se hace, en versión simple (JSONL a st
 
 Se borran cuando pasan a la spec con IDs.
 
-- PING: excepción de integridad pendiente de ampliar en A4 (log 2, 33). La fórmula general ya está confirmada en INT-01; no usar PING como oráculo.
-- Sobre (para A4; supuestos ENT-05..07 de B1, fijados en `internal/httpadapter/handler_test.go`): sin auth a `/no-existe`; sin auth con cuerpo `{` a `/msg`; `Bearer token-invalido` con `GET /msg`; `{` a `/no-existe` con auth; `/%6dsg`, `/msg/`, `/msg?x=1`; cuerpos vacío, `[]`, `{"m":null}`, `{"M":"PING;1"}`, `{"m":"PING;1"} x`, `m` duplicada; `Authorization` duplicado o con espacios extra; `PING;` sin control.
 
 ## Decisiones vigentes
 
@@ -90,7 +89,7 @@ Trabajan varios agentes en paralelo, sin reparto fijo por herramienta ni por eta
 
 **Mensajes** (con autor):
 
-- (vacío)
+- [claude → B1a/B3] A4 contradice el supuesto ENT-05 de B1: la ruta se evalúa antes que la auth. El handler necesita los deltas del [informe A4](docs/research/envelope-a4.md#deltas-para-el-handler-go-tablero-b); B3 debe implementar E103, la excepción de PING (INT-11) y `sugerencia` en E301.
 
 ## Registro
 
@@ -138,3 +137,6 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [claude] 2026-10-10 15:31: segunda revisión de B2 corregida: `-update-pending` falla sin escribir si se filtró con `-run` o hubo errores (antes reducía la lista a lo ejecutado).
 
 - [claude] 2026-10-10 15:22: A4 reclamado en feat/a4-envelope (worktree ../10102026-a4); usuario aprueba techo de 500 requests, variantes nuevas de auth en bb.py con pruebas y alcance solo exploración+spec (ajustes del handler Go quedan anotados para el tablero B).
+
+- [claude] 2026-10-10 15:45: A4 completado en feat/a4-envelope, antes del cambio (15:25:11–15:28:23, v1): IDs 887–1381, 495/500 requests; secuencias 01–18 repetidas sin caché, 241/241 iguales; 19–20 con una pasada. Precedencia ruta → auth → tamaño (E101, 8192 bytes) → JSON; nuevos E101, E103 y `sugerencia` en E301; control bien formado = 1–2 dígitos ASCII; PING sin integridad pero con aridad cero; montos enteros positivos sin ceros iniciales y con tope de 10 dígitos; comandos sin distinguir caja. Spec §1–3, §5 y §7 e informe docs/research/envelope-a4.md. Deltas del handler en la fila nueva B1a. Rama sin mezclar.
+- [claude] 2026-10-10 15:47: usuario avisa que el incidente (cambio de versión) ya está activo. Todo A4 es previo (`v1`); A6 debe repetir también `tests/corpus/a4/*.jsonl` con `BB_EPOCH=v2` y nombres nuevos (≈254 requests) para detectar deltas del sobre.
