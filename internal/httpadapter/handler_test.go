@@ -92,14 +92,21 @@ func TestLogCases(t *testing.T) {
 	})
 }
 
-// Supuesto ENT-05: auth se evalúa antes que ruta y JSON. Sin evidencia del
-// original; cuando A4 lo mida, ajustar estos casos y precedence() juntos.
-func TestPrecedenceAssumption(t *testing.T) {
+// ENT-05: método+ruta → auth → tamaño → JSON (A4 log 888–896, 1300–1301,
+// 1329–1331). Una ruta desconocida da E404 aunque falte la auth.
+func TestPrecedence(t *testing.T) {
+	big := str(`{"m":"PING;64","x":"` + strings.Repeat("a", 9000) + `"}`)
 	run(t, []exchange{
-		{"sin_auth_ruta_inexistente", "GET", "/no-existe", authNone, "", nil, 401, bodyE001},
+		{"log888_sin_auth_ruta_inexistente", "GET", "/no-existe", authNone, "", nil, 404, bodyE404},
+		{"log1329_sin_auth_post_health", "POST", "/health", authNone, "", nil, 404, bodyE404},
+		{"log1330_sin_auth_get_reset", "GET", "/__reset", authNone, "", nil, 404, bodyE404},
+		{"log1331_sin_auth_put_msg", "PUT", "/msg", authNone, "", str(`{"m":"PING;64"}`), 404, bodyE404},
+		{"token_invalido_metodo_incorrecto", "GET", "/msg", authInvalid, "", nil, 404, bodyE404},
 		{"sin_auth_json_malformado", "POST", "/msg", authNone, "", str(`{`), 401, bodyE001},
-		{"token_invalido_metodo_incorrecto", "GET", "/msg", authInvalid, "", nil, 401, bodyE001},
+		{"log1300_sin_auth_cuerpo_grande", "POST", "/msg", authNone, "", big, 401, bodyE001},
+		{"log1301_ruta_inexistente_cuerpo_grande", "POST", "/nada", authValid, "", big, 404, bodyE404},
 		{"ruta_inexistente_json_malformado", "POST", "/no-existe", authValid, "", str(`{`), 404, bodyE404},
+		{"head_health_sin_auth", "HEAD", "/health", authNone, "", nil, 404, bodyE404},
 	})
 }
 

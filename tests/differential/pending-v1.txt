@@ -34,8 +34,7 @@ a3-v1r-22-orden-e401-e506-e507 1-7
 a3-v1r-23-orden-e104 7
 a3-v1r-24-anula-sobre-limite 1-10
 a3-v1r-25-saldo-negativo 1-11
-a4r-v1-01-precedencia 1-2,5
-a4r-v1-03-metodos 1,11-12,16
+a4r-v1-03-metodos 1,16
 a4r-v1-04-cuerpos 27
 a4r-v1-05-escapes 6-7,10
 a4r-v1-07-control-formas 18
@@ -47,5 +46,4 @@ a4r-v1-13-nombre-largo 1-7
 a4-v1-19-montos-tope-fino 1-6
 a4r-v1-14-tamano-cuerpo 4
 a4r-v1-16-montos-tope 1-7
-a4r-v1-18-precedencia-metodo 1-3
 a4-v1-20-montos-tope-digitos 1-4

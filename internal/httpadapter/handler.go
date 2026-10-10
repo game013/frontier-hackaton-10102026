@@ -65,22 +65,27 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 }
 
-// precedence fija el orden de evaluación: auth, método/ruta exactos, JSON, m.
-// Auth antes que ruta y JSON es supuesto (ENT-05) hasta que A4 lo mida.
+// precedence fija el orden medido del sobre (ENT-05): método+ruta exactos,
+// luego auth, luego tamaño y JSON (estos dos, dentro de msg). Una ruta
+// desconocida da E404 aunque falte la auth (A4 log 888–896).
 func (h *Handler) precedence(r *http.Request) (int, []byte) {
+	route := r.Method + " " + rawPath(r)
+	switch route {
+	case "GET /health", "POST /__reset", "POST /msg":
+	default:
+		return http.StatusNotFound, respE404
+	}
 	if subtle.ConstantTimeCompare([]byte(r.Header.Get("Authorization")), h.auth) != 1 {
 		return http.StatusUnauthorized, respE001
 	}
-	switch route := r.Method + " " + rawPath(r); route {
-	case "GET /health":
-		return http.StatusOK, respOK
+	switch route {
 	case "POST /__reset":
 		h.reset()
 		return http.StatusOK, respOK
 	case "POST /msg":
 		return h.msg(r)
 	}
-	return http.StatusNotFound, respE404
+	return http.StatusOK, respOK // GET /health
 }
 
 func (h *Handler) msg(r *http.Request) (int, []byte) {
