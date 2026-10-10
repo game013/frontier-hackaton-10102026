@@ -1,0 +1,6 @@
+{
+  "sources": [
+    {"file": "tests/corpus/a6/a6-v2/corpus.jsonl", "seqs": ["*"]},
+    {"file": "experimentos.jsonl", "seqs": ["a6-v2r-sonda-*"]}
+  ]
+}
