@@ -232,6 +232,9 @@ class FakeClient:
             return []
         return self.current.entries
 
+    def pending_steps(self, _seq):
+        return []
+
     def conclude(self, *_args):
         pass
 
