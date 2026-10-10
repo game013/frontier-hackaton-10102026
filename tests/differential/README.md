@@ -79,12 +79,18 @@ Objetivo de conformidad (incidente FR-0153). Evidencia grabada contra `v2` en A6
   La primera corrida (`a7-v2-sonda-01-e304-racha`…`07-deposito-fallido`, IDs
   2979–3053) dio los mismos bytes. El replay final A7 (IDs 3129–3970) repitió
   byte a byte las fuentes anteriores y no se añade.
+- Replay sin caché de la corrida 1 del evaluador (`r1-eval-*`, IDs 3971–4373):
+  102 secuencias reconstruidas de las capturas del reemplazo en Railway, sin
+  los `GET /health` de readiness. Las 87, 98 y 103 aislaron el mismo titular
+  sin E506 y la detención por `HALT;1`.
+- Sondas de esas dos reglas (`r1-sonda-*`, IDs 4374–4437), pasada única.
 
 B7 implementa `v2` y la hace predeterminada. `pending-v2.txt` se regeneró tras
 comparar toda la suite: no quedan pasos pendientes, como en `pending-v1.txt`.
 Solo se retiraron pendientes; no se modificaron fuentes de evidencia ni criterios
-de comparación. La suite v2 tiene 72 secuencias/917 requests (resets incluidos):
-58/725 del replay A6, 7/117 de sus sondas repetidas y 7/75 de las sondas A7.
+de comparación. La suite v2 tiene 186 secuencias/1.384 requests (resets incluidos):
+58/725 del replay A6, 7/117 de sus sondas repetidas, 7/75 de las sondas A7,
+102/403 del replay de la corrida 1 y 12/64 de sus sondas.
 No añade el canario independiente ni duplica el replay final A7.
 La suite v1 conserva 55 secuencias/694 requests. Sin variable de entorno se
 validan ambas versiones al ejecutar el arnés.
