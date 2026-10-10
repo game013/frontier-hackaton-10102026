@@ -1,0 +1,1 @@
+{"method": "POST", "path": "/internal/export-docs", "hipotesis": "A5 v2: la ruta que menciona la nota N-01 de NOTAS (POST /internal/export-docs con token) existe; usuario autoriza llamarla una vez"}

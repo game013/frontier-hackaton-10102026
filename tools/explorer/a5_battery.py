@@ -103,8 +103,17 @@ CARACTERIZACION = {
 }
 
 
+# Ruta que menciona la nota N-01 de NOTAS; el usuario la ejecutó a mano (IDs 1997-1998).
+EXPORT_DOCS = {
+    "c04-export-docs": [
+        {"method": "POST", "path": "/internal/export-docs",
+         "hipotesis": "A5 v2: la ruta que menciona la nota N-01 de NOTAS (POST /internal/export-docs con token) existe; usuario autoriza llamarla una vez"},
+    ],
+}
+
+
 def sequences() -> dict[str, list[dict]]:
-    return {"00-previa": PREVIA, **sweep(dictionary()), **CARACTERIZACION}
+    return {"00-previa": PREVIA, **sweep(dictionary()), **CARACTERIZACION, **EXPORT_DOCS}
 
 
 SEQUENCES = sequences() if DICT.exists() else {"00-previa": PREVIA}
