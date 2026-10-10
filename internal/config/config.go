@@ -8,7 +8,7 @@ import (
 )
 
 // Versions son las reglas implementadas; la última es el valor por defecto.
-var Versions = []string{"v1"}
+var Versions = []string{"v1", "v2"}
 
 // Storage selecciona el adaptador; los valores desconocidos se rechazan al arrancar.
 type Storage string
@@ -42,12 +42,21 @@ func Load(getenv func(string) string) (Config, error) {
 	if c.Token == "" {
 		return c, errors.New("TEAM_TOKEN es obligatorio")
 	}
+	var err error
+	c.Version, err = ResolveVersion(c.Version)
+	return c, err
+}
+
+// ResolveVersion también valida Config construidos sin Load. El valor vacío
+// selecciona la última versión implementada; nunca se consulta el reloj.
+func ResolveVersion(version string) (string, error) {
+	version = or(version, Versions[len(Versions)-1])
 	for _, v := range Versions {
-		if c.Version == v {
-			return c, nil
+		if version == v {
+			return version, nil
 		}
 	}
-	return c, fmt.Errorf("BEHAVIOR_VERSION desconocida: %q", c.Version)
+	return "", fmt.Errorf("BEHAVIOR_VERSION desconocida: %q", version)
 }
 
 func or(v, def string) string {

@@ -39,6 +39,11 @@ type process struct {
 
 func startProcess(t *testing.T, dir string) *process {
 	t.Helper()
+	return startVersionProcess(t, dir, "v1")
+}
+
+func startVersionProcess(t *testing.T, dir, version string) *process {
+	t.Helper()
 	exe, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)
@@ -46,7 +51,7 @@ func startProcess(t *testing.T, dir string) *process {
 	cmd := exec.Command(exe, "-test.run=^TestReplacementProcess$")
 	// Entorno cerrado: nunca heredar tokens del operador ni ajustes del runtime.
 	cmd.Env = []string{
-		"B5_PROCESS_HELPER=1", "TEAM_TOKEN=b5-local-test", "PORT=0", "STORAGE=sqlite", "BEHAVIOR_VERSION=v1",
+		"B5_PROCESS_HELPER=1", "TEAM_TOKEN=b5-local-test", "PORT=0", "STORAGE=sqlite", "BEHAVIOR_VERSION=" + version,
 		"STATE_PATH=" + filepath.Join(dir, "state.db"), "CAPTURE_PATH=" + filepath.Join(dir, "capture.jsonl"),
 	}
 	stderr, err := cmd.StderrPipe()

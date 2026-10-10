@@ -9,7 +9,7 @@ func TestDefaults(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if c.Token != "t" || c.Port != "9900" || c.Version != "v1" || c.CapturePath != "var/capture.jsonl" || c.Storage != StorageSQLite || c.StatePath != "var/state.db" {
+	if c.Token != "t" || c.Port != "9900" || c.Version != "v2" || c.CapturePath != "var/capture.jsonl" || c.Storage != StorageSQLite || c.StatePath != "var/state.db" {
 		t.Fatalf("defaults: %+v", c)
 	}
 }

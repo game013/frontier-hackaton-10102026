@@ -12,7 +12,7 @@ Reemplazo autónomo HTTP en Go, con SQLite implementado y despliegue en Railway 
 - [Cliente instrumentado existente](tools/explorer/README.md): única vía al original.
 
 Reemplazo Go: `make serve` (puerto 9900; `TEAM_TOKEN` obligatorio, `BEHAVIOR_VERSION`
-por defecto `v1`) y `make test-go`. Cada request recibido, manejado o no, queda en
+por defecto `v2`) y `make test-go`. Cada request recibido, manejado o no, queda en
 `CAPTURE_PATH` (por defecto `var/capture.jsonl`) y en stdout como JSONL `"kind":"capture"`;
 `make seeds ARGS="<capturas o volcado de logs> -o <destino>"` lo agrupa por secuencia como
 semilla de replay local ([tools/capture/seeds.py](tools/capture/seeds.py)). El arnés diferencial local se ejecuta con `make differential`
@@ -26,11 +26,12 @@ SQLite conserva cuentas, saldos, operaciones, anulaciones y contadores tras rein
 no usa `STATE_PATH`. Un valor desconocido impide arrancar.
 
 `make serve` lee estas claves de `.env` si no están ya exportadas en el entorno
-(valores sin comillas); solo carga `TEAM_TOKEN`, `STORAGE` y `STATE_PATH`, nunca
+(valores sin comillas); solo carga `TEAM_TOKEN`, `BEHAVIOR_VERSION`, `STORAGE` y `STATE_PATH`, nunca
 `BB_TOKEN`. Ejemplo de las claves nuevas, también disponible en [.env.example](.env.example),
 sin incluir ningún secreto:
 
 ```dotenv
+BEHAVIOR_VERSION=v2
 STORAGE=sqlite
 STATE_PATH=var/state.db
 ```
@@ -42,7 +43,19 @@ antes de escuchar; un archivo inaccesible o esquema incompatible impide arrancar
 SIGTERM/SIGINT detienen el servidor y cierran el almacenamiento. Reset es transaccional;
 si falla, devuelve 500 E500 (supuesto del reemplazo), sin informar éxito.
 
-Pruebas de persistencia y límites: [almacenamiento B5](docs/storage-b5.md).
+`BEHAVIOR_VERSION=v2` implementa los tres deltas de A6: saldo de CONSULTA como
+texto con dos decimales, límite de TRANSFER de 50000 y bloqueo por tres fallos
+E506/E507 consecutivos del origen. Los contadores de bloqueo persisten en SQLite;
+un depósito exitoso los reinicia. `make serve BEHAVIOR_VERSION=v1` selecciona el
+contrato histórico con el mismo binario y esquema. No se elige por reloj.
+
+```sh
+make differential BEHAVIOR_VERSION=v2
+make differential BEHAVIOR_VERSION=v1
+```
+
+Pruebas de persistencia y límites: [almacenamiento B5/B7](docs/storage-b5.md).
+Fronteras no medidas y rollback: [implementación B7](docs/behavior-b7.md).
 
 Para regenerar los entregables después de editar el Markdown o Mermaid:
 

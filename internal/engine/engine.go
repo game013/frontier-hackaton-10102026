@@ -4,6 +4,7 @@
 package engine
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/game013/frontier-hackaton-10102026/internal/protocol"
@@ -47,15 +48,25 @@ const (
 	statusNotFound      = 404
 	statusConflict      = 409
 	statusUnprocessable = 422
+	statusLocked        = 423
 	statusInternalError = 500
 )
 
-// transferLimit: TRANSFER con monto mayor da E506, por operación (ERR-506).
-const transferLimit = 100000
+type Engine struct {
+	store Store
+	v2    bool
+}
 
-type Engine struct{ store Store }
-
-func New(store Store) *Engine { return &Engine{store: store} }
+// New recibe una versión explícita e inmutable. Solo la composición resuelve
+// el default de arranque; el motor no lee entorno ni reloj.
+func New(store Store, version string) (*Engine, error) {
+	switch version {
+	case "v1", "v2":
+		return &Engine{store: store, v2: version == "v2"}, nil
+	default:
+		return nil, fmt.Errorf("engine: versión desconocida: %q", version)
+	}
+}
 
 func (e *Engine) Reset() error { return e.store.Reset() }
 
@@ -73,7 +84,7 @@ func (e *Engine) Exec(m protocol.Message) (int, []byte) {
 	var status int
 	var body []byte
 	err := e.store.Update(func(s *state.State) (err error) {
-		status, body, err = apply(s, m)
+		status, body, err = e.apply(s, m)
 		return err
 	})
 	if err != nil {
@@ -82,10 +93,10 @@ func (e *Engine) Exec(m protocol.Message) (int, []byte) {
 	return status, body
 }
 
-// apply decide la respuesta y solo muta el estado cuando el comando tiene
-// éxito: ningún error consume IDs ni mueve saldos (MEM-01). Devuelve error
-// solo si el estado rechaza la mutación (state.ErrOverflow), sin cambios.
-func apply(s *state.State, m protocol.Message) (int, []byte, error) {
+// apply decide la respuesta: ningún error consume IDs ni mueve saldos
+// (MEM-01), pero E506/E507/E510 actualizan contadores en v2 (CAM-V2-3).
+// Un error interno descarta todas las mutaciones mediante Store.Update.
+func (e *Engine) apply(s *state.State, m protocol.Message) (int, []byte, error) {
 	switch m.Cmd {
 	case "ALTA":
 		id := s.OpenAccount(m.Args[0])
@@ -95,19 +106,29 @@ func apply(s *state.State, m protocol.Message) (int, []byte, error) {
 		if !ok {
 			return statusNotFound, respE401, nil
 		}
-		return statusOK, []byte(`{"cuenta_id":"` + acc.ID + `","saldo":` + strconv.FormatInt(acc.Balance, 10) + `}`), nil
+		saldo := strconv.FormatInt(acc.Balance, 10)
+		if e.v2 {
+			saldo = `"` + formatBalance(acc.Balance) + `"`
+		}
+		return statusOK, []byte(`{"cuenta_id":"` + acc.ID + `","saldo":` + saldo + `}`), nil
 	case "DEPOSITO":
 		// E303 → E401 (ERR-ORD).
 		amount, ok := parseAmount(m.Args[1])
 		if !ok {
 			return statusBadRequest, respE303, nil
 		}
-		if s.Accounts[m.Args[0]] == nil {
+		acc := s.Accounts[m.Args[0]]
+		if acc == nil {
 			return statusNotFound, respE401, nil
 		}
-		return operation(s.Apply(state.Delta{Account: m.Args[0], Amount: amount}))
+		id, err := s.Apply(state.Delta{Account: acc.ID, Amount: amount})
+		if err == nil && e.v2 {
+			acc.TransferFailures, acc.BlockedAttempts = 0, 0
+		}
+		return operation(id, err)
 	case "TRANSFER":
-		// E303 → E304 → E401 → E506 → E507 (ERR-ORD).
+		// E303 → E304 → E401 → E510(v2) → E506 → E507.
+		// La posición de E510 ante E303/E304/E401 es supuesto aprobado B7.
 		from, to := m.Args[0], m.Args[1]
 		amount, ok := parseAmount(m.Args[2])
 		switch {
@@ -117,15 +138,36 @@ func apply(s *state.State, m protocol.Message) (int, []byte, error) {
 			return statusBadRequest, respE304, nil
 		case s.Accounts[from] == nil || s.Accounts[to] == nil:
 			return statusNotFound, respE401, nil
-		case amount > transferLimit:
+		}
+		acc := s.Accounts[from]
+		limit := int64(100000)
+		if e.v2 {
+			limit = 50000
+			if acc.TransferFailures >= 3 {
+				acc.BlockedAttempts++
+				return statusLocked, []byte(`{"error":"E510","mensaje":"cuenta bloqueada","intentos":` + strconv.FormatInt(acc.BlockedAttempts, 10) + `}`), nil
+			}
+		}
+		switch {
+		case amount > limit:
+			if e.v2 {
+				acc.TransferFailures++
+			}
 			return statusUnprocessable, respE506, nil
-		case s.Accounts[from].Balance < amount:
+		case acc.Balance < amount:
+			if e.v2 {
+				acc.TransferFailures++
+			}
 			return statusUnprocessable, respE507, nil
 		}
-		return operation(s.Apply(
+		id, err := s.Apply(
 			state.Delta{Account: from, Amount: -amount},
 			state.Delta{Account: to, Amount: amount},
-		))
+		)
+		if err == nil && e.v2 {
+			acc.TransferFailures = 0
+		}
+		return operation(id, err)
 	case "ANULA":
 		id := m.Args[0]
 		found, already, err := s.Annul(id)
@@ -142,6 +184,17 @@ func apply(s *state.State, m protocol.Message) (int, []byte, error) {
 	// El protocolo solo entrega comandos de su tabla: llegar aquí es un error
 	// de programación, no una respuesta del original.
 	panic("engine: comando sin implementar: " + m.Cmd)
+}
+
+// formatBalance convierte centésimas sin floats ni negar MinInt64. El signo
+// se trata aparte para conservar -0.XX (supuesto B7 para saldos -99…-1).
+func formatBalance(balance int64) string {
+	whole, fraction := balance/100, balance%100
+	sign := ""
+	if balance < 0 {
+		sign, whole, fraction = "-", -whole, -fraction
+	}
+	return fmt.Sprintf("%s%d.%02d", sign, whole, fraction)
 }
 
 func operation(id string, err error) (int, []byte, error) {

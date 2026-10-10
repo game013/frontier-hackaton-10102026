@@ -26,6 +26,10 @@ func (a *App) Close() error { return a.close() }
 
 // New abre el almacenamiento antes de devolver un handler listo para servir.
 func New(cfg config.Config) (*App, error) {
+	version, err := config.ResolveVersion(cfg.Version)
+	if err != nil {
+		return nil, err
+	}
 	var store closableStore
 	switch cfg.Storage {
 	case config.StorageSQLite:
@@ -40,7 +44,11 @@ func New(cfg config.Config) (*App, error) {
 		// New también recibe Config construidos directamente, sin config.Load.
 		return nil, fmt.Errorf("STORAGE desconocido: %q", cfg.Storage)
 	}
-	eng := engine.New(store)
+	eng, err := engine.New(store, version)
+	if err != nil {
+		store.Close()
+		return nil, err
+	}
 	return &App{
 		Handler: httpadapter.New(cfg.Token,
 			httpadapter.WithExec(eng.Exec),
