@@ -1,0 +1,3 @@
+{"request": {"m": "PING;1;46"}, "hipotesis": "PING con argumento y control correcto: ¿E302?"}
+{"request": {"m": "PING;;1;64"}, "hipotesis": "PING con argumento vacío: E104"}
+{"request": {"m": "PING;1;2;57"}, "hipotesis": "PING con dos argumentos y control correcto"}

@@ -1,0 +1,7 @@
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "AC-0001"}
+{"request": {"m": "DEPOSITO;AC-0001;4294967296;43"}, "hipotesis": "DEPOSITO 2^32"}
+{"request": {"m": "DEPOSITO;AC-0001;999999999999;4"}, "hipotesis": "DEPOSITO de doce dígitos"}
+{"request": {"m": "DEPOSITO;AC-0001;999999999999999;4"}, "hipotesis": "DEPOSITO de quince dígitos"}
+{"request": {"m": "DEPOSITO;AC-0001;9007199254740991;94"}, "hipotesis": "DEPOSITO 2^53-1"}
+{"request": {"m": "DEPOSITO;AC-0001;9007199254740992;91"}, "hipotesis": "DEPOSITO 2^53"}
+{"raw_body": "{\"m\":\"ALTA;Lucia;82\\n\"}", "hipotesis": "control con salto de línea escapado en JSON: ¿E201?"}

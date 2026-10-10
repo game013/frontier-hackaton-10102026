@@ -1,0 +1,7 @@
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "AC-0001"}
+{"request": {"m": "DEPOSITO;AC-0001;100000000;54"}, "hipotesis": "DEPOSITO 1e8 (99999999 pasó)"}
+{"request": {"m": "DEPOSITO;AC-0001;999999999;4"}, "hipotesis": "DEPOSITO de nueve dígitos"}
+{"request": {"m": "DEPOSITO;AC-0001;2147483648;47"}, "hipotesis": "DEPOSITO 2^31"}
+{"request": {"m": "DEPOSITO;AC-0001;9007199254740993;88"}, "hipotesis": "DEPOSITO 2^53+1"}
+{"request": {"m": "CONSULTA;AC-0001;14"}, "hipotesis": "saldo tras los depósitos grandes aceptados"}
+{"request": {"m": "TRANSFER;AC-0001;AC-0001;9223372036854775808;53"}, "hipotesis": "TRANSFER fuera de rango con origen=destino: ¿E303 antes que E304?"}

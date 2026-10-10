@@ -1,0 +1,3 @@
+{"method": "POST", "path": "/health", "hipotesis": "POST /health sin auth: ¿404 o 401?", "auth": "none"}
+{"method": "GET", "path": "/__reset", "hipotesis": "GET /__reset sin auth: ¿404 o 401?", "auth": "none"}
+{"method": "PUT", "path": "/msg", "hipotesis": "PUT /msg sin auth: ¿404 o 401?", "auth": "none", "raw_body": "{\"m\":\"PING;64\"}"}

@@ -1,0 +1,4 @@
+{"request": {"m": "ALTA;Lucia;82"}, "hipotesis": "AC-0001"}
+{"request": {"m": "DEPOSITO;AC-0001;9999999999;4"}, "hipotesis": "DEPOSITO de diez dígitos"}
+{"request": {"m": "DEPOSITO;AC-0001;10000000000;63"}, "hipotesis": "DEPOSITO de once dígitos (mínimo)"}
+{"request": {"m": "DEPOSITO;AC-0001;99999999999;4"}, "hipotesis": "DEPOSITO de once dígitos (máximo)"}

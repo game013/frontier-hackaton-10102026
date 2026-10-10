@@ -1,0 +1,13 @@
+{"raw_body": "{\"m\":\"ALTA\"}", "hipotesis": "comando sin ;: ¿E103 antes que aridad?"}
+{"raw_body": "{\"m\":\"ZZZ\"}", "hipotesis": "comando desconocido sin ;: ¿E103 o E301?"}
+{"raw_body": "{\"m\":\";\"}", "hipotesis": "m solo separador: E104"}
+{"raw_body": "{\"m\":\"ALTA;Lucia;82\n\"}", "hipotesis": "control con salto de línea en ALTA: ¿E201?"}
+{"request": {"m": "ALT;Lucia;24"}, "hipotesis": "E301 con distancia 1 (borrado): ¿sugerencia ALTA?"}
+{"request": {"m": "BLTA;Lucia;29"}, "hipotesis": "E301 con distancia 1 (sustitución)"}
+{"request": {"m": "ATLA;Lucia;74"}, "hipotesis": "E301 por transposición"}
+{"request": {"m": "AXXA;Lucia;62"}, "hipotesis": "E301 con distancia 2"}
+{"request": {"m": "CONSULT;AC-0001;41"}, "hipotesis": "E301 cercano a CONSULTA"}
+{"request": {"m": "TRANSFE;AC-0001;AC-0002;5;98"}, "hipotesis": "E301 cercano a TRANSFER"}
+{"request": {"m": "PIN;87"}, "hipotesis": "E301 cercano a PING (sin argumentos)"}
+{"request": {"m": "alt;Lucia;24"}, "hipotesis": "E301 en minúscula: ¿sugerencia en mayúscula?"}
+{"request": {"m": "ZZZ;Lucia;54"}, "hipotesis": "E301 lejano: sin sugerencia"}
