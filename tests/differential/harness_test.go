@@ -1,10 +1,13 @@
 package differential
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 // Pruebas del propio arnés con evidencia sintética de testdata/.
@@ -56,6 +59,29 @@ func TestReplayMatchesAndReportsByteDiffs(t *testing.T) {
 	}
 	if m.Index != 1 || !strings.Contains(m.Error(), "JSON equivalente: sí") {
 		t.Fatalf("mensaje inesperado:\n%s", m)
+	}
+}
+
+// Un paso que tarda más que el límite del evaluador es un fallo, no un acierto.
+func TestReplayEnforcesStepTimeout(t *testing.T) {
+	release := make(chan struct{})
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{"ok":`))
+		w.(http.Flusher).Flush()
+		<-release
+		w.Write([]byte(`true}`))
+	}))
+	defer srv.Close()
+	defer close(release)
+	client := srv.Client()
+	client.Timeout = 50 * time.Millisecond
+	q := Sequence{Name: "lenta", Steps: []Step{{Method: "POST", Path: "/__reset", Auth: "valid",
+		Body: []byte{}, Status: 200, Response: []byte(`{"ok":true}`)}}}
+	if _, err := Replay(client, srv.URL, testToken, q); err == nil {
+		t.Fatal("se esperaba timeout al leer el cuerpo")
+	}
+	if _, c := serve(t, "v1"); c.Timeout != stepTimeout {
+		t.Fatalf("el cliente del arnés usa timeout %v", c.Timeout)
 	}
 }
 

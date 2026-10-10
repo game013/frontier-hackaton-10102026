@@ -8,6 +8,7 @@ import (
 	"slices"
 	"sort"
 	"testing"
+	"time"
 
 	"github.com/game013/frontier-hackaton-10102026/internal/app"
 	"github.com/game013/frontier-hackaton-10102026/internal/config"
@@ -17,6 +18,9 @@ const (
 	repoRoot  = "../.."
 	testToken = "equipo-secreto"
 )
+
+// stepTimeout es el tiempo que el evaluador da a cada paso, cuerpo incluido.
+const stepTimeout = 5 * time.Second
 
 func behaviorVersion() string {
 	if v := os.Getenv("BEHAVIOR_VERSION"); v != "" {
@@ -32,6 +36,7 @@ func serve(t *testing.T, version string) (*httptest.Server, *http.Client) {
 	srv := httptest.NewServer(app.New(config.Config{Token: testToken, Version: version}))
 	t.Cleanup(srv.Close)
 	client := srv.Client()
+	client.Timeout = stepTimeout
 	client.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
 	return srv, client
 }
