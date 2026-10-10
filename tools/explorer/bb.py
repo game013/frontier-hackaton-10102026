@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import fcntl
+import hashlib
 import json
 import os
 import sys
@@ -67,10 +68,10 @@ class Result:
         self.cached = cached
 
     id = property(lambda self: self.entry["id"])
-    status = property(lambda self: self.entry["status"])
-    response = property(lambda self: self.entry["response"])
-    raw = property(lambda self: self.entry["raw"])
-    x_req = property(lambda self: self.entry["x_req"])
+    status = property(lambda self: self.entry.get("status"))
+    response = property(lambda self: self.entry.get("response"))
+    raw = property(lambda self: self.entry.get("raw"))
+    x_req = property(lambda self: self.entry.get("x_req"))
 
     def __repr__(self) -> str:
         tag = " (cache)" if self.cached else ""
@@ -103,7 +104,6 @@ class Client:
         self.min_interval = float(min_interval if min_interval is not None else env.get("BB_MIN_INTERVAL", 0.125))
         self._opener = opener or urllib.request.urlopen
         self._sleep = sleep
-        self._last_call = 0.0
 
     # ---------- log ----------
     @contextmanager
@@ -129,15 +129,70 @@ class Client:
         return [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
 
     def _append_side(self, name: str, obj: dict) -> None:
+        with self._locked():
+            self.side_dir.mkdir(parents=True, exist_ok=True)
+            with open(self.side_dir / name, "a") as fh:
+                fh.write(json.dumps(obj, ensure_ascii=False) + "\n")
+
+    @property
+    def _token_tag(self) -> str:
+        """Etiqueta no reversible para separar las cuotas de tokens compartidos."""
+        return hashlib.sha256(self._token.encode()).hexdigest()[:16]
+
+    @property
+    def _quota_path(self) -> Path:
+        return self.side_dir / "quota.json"
+
+    def _read_quota(self) -> dict:
+        if not self._quota_path.exists():
+            return {"tokens": {}}
+        return json.loads(self._quota_path.read_text())
+
+    def _write_quota(self, quota: dict) -> None:
         self.side_dir.mkdir(parents=True, exist_ok=True)
-        with open(self.side_dir / name, "a") as fh:
-            fh.write(json.dumps(obj, ensure_ascii=False) + "\n")
+        tmp = self._quota_path.with_suffix(".tmp")
+        tmp.write_text(json.dumps(quota))
+        tmp.replace(self._quota_path)
+
+    def _quota_state(self, quota: dict, today: str) -> dict:
+        tokens = quota.setdefault("tokens", {})
+        state = tokens.get(self._token_tag)
+        if state is None or state.get("day") != today:
+            # Migra el contador previo del log la primera vez que se usa esta versión.
+            entries = self.entries()
+            prior = sum(1 for e in entries if e.get("ts") and bogota_day(e["ts"]) == today)
+            # Las versiones anteriores guardaban los rate limits solo en el archivo lateral.
+            if not any(e.get("infrastructure") == "rate-limit" for e in entries):
+                prior += sum(1 for e in self._side("rate_limited.jsonl")
+                             if e.get("ts") and bogota_day(e["ts"]) == today)
+            state = {"day": today, "used": prior, "next_at": 0.0}
+            tokens[self._token_tag] = state
+        return state
 
     def used_today(self) -> int:
         today = bogota_day(now_iso())
-        calls = [e for e in self.entries() if e.get("ts") and bogota_day(e["ts"]) == today]
-        calls += [e for e in self._side("rate_limited.jsonl") if bogota_day(e["ts"]) == today]
-        return len(calls)
+        with self._locked():
+            return self._quota_state(self._read_quota(), today)["used"]
+
+    def _reserve_request(self) -> float:
+        """Reserva atómicamente cuota y turno; devuelve la espera antes de enviar."""
+        today = bogota_day(now_iso())
+        with self._locked():
+            quota = self._read_quota()
+            state = self._quota_state(quota, today)
+            if state["used"] >= self.daily_cap:
+                raise BudgetExceeded(f"tope diario alcanzado ({self.daily_cap})")
+            now = time.time()
+            scheduled = max(now, state["next_at"])
+            state["next_at"] = scheduled + self.min_interval
+            state["used"] += 1
+            self._write_quota(quota)
+        return max(0.0, scheduled - time.time())
+
+    def _replace_entries(self, entries: list[dict]) -> None:
+        tmp = self.log_path.with_suffix(".tmp")
+        tmp.write_text("".join(json.dumps(e, ensure_ascii=False) + "\n" for e in entries))
+        tmp.replace(self.log_path)
 
     def conclude(self, entry_id: int, text: str) -> None:
         with self._locked():
@@ -148,13 +203,32 @@ class Client:
                     break
             else:
                 raise KeyError(entry_id)
-            tmp = self.log_path.with_suffix(".tmp")
-            tmp.write_text("".join(json.dumps(e, ensure_ascii=False) + "\n" for e in es))
-            tmp.replace(self.log_path)
+            self._replace_entries(es)
 
     # ---------- secuencias ----------
     def seq_steps(self, seq: str) -> list[dict]:
         return [e for e in self.entries() if e["seq"] == seq]
+
+    def pending_steps(self, seq: str) -> list[dict]:
+        return [e for e in self._side("pending.jsonl") if e["seq"] == seq]
+
+    def _append_pending(self, seq: str, args: tuple, kw: dict) -> None:
+        self._append_side("pending.jsonl", {"seq": seq, "args": args, "kw": kw})
+
+    def _remove_pending(self, seq: str, args: tuple, kw: dict) -> None:
+        with self._locked():
+            pending = self._side("pending.jsonl")
+            target = {"seq": seq, "args": list(args), "kw": kw}
+            for index, item in enumerate(pending):
+                if item == target:
+                    pending.pop(index)
+                    break
+            else:
+                return
+            path = self.side_dir / "pending.jsonl"
+            tmp = path.with_suffix(".tmp")
+            tmp.write_text("".join(json.dumps(e, ensure_ascii=False) + "\n" for e in pending))
+            tmp.replace(path)
 
     def sequence(self, seq: str, hipotesis: str = "inicio de secuencia: estado limpio") -> "Sequence":
         """Abre una secuencia. El reset se envía de forma perezosa (ver Sequence)."""
@@ -166,18 +240,34 @@ class Client:
         steps = self.seq_steps(seq)
         if not steps:
             raise ValueError(f"la secuencia {seq!r} no existe")
-        return Sequence(self, seq, steps=[self._step_key(e) for e in steps])
+        if any(e.get("outcome") == "transport_error" for e in steps):
+            raise ValueError(f"la secuencia {seq!r} tiene un transporte incierto; empieza otra desde reset")
+        pending = [(tuple(e["args"]), e["kw"]) for e in self.pending_steps(seq)]
+        logical_steps = [self._step_key(e) for e in steps
+                         if "status" in e and not e.get("infrastructure")]
+        logical_steps.extend(self.step_key(args[0], args[1], args[2], kw) for args, kw in pending)
+        return Sequence(self, seq, steps=logical_steps, pending=pending)
 
     # ---------- caché ----------
     @staticmethod
     def _step_key(e: dict) -> list:
-        return [e["method"], e["path"], e.get("auth", "valid"), e["request"], e.get("raw_body")]
+        body = e.get("request")
+        raw_body = e.get("raw_body")
+        has_data = raw_body is not None or body is not None or e.get("method") == "POST"
+        content_type = e.get("content_type") or ("application/json" if has_data else None)
+        return [e["method"], e["path"], e.get("auth", "valid"), body, raw_body, content_type]
+
+    @classmethod
+    def step_key(cls, method: str, path: str, body, kw: dict) -> list:
+        return cls._step_key({"method": method, "path": path, "request": body,
+                              "auth": kw.get("auth", "valid"), "raw_body": kw.get("raw_body"),
+                              "content_type": kw.get("content_type")})
 
     def cache_lookup(self, prefix: list, step: list) -> dict | None:
         """Busca una secuencia previa (misma epoch) con el mismo prefijo desde reset."""
         by_seq: dict[str, list[dict]] = {}
         for e in self.entries():
-            if e.get("epoch") == self.epoch:
+            if e.get("epoch") == self.epoch and "status" in e and not e.get("infrastructure"):
                 by_seq.setdefault(e["seq"], []).append(e)
         n = len(prefix)
         for steps in by_seq.values():
@@ -209,12 +299,6 @@ class Client:
             status, hdrs, body = err.code, dict(err.headers), err.read()
         return status, {k.lower(): v for k, v in hdrs.items()}, body
 
-    def _throttle(self) -> None:
-        wait = self.min_interval - (time.monotonic() - self._last_call)
-        if wait > 0:
-            self._sleep(wait)
-        self._last_call = time.monotonic()
-
     def execute(self, seq: str, method: str, path: str, body, hipotesis: str, *,
                 auth: str = "valid", raw_body: str | None = None, content_type: str | None = None,
                 conclusion: str | None = None, retries: int = 3) -> Result:
@@ -231,49 +315,58 @@ class Client:
             data = b"" if method == "POST" else None
 
         for attempt in range(retries + 1):
-            if self.used_today() >= self.daily_cap:
-                raise BudgetExceeded(f"tope diario alcanzado ({self.daily_cap})")
-            self._throttle()
+            wait = self._reserve_request()
+            if wait:
+                self._sleep(wait)
             ts = now_iso()
-            status, hdrs, raw = self._send(method, path, data, auth, content_type)
+            # Escribir antes de abrir la conexión conserva evidencia incluso si se pierde la respuesta.
+            with self._locked():
+                es = self.entries()
+                entry = {
+                    "id": (max((e["id"] for e in es), default=0) + 1),
+                    "seq": seq, "x_req": None, "hipotesis": hipotesis, "request": body,
+                    "conclusion": conclusion, "method": method, "path": path, "auth": auth,
+                    "raw_body": raw_body, "content_type": content_type, "epoch": self.epoch, "ts": ts,
+                    "outcome": "pending",
+                }
+                with open(self.log_path, "a") as fh:
+                    fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
+            try:
+                status, hdrs, raw = self._send(method, path, data, auth, content_type)
+            except Exception as err:
+                with self._locked():
+                    es = self.entries()
+                    target = next(e for e in es if e["id"] == entry["id"])
+                    target.update({"outcome": "transport_error", "transport_error": type(err).__name__})
+                    self._replace_entries(es)
+                raise
+
+            text = raw.decode("utf-8", errors="replace")
+            try:
+                parsed = json.loads(text)
+            except ValueError:
+                parsed = text
+            with self._locked():
+                es = self.entries()
+                target = next(e for e in es if e["id"] == entry["id"])
+                target.update({"x_req": hdrs.get("x-req"), "status": status, "response": parsed,
+                               "raw": text, "outcome": "completed"})
+                self._replace_entries(es)
+                entry = target
             if hdrs.get(RATE_LIMIT_HEADER.lower()) == "rate-limit":
-                # Respuesta de infraestructura: no es evidencia del servicio.
+                # Infraestructura: queda auditada pero nunca alimenta la caché ni la evidencia.
+                with self._locked():
+                    es = self.entries()
+                    target = next(e for e in es if e["id"] == entry["id"])
+                    target.update({"infrastructure": "rate-limit", "outcome": "infrastructure"})
+                    for field in ("x_req", "status", "response", "raw"):
+                        target.pop(field, None)
+                    self._replace_entries(es)
                 self._append_side("rate_limited.jsonl", {"ts": ts, "seq": seq, "path": path, "status": status})
                 self._sleep(min(2 ** attempt, 10))
                 continue
-            break
-        else:
-            raise RateLimited("rate limit persistente; tanda detenida")
-
-        text = raw.decode("utf-8", errors="replace")
-        try:
-            parsed = json.loads(text)
-        except ValueError:
-            parsed = text
-        with self._locked():
-            es = self.entries()
-            entry = {
-                "id": (es[-1]["id"] + 1) if es else 1,
-                "seq": seq,
-                "x_req": hdrs.get("x-req"),
-                "hipotesis": hipotesis,
-                "request": body,
-                "status": status,
-                "response": parsed,
-                "conclusion": conclusion,
-                # Campos extra para reproducir y auditar.
-                "method": method,
-                "path": path,
-                "auth": auth,
-                "raw_body": raw_body,
-                "content_type": content_type,
-                "raw": text,
-                "epoch": self.epoch,
-                "ts": ts,
-            }
-            with open(self.log_path, "a") as fh:
-                fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
-        return Result(entry, cached=False)
+            return Result(entry, cached=False)
+        raise RateLimited("rate limit persistente; tanda detenida")
 
 
 class Sequence:
@@ -285,35 +378,38 @@ class Sequence:
     """
 
     def __init__(self, client: Client, seq: str, steps: list | None = None,
-                 reset_hipotesis: str | None = None):
+                 pending: list[tuple[tuple, dict]] | None = None, reset_hipotesis: str | None = None):
         self.client, self.seq = client, seq
         self.steps: list = list(steps or [])
-        self.pending: list[tuple[tuple, dict]] = []
+        self.pending: list[tuple[tuple, dict]] = list(pending or [])
         if reset_hipotesis is not None:
             self._queue(("POST", "/__reset", None, reset_hipotesis), {})
 
-    def _queue(self, args: tuple, kw: dict) -> None:
+    def _queue(self, args: tuple, kw: dict, *, persist: bool = False) -> None:
         method, path, body, _ = args
-        self.steps.append([method, path, kw.get("auth", "valid"), body, kw.get("raw_body")])
+        self.steps.append(self.client.step_key(method, path, body, kw))
         self.pending.append((args, kw))
+        if persist:
+            self.client._append_pending(self.seq, args, kw)
 
     def flush(self) -> None:
         if self.pending and self.pending[0][0][1] == "/__reset" and self.client.seq_steps(self.seq):
             raise ValueError(f"la secuencia {self.seq!r} ya existe en el log")
         while self.pending:
-            (method, path, body, hip), kw = self.pending[0]
-            if path != "/__reset":
-                hip = f"[replay de prefijo] {hip}"
-            self.client.execute(self.seq, method, path, body, hip, **kw)
+            args, kw = self.pending[0]
+            method, path, body, hip = args
+            replay_hip = f"[replay de prefijo] {hip}" if path != "/__reset" else hip
+            self.client.execute(self.seq, method, path, body, replay_hip, **kw)
             self.pending.pop(0)
+            self.client._remove_pending(self.seq, args, kw)
 
     def call(self, method: str, path: str, body, hipotesis: str, *, confirm: bool = False,
              **kw) -> Result:
-        step = [method, path, kw.get("auth", "valid"), body, kw.get("raw_body")]
+        step = self.client.step_key(method, path, body, kw)
         if not confirm and path != "/__reset":
             hit = self.client.cache_lookup(self.steps, step)
             if hit is not None:
-                self._queue((method, path, body, hipotesis), kw)
+                self._queue((method, path, body, hipotesis), kw, persist=True)
                 return Result(hit, cached=True)
         self.flush()
         res = self.client.execute(self.seq, method, path, body, hipotesis, **kw)

@@ -123,6 +123,35 @@ class ClientTest(unittest.TestCase):
         self.assertEqual([p for p, _, _ in Fake.calls], ["/__reset", "/msg", "/msg"])
         self.assertEqual([e["seq"] for e in self.c.entries()[-3:]], ["b", "b", "b"])
 
+    def test_cache_survives_a_new_cli_process_and_replays_prefix(self):
+        self.c.sequence("a").msg("ALTA;X;1", "alta")
+        self.c.sequence("b").flush()
+        self.assertTrue(self.c.resume("b").msg("ALTA;X;1", "alta").cached)
+        Fake.calls.clear()
+        fresh = self.client()
+        fresh.resume("b").msg("CONSULTA;AC-0001;2", "consulta")
+        self.assertEqual([path for path, _, _ in Fake.calls], ["/msg", "/msg"])
+
+    def test_cache_distinguishes_content_type(self):
+        self.c.sequence("a").call("POST", "/msg", {"m": "PING;64"}, "json")
+        Fake.calls.clear()
+        r = self.c.sequence("b").call("POST", "/msg", {"m": "PING;64"}, "texto",
+                                       content_type="text/plain")
+        self.assertFalse(r.cached)
+        self.assertEqual([path for path, _, _ in Fake.calls], ["/__reset", "/msg"])
+
+    def test_transport_failure_is_logged_before_propagating(self):
+        def unavailable(*_args, **_kwargs):
+            raise OSError("network down")
+
+        c = self.client(opener=unavailable)
+        with self.assertRaises(OSError):
+            c.sequence("s1").flush()
+        entry = c.entries()[0]
+        self.assertEqual(entry["outcome"], "transport_error")
+        self.assertEqual(entry["transport_error"], "OSError")
+        self.assertNotIn("status", entry)
+
     def test_cache_respects_epoch_and_confirm(self):
         self.c.sequence("a").msg("PING;64", "h")
         Fake.calls.clear()
@@ -137,9 +166,9 @@ class ClientTest(unittest.TestCase):
         Fake.rate_limit_next = 2
         r = s.msg("PING;64", "h")
         self.assertEqual(r.status, 200)
-        self.assertEqual(len(self.c.entries()), 2)  # reset + msg; los 429 no son evidencia
-        self.assertNotIn("slow down", self.log.read_text())
-        self.assertEqual(self.c.used_today(), 4)  # pero sí cuentan para el presupuesto
+        self.assertEqual(len(self.c.entries()), 4)  # reset + tres intentos de msg auditados
+        self.assertEqual(sum(e.get("infrastructure") == "rate-limit" for e in self.c.entries()), 2)
+        self.assertEqual(self.c.used_today(), 4)  # también cuentan para el presupuesto
 
     def test_budget_cap_stops(self):
         c = self.client(daily_cap=2)
@@ -147,6 +176,14 @@ class ClientTest(unittest.TestCase):
         s.msg("PING;1", "h")
         with self.assertRaises(bb.BudgetExceeded):
             s.msg("PING;2", "h")
+
+    def test_budget_is_shared_by_client_instances(self):
+        first = self.client(daily_cap=2)
+        first.sequence("s1").flush()  # reserva una de las dos solicitudes
+        second = self.client(daily_cap=2)
+        second.resume("s1").msg("PING;1", "h", confirm=True)
+        with self.assertRaises(bb.BudgetExceeded):
+            first.resume("s1").msg("PING;2", "h", confirm=True)
 
     def test_non_json_response_kept_verbatim(self):
         s = self.c.sequence("s1")

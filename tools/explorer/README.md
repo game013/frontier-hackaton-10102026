@@ -2,17 +2,21 @@
 
 `bb.py` es la única vía permitida hacia el servicio original. Usa solo la librería estándar.
 
-- Registra cada request en `experimentos.jsonl`, incluido `/__reset`, con su `hipotesis`.
+- Registra cada intento en `experimentos.jsonl` **antes** de abrir la conexión, incluido
+  `/__reset`, con su `hipotesis`. Un corte de transporte queda como `outcome: transport_error`
+  sin respuesta; los rate limits se marcan como infraestructura y se excluyen de la evidencia.
   Además de los campos del contrato agrega `method`, `path`, `auth`, `raw` (cuerpo exacto),
   `epoch` y `ts`.
 - Lee el token de `BB_TOKEN` (en el entorno o en `.env`) y nunca lo escribe.
-- Limita el ritmo a 8 req/s y para al llegar a `BB_DAILY_CAP`, por defecto 7.800, contado por
-  día de Bogotá. Las respuestas con `X-Frontier-Infra: rate-limit` se descartan, se reintentan y
-  se cuentan en `.explore/rate_limited.jsonl`.
-- Caché: si el mismo prefijo desde el reset y el mismo paso ya se observaron en la misma
-  `BB_EPOCH`, devuelve el resultado sin llamar. Ante un fallo de caché reenvía primero el prefijo
-  pendiente. `--confirm` o `confirm=True` fuerza la repetición. Tras el cambio de las 15:30 hay
-  que usar `BB_EPOCH=v2`.
+- Coordina entre procesos el ritmo a 8 req/s y `BB_DAILY_CAP` (7.800 por defecto) por token y
+  día de Bogotá. La reserva atómica vive en `.explore/quota.json` y solo guarda una etiqueta
+  derivada del token, nunca su valor. Las respuestas `X-Frontier-Infra: rate-limit` se descartan,
+  se reintentan y consumen presupuesto.
+- Caché: la clave incluye el prefijo desde reset, método, ruta, autenticación, cuerpo crudo y el
+  `Content-Type` efectivo, siempre dentro de la misma `BB_EPOCH`. Los aciertos pendientes se
+  guardan en `.explore/pending.jsonl`; otra ejecución puede restaurarlos y reenviarlos antes del
+  primer fallo de caché. `--confirm` o `confirm=True` fuerza la repetición. Tras el cambio de las
+  15:30 hay que usar `BB_EPOCH=v2`.
 
 ```sh
 python3 tools/explorer/bb.py budget
