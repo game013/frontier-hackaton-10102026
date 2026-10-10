@@ -9,14 +9,14 @@ func TestDefaults(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if c.Token != "t" || c.Port != "9900" || c.Version != "v1" || c.CapturePath != "var/capture.jsonl" || c.Storage != "sqlite" || c.StatePath != "var/state.db" {
+	if c.Token != "t" || c.Port != "9900" || c.Version != "v1" || c.CapturePath != "var/capture.jsonl" || c.Storage != StorageSQLite || c.StatePath != "var/state.db" {
 		t.Fatalf("defaults: %+v", c)
 	}
 }
 
 func TestOverrides(t *testing.T) {
 	c, err := Load(env(map[string]string{"TEAM_TOKEN": "t", "PORT": "8123", "BEHAVIOR_VERSION": "v1", "CAPTURE_PATH": "/data/c.jsonl", "STORAGE": "memory", "STATE_PATH": "/data/state.db"}))
-	if err != nil || c.Port != "8123" || c.CapturePath != "/data/c.jsonl" || c.Storage != "memory" || c.StatePath != "/data/state.db" {
+	if err != nil || c.Port != "8123" || c.CapturePath != "/data/c.jsonl" || c.Storage != StorageMemory || c.StatePath != "/data/state.db" {
 		t.Fatalf("%+v %v", c, err)
 	}
 }

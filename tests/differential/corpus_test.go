@@ -38,7 +38,7 @@ func behaviorVersion() string {
 // parseo de net/http (rutas crudas, cuerpos) sea el mismo que en despliegue.
 func serve(t *testing.T, version string) (*httptest.Server, *http.Client) {
 	t.Helper()
-	replacement, err := app.New(config.Config{Token: testToken, Version: version, Storage: "sqlite", StatePath: filepath.Join(t.TempDir(), "state.db")})
+	replacement, err := app.New(config.Config{Token: testToken, Version: version, Storage: config.StorageSQLite, StatePath: filepath.Join(t.TempDir(), "state.db")})
 	if err != nil {
 		t.Fatal(err)
 	}

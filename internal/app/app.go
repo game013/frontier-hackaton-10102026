@@ -11,6 +11,11 @@ import (
 	"github.com/game013/frontier-hackaton-10102026/internal/storage/sqlite"
 )
 
+type closableStore interface {
+	engine.Store
+	Close() error
+}
+
 // App posee el almacenamiento. Close se llama después de detener el servidor.
 type App struct {
 	http.Handler
@@ -21,20 +26,18 @@ func (a *App) Close() error { return a.close() }
 
 // New abre el almacenamiento antes de devolver un handler listo para servir.
 func New(cfg config.Config) (*App, error) {
-	var store interface {
-		engine.Store
-		Close() error
-	}
+	var store closableStore
 	switch cfg.Storage {
-	case "sqlite":
+	case config.StorageSQLite:
 		s, err := sqlite.Open(cfg.StatePath)
 		if err != nil {
 			return nil, err
 		}
 		store = s
-	case "memory":
+	case config.StorageMemory:
 		store = engine.NewMemoryStore()
 	default:
+		// New también recibe Config construidos directamente, sin config.Load.
 		return nil, fmt.Errorf("STORAGE desconocido: %q", cfg.Storage)
 	}
 	eng := engine.New(store)

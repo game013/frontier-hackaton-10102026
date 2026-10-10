@@ -10,12 +10,20 @@ import (
 // Versions son las reglas implementadas; la última es el valor por defecto.
 var Versions = []string{"v1"}
 
+// Storage selecciona el adaptador; los valores desconocidos se rechazan al arrancar.
+type Storage string
+
+const (
+	StorageSQLite Storage = "sqlite"
+	StorageMemory Storage = "memory"
+)
+
 type Config struct {
 	Token       string
 	Port        string
 	Version     string
 	CapturePath string
-	Storage     string
+	Storage     Storage
 	StatePath   string
 }
 
@@ -25,10 +33,10 @@ func Load(getenv func(string) string) (Config, error) {
 		Port:        or(getenv("PORT"), "9900"),
 		Version:     or(getenv("BEHAVIOR_VERSION"), Versions[len(Versions)-1]),
 		CapturePath: or(getenv("CAPTURE_PATH"), "var/capture.jsonl"),
-		Storage:     or(getenv("STORAGE"), "sqlite"),
+		Storage:     Storage(or(getenv("STORAGE"), string(StorageSQLite))),
 		StatePath:   or(getenv("STATE_PATH"), "var/state.db"),
 	}
-	if c.Storage != "sqlite" && c.Storage != "memory" {
+	if c.Storage != StorageSQLite && c.Storage != StorageMemory {
 		return c, fmt.Errorf("STORAGE desconocido: %q", c.Storage)
 	}
 	if c.Token == "" {
