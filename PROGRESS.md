@@ -30,7 +30,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 | --- | --- | --- | --- | --- | --- | --- |
 | A0 | Completar `bb.py`: request/response en base64, `--no-cache`, runner de secuencias (reset + lock por token mientras dura la secuencia, entre procesos de esta máquina). | 0 | — | Codex (orquestación), Luna (revisión/pruebas) | Completado | — (0 requests) |
 | A1 | **Fórmula del control:** pares mínimos sobre ALTA/CONSULTA que cambien una sola propiedad (longitud, caja, acento, separador, ceros) y búsqueda de candidatos 0–99 con parada al primer control compatible; validar candidatos con mensajes reservados. | ≤100 por tanda | A0 | Codex (orquestación), Luna (análisis/revisión) | Completado | 52–225 (51: fallo DNS sin evidencia) |
-| A2 | **Línea base `v1`:** corpus de ejemplos, secuencias 1–50 y lo de A1 en `tests/corpus/`; repetir sin caché. | ~150 | A0 | — | Pendiente | — |
+| A2 | **Línea base `v1`:** corpus de ejemplos, secuencias 1–50 y lo de A1 en `tests/corpus/`; repetir sin caché. | ≤250 (224 previstas) | A0 | Codex (orquestación), Luna (herramientas/revisión) | En curso | — |
 | A3 | **Estado:** consumo de IDs ante errores, anulación de transferencias, ANULA sobre operación inexistente, alcance del reset, naturaleza del límite E506. | ~500 | A0 (mejor con A1) | — | Pendiente | — |
 | A4 | **Sobre HTTP y números:** matriz de cierre del diseño (precedencia auth/ruta/JSON, cuerpos, HEAD/OPTIONS, escapes) y bordes (`0`, `-1`, `+1`, `01`, `1.0`, int64). | ~300 | A0 | — | Pendiente | — |
 | A5 | **Descubrir comandos** por diccionario (RETIRO, MOVIMIENTOS, CIERRE…). | ~500 | A1 | — | Pendiente | — |
@@ -123,3 +123,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [codex] 2026-10-10 14:50: revisión de cobertura A1: 0–99 es el rango de candidatos con parada al primer acierto, según estrategia inicial §2.3; no exige barrido exhaustivo. ALTA A se barró 0–62 (IDs62–124); vecino63 rechazado después (ID147). Informe y tablero aclarados; sin nuevas llamadas ni cambios en bb.py; mezcla sigue pendiente de autorización.
 
 - [codex] 2026-10-10 14:51: usuario autoriza mezcla; feat/a1-control integrado en master con git merge --ff-only hasta 310a1be, sin commit de merge. Checkout verificado limpio tras el fast-forward; sin nuevas llamadas al original.
+
+- [codex] 2026-10-10 14:55: A2 reclamado en feat/a2-baseline; usuario aprueba techo de 250 requests (224 previstos: IDs 1–50 y 52–225, resets incluidos). Los ejemplos ya están en s001; ID51 sin respuesta excluido. Luna prepara herramientas y revisión offline; ejecución centralizada mediante bb.py.
