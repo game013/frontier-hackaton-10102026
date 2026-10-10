@@ -17,6 +17,10 @@
   guardan en `.explore/pending.jsonl`; otra ejecución puede restaurarlos y reenviarlos antes del
   primer fallo de caché. `--confirm` o `confirm=True` fuerza la repetición. Tras el cambio de las
   15:30 hay que usar `BB_EPOCH=v2`.
+- Versionado: `experimentos.jsonl` es un entregable y vive en la raíz; **no** va en `.gitignore`.
+  Tras cada bloque de experimentos, con ningún `bb.py` en ejecución, valida el log y commitéalo
+  aparte con `git add experimentos.jsonl` explícito (nunca `git add .`), en un commit `docs:`. El
+  `.lock`, el `.tmp` y `.explore/` siguen ignorados.
 
 ```sh
 python3 tools/explorer/bb.py budget
