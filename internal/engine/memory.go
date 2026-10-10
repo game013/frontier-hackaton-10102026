@@ -9,7 +9,7 @@ import (
 // MemoryStore es transitorio: da al motor un Store mientras B5 añade SQLite,
 // que lo reemplaza en producción. No persiste tras reiniciar (MEM-03).
 // Update no revierte cambios parciales: es atómico porque apply valida todo
-// antes de mutar y fn nunca devuelve error a mitad de camino.
+// antes de mutar y state solo devuelve error (ErrOverflow) antes de escribir.
 type MemoryStore struct {
 	mu sync.Mutex
 	st *state.State

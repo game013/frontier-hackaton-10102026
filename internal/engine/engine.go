@@ -33,7 +33,8 @@ var (
 	respE507   = []byte(`{"error":"E507","mensaje":"saldo insuficiente"}`)
 	respE520   = []byte(`{"error":"E520","mensaje":"operación destructiva: detiene el servicio; reenvía con confirmación"}`)
 	// Supuesto: el original nunca mostró un fallo interno. Solo sale si el
-	// Store falla (no ocurre en memoria); 500 para no confundirlo con lo observado.
+	// Store falla o un saldo desbordaría int64 (state.ErrOverflow, inalcanzable
+	// en la práctica); 500 para no confundirlo con lo observado (MEM-07).
 	respStoreError = []byte(`{"error":"E500","mensaje":"error interno"}`)
 )
 
@@ -59,9 +60,9 @@ func (e *Engine) Exec(m protocol.Message) (int, []byte) {
 	}
 	var status int
 	var body []byte
-	err := e.store.Update(func(s *state.State) error {
-		status, body = apply(s, m)
-		return nil
+	err := e.store.Update(func(s *state.State) (err error) {
+		status, body, err = apply(s, m)
+		return err
 	})
 	if err != nil {
 		return http.StatusInternalServerError, respStoreError
@@ -70,26 +71,27 @@ func (e *Engine) Exec(m protocol.Message) (int, []byte) {
 }
 
 // apply decide la respuesta y solo muta el estado cuando el comando tiene
-// éxito: ningún error consume IDs ni mueve saldos (MEM-01).
-func apply(s *state.State, m protocol.Message) (int, []byte) {
+// éxito: ningún error consume IDs ni mueve saldos (MEM-01). Devuelve error
+// solo si el estado rechaza la mutación (state.ErrOverflow), sin cambios.
+func apply(s *state.State, m protocol.Message) (int, []byte, error) {
 	switch m.Cmd {
 	case "ALTA":
 		id := s.OpenAccount(m.Args[0])
-		return http.StatusCreated, []byte(`{"cuentaId":"` + id + `"}`)
+		return http.StatusCreated, []byte(`{"cuentaId":"` + id + `"}`), nil
 	case "CONSULTA":
 		acc, ok := s.Accounts[m.Args[0]]
 		if !ok {
-			return http.StatusNotFound, respE401
+			return http.StatusNotFound, respE401, nil
 		}
-		return http.StatusOK, []byte(`{"cuenta_id":"` + acc.ID + `","saldo":` + strconv.FormatInt(acc.Balance, 10) + `}`)
+		return http.StatusOK, []byte(`{"cuenta_id":"` + acc.ID + `","saldo":` + strconv.FormatInt(acc.Balance, 10) + `}`), nil
 	case "DEPOSITO":
 		// E303 → E401 (ERR-ORD).
 		amount, ok := parseAmount(m.Args[1])
 		if !ok {
-			return http.StatusBadRequest, respE303
+			return http.StatusBadRequest, respE303, nil
 		}
 		if s.Accounts[m.Args[0]] == nil {
-			return http.StatusNotFound, respE401
+			return http.StatusNotFound, respE401, nil
 		}
 		return operation(s.Apply(state.Delta{Account: m.Args[0], Amount: amount}))
 	case "TRANSFER":
@@ -98,15 +100,15 @@ func apply(s *state.State, m protocol.Message) (int, []byte) {
 		amount, ok := parseAmount(m.Args[2])
 		switch {
 		case !ok:
-			return http.StatusBadRequest, respE303
+			return http.StatusBadRequest, respE303, nil
 		case from == to:
-			return http.StatusBadRequest, respE304
+			return http.StatusBadRequest, respE304, nil
 		case s.Accounts[from] == nil || s.Accounts[to] == nil:
-			return http.StatusNotFound, respE401
+			return http.StatusNotFound, respE401, nil
 		case amount > transferLimit:
-			return http.StatusUnprocessableEntity, respE506
+			return http.StatusUnprocessableEntity, respE506, nil
 		case s.Accounts[from].Balance < amount:
-			return http.StatusUnprocessableEntity, respE507
+			return http.StatusUnprocessableEntity, respE507, nil
 		}
 		return operation(s.Apply(
 			state.Delta{Account: from, Amount: -amount},
@@ -114,22 +116,27 @@ func apply(s *state.State, m protocol.Message) (int, []byte) {
 		))
 	case "ANULA":
 		id := m.Args[0]
-		found, already := s.Annul(id)
+		found, already, err := s.Annul(id)
 		switch {
+		case err != nil:
+			return 0, nil, err
 		case !found:
-			return http.StatusNotFound, respE402
+			return http.StatusNotFound, respE402, nil
 		case already:
-			return http.StatusOK, respAnulYa
+			return http.StatusOK, respAnulYa, nil
 		}
-		return http.StatusOK, []byte(`{"ok":true,"anulada":"` + id + `"}`)
+		return http.StatusOK, []byte(`{"ok":true,"anulada":"` + id + `"}`), nil
 	}
 	// El protocolo solo entrega comandos de su tabla: llegar aquí es un error
 	// de programación, no una respuesta del original.
 	panic("engine: comando sin implementar: " + m.Cmd)
 }
 
-func operation(id string) (int, []byte) {
-	return http.StatusOK, []byte(`{"status":"recieved","operacionId":"` + id + `"}`)
+func operation(id string, err error) (int, []byte, error) {
+	if err != nil {
+		return 0, nil, err
+	}
+	return http.StatusOK, []byte(`{"status":"recieved","operacionId":"` + id + `"}`), nil
 }
 
 // parseAmount acepta un entero decimal ASCII positivo sin signo ni ceros

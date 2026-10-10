@@ -1,9 +1,11 @@
 package engine
 
 import (
+	"math"
 	"testing"
 
 	"github.com/game013/frontier-hackaton-10102026/internal/protocol"
+	"github.com/game013/frontier-hackaton-10102026/internal/state"
 )
 
 // step es un mensaje que ya pasó el protocolo (sin control) y su respuesta
@@ -184,4 +186,27 @@ func TestConcurrentExecIsSerialized(t *testing.T) {
 	if len(seen) != 50 || !seen[`{"cuentaId":"AC-0050"}`] {
 		t.Fatalf("%d cuentas distintas", len(seen))
 	}
+}
+
+// Desbordamiento de int64 (inalcanzable con montos de 10 dígitos en la
+// práctica): fallo del Store → 500 E500 (MEM-07, supuesto), sin consumir OP
+// ni mover saldos.
+func TestOverflowIsStoreFailure(t *testing.T) {
+	store := NewMemoryStore()
+	e := New(store)
+	e.Exec(protocol.Message{Cmd: "ALTA", Args: []string{"A"}})
+	store.Update(func(s *state.State) error {
+		s.Accounts["AC-0001"].Balance = math.MaxInt64 - 5
+		return nil
+	})
+	run := func(cmd string, args []string, status int, body string) {
+		t.Helper()
+		gotStatus, gotBody := e.Exec(protocol.Message{Cmd: cmd, Args: args})
+		if gotStatus != status || string(gotBody) != body {
+			t.Fatalf("%s %v: got %d %s, want %d %s", cmd, args, gotStatus, gotBody, status, body)
+		}
+	}
+	run("DEPOSITO", a("AC-0001", "6"), 500, `{"error":"E500","mensaje":"error interno"}`)
+	run("CONSULTA", a("AC-0001"), 200, `{"cuenta_id":"AC-0001","saldo":9223372036854775802}`)
+	run("DEPOSITO", a("AC-0001", "5"), 200, `{"status":"recieved","operacionId":"OP-0001"}`)
 }

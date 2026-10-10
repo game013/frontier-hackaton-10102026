@@ -3,7 +3,11 @@
 // motor, que solo llama a estas transiciones cuando ya decidió aplicarlas.
 package state
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"math"
+)
 
 type Account struct {
 	ID      string
@@ -49,34 +53,64 @@ func (s *State) OpenAccount(name string) string {
 	return id
 }
 
+// ErrOverflow: algún saldo resultante no cabe en int64. El diseño exige
+// comprobarlo antes de escribir y no saturar; el original nunca lo mostró.
+var ErrOverflow = errors.New("state: saldo fuera de int64")
+
 // Apply registra una operación con sus deltas, los suma a los saldos y
-// consume un número OP. Las cuentas deben existir.
-func (s *State) Apply(deltas ...Delta) string {
+// consume un número OP. Las cuentas deben existir. Si un saldo desbordaría,
+// devuelve ErrOverflow sin cambiar nada.
+func (s *State) Apply(deltas ...Delta) (string, error) {
+	if err := s.check(deltas, 1); err != nil {
+		return "", err
+	}
 	id := FormatID("OP", s.NextOperation)
 	s.NextOperation++
 	s.Operations[id] = &Operation{ID: id, Deltas: deltas}
 	for _, d := range deltas {
 		s.Accounts[d.Account].Balance += d.Amount
 	}
-	return id
+	return id, nil
 }
 
 // Annul revierte los deltas de la operación una sola vez, sin comprobar saldos
 // (CMD-ANULA, MEM-04). found es false si el ID no coincide exactamente con una
 // operación emitida; already es true si ya estaba anulada (y no se toca nada).
-func (s *State) Annul(id string) (found, already bool) {
+// Si un saldo desbordaría, devuelve ErrOverflow sin cambiar nada.
+func (s *State) Annul(id string) (found, already bool, err error) {
 	op, ok := s.Operations[id]
 	if !ok {
-		return false, false
+		return false, false, nil
 	}
 	if op.Annulled {
-		return true, true
+		return true, true, nil
+	}
+	if err := s.check(op.Deltas, -1); err != nil {
+		return true, false, err
 	}
 	op.Annulled = true
 	for _, d := range op.Deltas {
 		s.Accounts[d.Account].Balance -= d.Amount
 	}
-	return true, false
+	return true, false, nil
+}
+
+// check simula sign·deltas sobre los saldos (acumulando si una cuenta se
+// repite) y falla si alguno sale de int64.
+func (s *State) check(deltas []Delta, sign int64) error {
+	next := map[string]int64{}
+	for _, d := range deltas {
+		cur, ok := next[d.Account]
+		if !ok {
+			cur = s.Accounts[d.Account].Balance
+		}
+		amount := sign * d.Amount
+		if (amount > 0 && cur > math.MaxInt64-amount) || (amount < 0 && cur < math.MinInt64-amount) {
+			return ErrOverflow
+		}
+		next[d.Account] = cur + amount
+	}
+	return nil
 }
 
 // FormatID da `AC-0001`/`OP-0001`. Pasado 9999 crece sin truncar: supuesto,
