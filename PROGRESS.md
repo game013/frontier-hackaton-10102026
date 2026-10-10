@@ -44,7 +44,7 @@ commit aparte de `experimentos.jsonl` (`git add experimentos.jsonl` explícito, 
 
 | Paso | Qué | Depende de | Responsable | Estado | Commit |
 | --- | --- | --- | --- | --- | --- |
-| B1 | `go.mod`, `cmd/replacement`, handler propio: auth, `/health`, `/__reset`, 404 E404, E100/E102 (casos del log 34–50). Captura íntegra de toda request recibida (seed para replay local). | — | claude | En curso | — |
+| B1 | `go.mod`, `cmd/replacement`, handler propio: auth, `/health`, `/__reset`, 404 E404, E100/E102 (casos del log 34–50). Captura íntegra de toda request recibida (seed para replay local). | — | claude | Completado | 4a2d32d…fc09d12 |
 | B2 | **Arnés diferencial:** test Go que lee secuencias de `tests/corpus/` y compara status y bytes. | B1 | — | Pendiente | — |
 | B3 | `internal/protocol`: parser de `m`, E201 y control tras una sola función (primero plan B; luego la fórmula de A1). | B1; A1 | — | Pendiente | — |
 | B4 | `internal/engine` + `state`: seis comandos, orden E201→E202→E301/E302/E401, E506/E507, sin corregir `recieved` ni espacios. | B3; A3 | — | Pendiente | — |
@@ -70,6 +70,7 @@ Se borran cuando pasan a la spec con IDs.
 - E506: ¿límite por operación o acumulado? Visto con 120000 (log 10).
 - IDs: ¿un comando fallido consume `AC-`/`OP-`?
 - Reset: ¿alcance por token?, ¿reinicia contadores a 1?
+- Sobre (para A4; supuestos ENT-05..07 de B1, fijados en `internal/httpadapter/handler_test.go`): sin auth a `/no-existe`; sin auth con cuerpo `{` a `/msg`; `Bearer token-invalido` con `GET /msg`; `{` a `/no-existe` con auth; `/%6dsg`, `/msg/`, `/msg?x=1`; cuerpos vacío, `[]`, `{"m":null}`, `{"M":"PING;1"}`, `{"m":"PING;1"} x`, `m` duplicada; `Authorization` duplicado o con espacios extra; `PING;` sin control.
 
 ## Decisiones vigentes
 
@@ -106,3 +107,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [codex] 2026-10-10 13:59: A0 completado en de50612: request/response base64, --no-cache, runner con lock por token; make explore documentado (nombre solicitado por el usuario). 23 pruebas locales en verde; 0 requests al original. Luna revisó y amplió pruebas. A1 y A2 desbloqueados.
 
 - [claude] 2026-10-10 14:02: B1 reclamado en rama feat/b1-handler; incluye captura íntegra de requests del evaluador (método, ruta cruda, headers sin secretos, cuerpo base64, respuesta) como seed local.
+
+- [claude] 2026-10-10 14:09: B1 completado (4a2d32d…fc09d12, ff a master): handler con auth/health/reset/E404/E100/E102 y stub PING (19 casos del log 2, 33–50 en verde), captura JSONL de todo request en `CAPTURE_PATH` + stdout con token redactado, `make serve` (:9900), `make test-go`, `make seeds` para convertir capturas o logs en semillas. Límites: lo que net/http rechaza antes del handler no se captura; cuerpo sin tope de tamaño. 0 requests al original. B2 desbloqueado.
