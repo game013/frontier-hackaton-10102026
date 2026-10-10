@@ -32,7 +32,7 @@ hosting, coordinación pi/Codex): [docs/archive/progress-diseno.md](docs/archive
 | A1 | **Fórmula del control:** pares mínimos sobre ALTA/CONSULTA que cambien una sola propiedad (longitud, caja, acento, separador, ceros) y búsqueda de candidatos 0–99 con parada al primer control compatible; validar candidatos con mensajes reservados. | ≤100 por tanda | A0 | Codex (orquestación), Luna (análisis/revisión) | Completado | 52–225 (51: fallo DNS sin evidencia) |
 | A2 | **Línea base `v1`:** corpus de ejemplos, secuencias 1–50 y lo de A1 en `tests/corpus/`; repetir sin caché. | ≤250 (225 consumidas) | A0 | Codex (orquestación), Luna (herramientas/revisión) | Completado | 227–450 (226: fallo sin respuesta) |
 | A3 | **Estado:** consumo de IDs ante errores, anulación de transferencias, ANULA sobre operación inexistente, alcance del reset, naturaleza del límite E506. | ~500 (800 aprobados; 436 consumidas) | A0 (mejor con A1) | claude (orquestación), Haiku (minería/auditoría) | Completado | 451–886 (618: TEAM_TOKEN rechazado) |
-| A4 | **Sobre HTTP y números:** matriz de cierre del diseño (precedencia auth/ruta/JSON, cuerpos, HEAD/OPTIONS, escapes) y bordes (`0`, `-1`, `+1`, `01`, `1.0`, int64). | ~300 | A0 | — | Pendiente | — |
+| A4 | **Sobre HTTP y números:** matriz de cierre del diseño (precedencia auth/ruta/JSON, cuerpos, HEAD/OPTIONS, escapes) y bordes (`0`, `-1`, `+1`, `01`, `1.0`, int64). | ~300 (500 aprobados) | A0 | claude (orquestación), Haiku (minería/auditoría) | En curso | — |
 | A5 | **Descubrir comandos** por diccionario (RETIRO, MOVIMIENTOS, CIERRE…). | ~500 | A1 | — | Pendiente | — |
 | A6 | **Detección del cambio:** replay contra la base a las 15:35 y 16:35, sondas mínimas por delta, sección 6 de la spec con IDs nuevos. | ~300 | A2 | — | Pendiente | — |
 | A7 | Replay final sin caché de la versión vigente. | ~300 | A6 | — | Pendiente | — |
@@ -136,3 +136,5 @@ Solo por adición, una línea por evento, con autor y hora de Bogotá.
 - [claude] 2026-10-10 15:28: revisión adversaria de B2 corregida (a99e09c…7c2df2e): pendientes por paso como trinquete (falla ante regresión o paso ya resuelto; `-update-pending` regenera), versión desconocida o sin suite falla en vez de skip, timeout de 5 s por paso con cuerpo incluido. 0 requests al original.
 
 - [claude] 2026-10-10 15:31: segunda revisión de B2 corregida: `-update-pending` falla sin escribir si se filtró con `-run` o hubo errores (antes reducía la lista a lo ejecutado).
+
+- [claude] 2026-10-10 15:22: A4 reclamado en feat/a4-envelope (worktree ../10102026-a4); usuario aprueba techo de 500 requests, variantes nuevas de auth en bb.py con pruebas y alcance solo exploración+spec (ajustes del handler Go quedan anotados para el tablero B).
