@@ -35,3 +35,10 @@ a6-v2r-sonda-04-bloqueo-conteo 5-9,13-17
 a6-v2r-sonda-05-desbloqueo 9-25,27
 a6-v2r-sonda-06-umbral-fino 4,6-7,9-10
 a6-v2r-sonda-07-desbloqueo-entrante 6-16
+a7-v2r-sonda-01-e304-racha 4-5,7-8
+a7-v2r-sonda-02-e401-racha 4-5,7-8
+a7-v2r-sonda-03-e303-racha 4-5,7-8
+a7-v2r-sonda-04-neutros 4-6,8-10
+a7-v2r-sonda-05-orden 4-6,10
+a7-v2r-sonda-06-rebloqueo 4-16
+a7-v2r-sonda-07-deposito-fallido 4-6,8

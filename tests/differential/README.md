@@ -69,6 +69,11 @@ Objetivo de conformidad (incidente FR-0153). Todo corrió contra `v2` en A6:
   NOTAS/HALT. 58 secuencias, 725 pasos.
 - Repetición sin caché de las sondas de aislamiento (`a6-v2r-sonda-*`,
   IDs 2862–2978). La primera corrida (`a6-v2-sonda-*`) dio los mismos bytes.
+- Repetición sin caché de las sondas A7 del bloqueo E510 (`a7-v2r-sonda-*`,
+  IDs 3054–3128): fallos que cuentan, orden de E510 e `intentos` tras rebloqueo.
+  La primera corrida (`a7-v2-sonda-01-e304-racha`…`07-deposito-fallido`, IDs
+  2979–3053) dio los mismos bytes. El replay final A7 (IDs 3129–3970) repitió
+  byte a byte las fuentes anteriores y no se añade.
 
 `pending-v2.txt` se generó con `v2` añadida a `config.Versions` solo en local:
 hoy el reemplazo responde como v1 (B4, sin pendientes en `v1`), así que lista
